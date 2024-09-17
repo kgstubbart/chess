@@ -38,21 +38,50 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        for (int i = 1; i <= 8; i++){
-            for (int j = 1; j <= 8; j++){
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
                 ChessPosition position = new ChessPosition(i, j);
                 squares[position.getRow()][position.getColumn()] = null;
             }
         }
-        for (int j = 1; j <= 8; j++){
+        for (int j = 1; j <= 8; j++) {
             ChessPiece piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
             ChessPosition position = new ChessPosition(2, j);
             squares[position.getRow()][position.getColumn()] = piece;
         }
-        for (int j = 1; j <= 8; j++){
+        for (int j = 1; j <= 8; j++) {
             ChessPiece piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
             ChessPosition position = new ChessPosition(7, j);
             squares[position.getRow()][position.getColumn()] = piece;
+        }
+        for (int j = 1; j <= 8; j++) {
+            int i = 1;
+
+            if (j == 1 || j == 8) {
+                ChessPiece piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+                ChessPosition position = new ChessPosition(i, j);
+                squares[position.getRow()][position.getColumn()] = piece;
+            }
+            if (j == 2 || j == 7) {
+                ChessPiece piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+                ChessPosition position = new ChessPosition(i, j);
+                squares[position.getRow()][position.getColumn()] = piece;
+            }
+            if (j == 3 || j == 6) {
+                ChessPiece piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+                ChessPosition position = new ChessPosition(i, j);
+                squares[position.getRow()][position.getColumn()] = piece;
+            }
+            if (j == 4) {
+                ChessPiece piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
+                ChessPosition position = new ChessPosition(i, j);
+                squares[position.getRow()][position.getColumn()] = piece;
+            }
+            if (j == 5) {
+                ChessPiece piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+                ChessPosition position = new ChessPosition(i, j);
+                squares[position.getRow()][position.getColumn()] = piece;
+            }
         }
     }
 }
