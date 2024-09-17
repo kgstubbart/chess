@@ -44,5 +44,10 @@ public class ChessBoard {
                 squares[position.getRow()][position.getColumn()] = null;
             }
         }
+        for (int j = 1; j <= 8; j++){
+            ChessPiece piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+            ChessPosition position = new ChessPosition(2, j);
+            squares[position.getRow()][position.getColumn()] = piece;
+        }
     }
 }
