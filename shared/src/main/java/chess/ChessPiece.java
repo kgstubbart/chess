@@ -1,5 +1,7 @@
 package chess;
 
+import chess.movement.BishopMovement;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -75,6 +77,21 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return new ArrayList<>();
+        switch(this.type) {
+            case KING:
+                return null;
+            case QUEEN:
+                return null;
+            case BISHOP:
+                BishopMovement bishop_movement = new BishopMovement(board, myPosition);
+                return bishop_movement.moves(board, myPosition);
+            case KNIGHT:
+                return null;
+            case ROOK:
+                return null;
+            case PAWN:
+                return null;
+        }
+        return null;
     }
 }

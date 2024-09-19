@@ -8,6 +8,14 @@ import java.util.Collection;
 
 public abstract class BaseMovementRule implements PieceMovementCalculator{
 
+    private final ChessBoard board;
+    private final ChessPosition position;
+
+    public BaseMovementRule(ChessBoard board, ChessPosition position) {
+        this.board = board;
+        this.position = position;
+    }
+
     protected void calculateMoves(ChessBoard board, ChessPosition pos, int rowInc, int colInc,
                                   Collection<ChessMove> moves, boolean allowDistance) {
 
@@ -15,10 +23,24 @@ public abstract class BaseMovementRule implements PieceMovementCalculator{
         int col = pos.getColumn();
 
         if (allowDistance) {
-            while (row >= 1 && row <= 8 && col >= 1 && col <= 8) {
-                int updated_row = row + rowInc;
-                int updated_col = col + colInc;
-                ChessPosition position = new ChessPosition(updated_row, updated_col);
+            while ((row > 0) && (row < 7) && (col > 0) && (col < 7)) {
+                row += rowInc;
+                col += colInc;
+
+                int temp_row = switch (row) {
+                    case 7 -> 1;
+                    case 6 -> 2;
+                    case 5 -> 3;
+                    case 4 -> 4;
+                    case 3 -> 5;
+                    case 2 -> 6;
+                    case 1 -> 7;
+                    case 0 -> 8;
+                    default -> row;
+                };
+                int temp_col = col + 1;
+
+                ChessPosition position = new ChessPosition(temp_row, temp_col);
                 if (board.getPiece(position) != null) {
                     if (board.getPiece(position).getTeamColor() != board.getPiece(pos).getTeamColor()) {
                         moves.add(new ChessMove(pos, position, null));
