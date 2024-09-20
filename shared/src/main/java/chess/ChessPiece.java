@@ -3,6 +3,7 @@ package chess;
 import chess.movement.BishopMovement;
 import chess.movement.RookMovement;
 import chess.movement.QueenMovement;
+import chess.movement.KnightMovement;
 
 
 import java.util.ArrayList;
@@ -90,7 +91,8 @@ public class ChessPiece {
                 BishopMovement bishop_movement = new BishopMovement(board, myPosition);
                 return bishop_movement.moves(board, myPosition);
             case KNIGHT:
-                return null;
+                KnightMovement knight_movement = new KnightMovement(board, myPosition);
+                return knight_movement.moves(board, myPosition);
             case ROOK:
                 RookMovement rook_movement = new RookMovement(board, myPosition);
                 return rook_movement.moves(board, myPosition);
