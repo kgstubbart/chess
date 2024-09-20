@@ -5,6 +5,7 @@ import chess.movement.RookMovement;
 import chess.movement.QueenMovement;
 import chess.movement.KnightMovement;
 import chess.movement.KingMovement;
+import chess.movement.PawnMovement;
 
 
 import java.util.ArrayList;
@@ -99,7 +100,8 @@ public class ChessPiece {
                 RookMovement rook_movement = new RookMovement(board, myPosition);
                 return rook_movement.moves(board, myPosition);
             case PAWN:
-                return null;
+                PawnMovement pawn_movement = new PawnMovement(board, myPosition);
+                return pawn_movement.moves(board, myPosition);
         }
         return null;
     }
