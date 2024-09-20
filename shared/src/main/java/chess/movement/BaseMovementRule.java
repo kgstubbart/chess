@@ -64,27 +64,31 @@ public abstract class BaseMovementRule implements PieceMovementCalculator{
                 row += rowInc;
                 col += colInc;
 
-                int temp_row = switch (row) {
-                    case 7 -> 1;
-                    case 6 -> 2;
-                    case 5 -> 3;
-                    case 4 -> 4;
-                    case 3 -> 5;
-                    case 2 -> 6;
-                    case 1 -> 7;
-                    case 0 -> 8;
-                    default -> row;
-                };
-                int temp_col = col + 1;
-
-                ChessPosition position = new ChessPosition(temp_row, temp_col);
-                if (board.getPiece(position) != null) {
-                    if (board.getPiece(position).getTeamColor() != board.getPiece(pos).getTeamColor()) {
-                        moves.add(new ChessMove(pos, position, null));
-                    }
+                if (row < 0 || row > 7 || col < 0 || col > 7) {
+                    // do nothing
                 }
                 else {
-                    moves.add(new ChessMove(pos, position, null));
+                    int temp_row = switch (row) {
+                        case 7 -> 1;
+                        case 6 -> 2;
+                        case 5 -> 3;
+                        case 4 -> 4;
+                        case 3 -> 5;
+                        case 2 -> 6;
+                        case 1 -> 7;
+                        case 0 -> 8;
+                        default -> row;
+                    };
+                    int temp_col = col + 1;
+
+                    ChessPosition position = new ChessPosition(temp_row, temp_col);
+                    if (board.getPiece(position) != null) {
+                        if (board.getPiece(position).getTeamColor() != board.getPiece(pos).getTeamColor()) {
+                            moves.add(new ChessMove(pos, position, null));
+                        }
+                    } else {
+                        moves.add(new ChessMove(pos, position, null));
+                    }
                 }
             }
         }
