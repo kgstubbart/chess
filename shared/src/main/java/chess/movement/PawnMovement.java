@@ -50,11 +50,27 @@ public class PawnMovement extends BaseMovementRule {
             }
             ChessPosition right_attack_position = new ChessPosition(temp_row + 1, temp_col - 1);
             if (board.getPiece(right_attack_position) != null) {
-                calculateMoves(board, position, -1, -1, moves, false);
+                if (row - 1 == 0) {
+                    moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.QUEEN));
+                    moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.ROOK));
+                    moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.BISHOP));
+                    moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.KNIGHT));
+                }
+                else {
+                    calculateMoves(board, position, -1, -1, moves, false);
+                }
             }
             ChessPosition left_attack_position = new ChessPosition(temp_row - 1, temp_col - 1);
             if (board.getPiece(left_attack_position) != null) {
-                calculateMoves(board, position, 1, -1, moves, false);
+                if (row - 1 == 0) {
+                    moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.QUEEN));
+                    moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.ROOK));
+                    moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.BISHOP));
+                    moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.KNIGHT));
+                }
+                else {
+                    calculateMoves(board, position, 1, -1, moves, false);
+                }
             }
         }
         else {
@@ -76,13 +92,29 @@ public class PawnMovement extends BaseMovementRule {
                     }
                 }
             }
-            ChessPosition left_attack_position = new ChessPosition(temp_row + 1, temp_col + 1);
+            ChessPosition left_attack_position = new ChessPosition(temp_row - 1, temp_col - 1);
             if (board.getPiece(left_attack_position) != null) {
-                calculateMoves(board, position, -1, 1, moves, false);
+                if (row + 1 == 7) {
+                    moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.QUEEN));
+                    moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.ROOK));
+                    moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.BISHOP));
+                    moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.KNIGHT));
+                }
+                else {
+                    calculateMoves(board, position, -1, 1, moves, false);
+                }
             }
             ChessPosition right_attack_position = new ChessPosition(temp_row - 1, temp_col + 1);
             if (board.getPiece(right_attack_position) != null) {
-                calculateMoves(board, position, 1, 1, moves, false);
+                if (row + 1 == 7) {
+                    moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.QUEEN));
+                    moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.ROOK));
+                    moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.BISHOP));
+                    moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.KNIGHT));
+                }
+                else {
+                    calculateMoves(board, position, 1, 1, moves, false);
+                }
             }
         }
         return moves;
