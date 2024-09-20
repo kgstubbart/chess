@@ -4,6 +4,7 @@ import chess.movement.BishopMovement;
 import chess.movement.RookMovement;
 import chess.movement.QueenMovement;
 import chess.movement.KnightMovement;
+import chess.movement.KingMovement;
 
 
 import java.util.ArrayList;
@@ -83,7 +84,8 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         switch(this.type) {
             case KING:
-                return null;
+                KingMovement king_movement = new KingMovement(board, myPosition);
+                return king_movement.moves(board, myPosition);
             case QUEEN:
                 QueenMovement queen_movement = new QueenMovement(board, myPosition);
                 return queen_movement.moves(board, myPosition);
