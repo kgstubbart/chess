@@ -33,12 +33,24 @@ public class PawnMovement extends BaseMovementRule {
             ChessPosition forward_position = new ChessPosition(temp_row + 1, temp_col);
             if (board.getPiece(forward_position) == null) {
                 calculateMoves(board, position, -1, 0, moves, false);
+                if (row == 6) {
+                    ChessPosition double_forward_position = new ChessPosition(temp_row + 2, temp_col);
+                    if (board.getPiece(double_forward_position) == null) {
+                        calculateMoves(board, position, -2, 0, moves, false);
+                    }
+                }
             }
         }
         else {
             ChessPosition forward_position = new ChessPosition(temp_row - 1, temp_col);
             if (board.getPiece(forward_position) == null) {
                 calculateMoves(board, position, 1, 0, moves, false);
+                if (row == 1) {
+                    ChessPosition double_forward_position = new ChessPosition(temp_row - 2, temp_col);
+                    if (board.getPiece(double_forward_position) == null) {
+                        calculateMoves(board, position, 2, 0, moves, false);
+                    }
+                }
             }
         }
         return moves;
