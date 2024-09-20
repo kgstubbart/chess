@@ -40,6 +40,14 @@ public class PawnMovement extends BaseMovementRule {
                     }
                 }
             }
+            ChessPosition right_attack_position = new ChessPosition(temp_row + 1, temp_col + 1);
+            if (board.getPiece(right_attack_position) != null) {
+                calculateMoves(board, position, -1, -1, moves, false);
+            }
+            ChessPosition left_attack_position = new ChessPosition(temp_row - 1, temp_col - 1);
+            if (board.getPiece(left_attack_position) != null) {
+                calculateMoves(board, position, 1, -1, moves, false);
+            }
         }
         else {
             ChessPosition forward_position = new ChessPosition(temp_row - 1, temp_col);
