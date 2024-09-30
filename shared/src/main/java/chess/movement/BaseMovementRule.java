@@ -1,12 +1,11 @@
 package chess.movement;
 
-import chess.movement.PieceMovementCalculator;
 import chess.ChessBoard;
 import chess.ChessPosition;
 import chess.ChessMove;
 import java.util.Collection;
 
-public abstract class BaseMovementRule implements PieceMovementCalculator{
+public abstract class BaseMovementRule{
 
     private final ChessBoard board;
     private final ChessPosition position;
