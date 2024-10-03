@@ -5,16 +5,18 @@ import chess.*;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class PawnMovement extends BaseMovementRule {
+public class PawnMovement extends BaseMovement {
     public PawnMovement(ChessBoard board, ChessPosition position) {
         super(board, position);
     }
 
-    @Override
     public Collection<ChessMove> moves(ChessBoard board, ChessPosition position) {
+        var moves = new HashSet<ChessMove>();
+
         int row = position.getRow();
         int col = position.getColumn();
 
+        int temp_col = col + 1;
         int temp_row = switch (row) {
             case 7 -> 1;
             case 6 -> 2;
@@ -26,114 +28,92 @@ public class PawnMovement extends BaseMovementRule {
             case 0 -> 8;
             default -> row;
         };
-        int temp_col = col + 1;
 
-        var moves = new HashSet<ChessMove>();
         if (board.getPiece(position).getTeamColor() == ChessGame.TeamColor.WHITE) {
-            ChessPosition forward_position = new ChessPosition(temp_row + 1, temp_col);
-            if (board.getPiece(forward_position) == null) {
-                if (row - 1 == 0) {
-                    moves.add(new ChessMove(position, forward_position, ChessPiece.PieceType.QUEEN));
-                    moves.add(new ChessMove(position, forward_position, ChessPiece.PieceType.ROOK));
-                    moves.add(new ChessMove(position, forward_position, ChessPiece.PieceType.BISHOP));
-                    moves.add(new ChessMove(position, forward_position, ChessPiece.PieceType.KNIGHT));
-                }
-                else {
-                    calculateMoves(board, position, -1, 0, moves, false);
-                }
-                if (row == 6) {
-                    ChessPosition double_forward_position = new ChessPosition(temp_row + 2, temp_col);
-                    if (board.getPiece(double_forward_position) == null) {
-                        calculateMoves(board, position, -2, 0, moves, false);
-                    }
-                }
-            }
-            if (temp_row + 1 < 1 || temp_row + 1 > 8 || temp_col - 1 < 1 || temp_col - 1 > 8) {
-                // do nothing
-            }
-            else {
-                ChessPosition right_attack_position = new ChessPosition(temp_row + 1, temp_col - 1);
-                if (board.getPiece(right_attack_position) != null) {
-                    if (row - 1 == 0) {
-                        moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.QUEEN));
-                        moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.ROOK));
-                        moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.BISHOP));
-                        moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.KNIGHT));
-                    }
-                    else {
-                        calculateMoves(board, position, -1, -1, moves, false);
-                    }
-                }
-            }
-            if (temp_row - 1 < 1 || temp_row - 1 > 8 || temp_col - 1 < 1 || temp_col - 1 > 8) {
-                // do nothing
-            }
-            else {
-                ChessPosition left_attack_position = new ChessPosition(temp_row - 1, temp_col - 1);
-                if (board.getPiece(left_attack_position) != null) {
-                    if (row - 1 == 0) {
-                        moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.QUEEN));
-                        moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.ROOK));
-                        moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.BISHOP));
-                        moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.KNIGHT));
+            if (temp_row + 1 <= 8) {
+                if (board.getPiece(new ChessPosition(temp_row + 1, temp_col)) == null) {
+                    if (temp_row + 1 == 8) {
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row + 1, temp_col), ChessPiece.PieceType.QUEEN));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row + 1, temp_col), ChessPiece.PieceType.BISHOP));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row + 1, temp_col), ChessPiece.PieceType.ROOK));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row + 1, temp_col), ChessPiece.PieceType.KNIGHT));
                     } else {
-                        calculateMoves(board, position, 1, -1, moves, false);
+                        BaseCalc(board, position, -1, 0, moves, false);
+                    }
+
+                    if ((row == 6) && (board.getPiece(new ChessPosition(temp_row + 2, temp_col)) == null)) {
+                        BaseCalc(board, position, -2, 0, moves, false);
+                    }
+                }
+            }
+            if (temp_row + 1 <= 8 && temp_col + 1 <= 8) {
+                if (board.getPiece(new ChessPosition(temp_row + 1, temp_col + 1)) != null) {
+                    if (temp_row + 1 == 8) {
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row + 1, temp_col + 1), ChessPiece.PieceType.QUEEN));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row + 1, temp_col + 1), ChessPiece.PieceType.BISHOP));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row + 1, temp_col + 1), ChessPiece.PieceType.ROOK));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row + 1, temp_col + 1), ChessPiece.PieceType.KNIGHT));
+                    } else {
+                        BaseCalc(board, position, -1, -1, moves, false);
+                    }
+                }
+            }
+            if (temp_row + 1 <= 8 && temp_col - 1 >= 1) {
+                if (board.getPiece(new ChessPosition(temp_row + 1, temp_col - 1)) != null) {
+                    if (temp_row + 1 == 8) {
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row + 1, temp_col - 1), ChessPiece.PieceType.QUEEN));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row + 1, temp_col - 1), ChessPiece.PieceType.BISHOP));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row + 1, temp_col - 1), ChessPiece.PieceType.ROOK));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row + 1, temp_col - 1), ChessPiece.PieceType.KNIGHT));
+                    } else {
+                        BaseCalc(board, position, -1, 1, moves, false);
                     }
                 }
             }
         }
         else {
-            ChessPosition forward_position = new ChessPosition(temp_row - 1, temp_col);
-            if (board.getPiece(forward_position) == null) {
-                if (row + 1 == 7) {
-                    moves.add(new ChessMove(position, forward_position, ChessPiece.PieceType.QUEEN));
-                    moves.add(new ChessMove(position, forward_position, ChessPiece.PieceType.ROOK));
-                    moves.add(new ChessMove(position, forward_position, ChessPiece.PieceType.BISHOP));
-                    moves.add(new ChessMove(position, forward_position, ChessPiece.PieceType.KNIGHT));
-                }
-                else {
-                    calculateMoves(board, position, 1, 0, moves, false);
-                }
-                if (row == 1) {
-                    ChessPosition double_forward_position = new ChessPosition(temp_row - 2, temp_col);
-                    if (board.getPiece(double_forward_position) == null) {
-                        calculateMoves(board, position, 2, 0, moves, false);
+            if (temp_row - 1 >= 1) {
+                if (board.getPiece(new ChessPosition(temp_row - 1, temp_col)) == null) {
+                    if (temp_row - 1 == 1) {
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row - 1, temp_col), ChessPiece.PieceType.QUEEN));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row - 1, temp_col), ChessPiece.PieceType.BISHOP));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row - 1, temp_col), ChessPiece.PieceType.ROOK));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row - 1, temp_col), ChessPiece.PieceType.KNIGHT));
+                    } else {
+                        BaseCalc(board, position, 1, 0, moves, false);
+                    }
+
+                    if ((row == 1) && (board.getPiece(new ChessPosition(temp_row - 2, temp_col)) == null)) {
+                        BaseCalc(board, position, 2, 0, moves, false);
                     }
                 }
             }
-            if (temp_row - 1 < 1 || temp_row - 1 > 8 || temp_col - 1 < 1 || temp_col - 1 > 8) {
-                // do nothing
-            }
-            else {
-                ChessPosition left_attack_position = new ChessPosition(temp_row - 1, temp_col - 1);
-                if (board.getPiece(left_attack_position) != null) {
-                    if (row + 1 == 7) {
-                        moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.QUEEN));
-                        moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.ROOK));
-                        moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.BISHOP));
-                        moves.add(new ChessMove(position, left_attack_position, ChessPiece.PieceType.KNIGHT));
+            if (temp_row - 1 >= 1 && temp_col + 1 <= 8) {
+                if (board.getPiece(new ChessPosition(temp_row - 1, temp_col + 1)) != null) {
+                    if (temp_row - 1 == 1) {
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row - 1, temp_col + 1), ChessPiece.PieceType.QUEEN));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row - 1, temp_col + 1), ChessPiece.PieceType.BISHOP));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row - 1, temp_col + 1), ChessPiece.PieceType.ROOK));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row - 1, temp_col + 1), ChessPiece.PieceType.KNIGHT));
                     } else {
-                        calculateMoves(board, position, -1, 1, moves, false);
+                        BaseCalc(board, position, 1, 1, moves, false);
                     }
                 }
             }
-            if (temp_row - 1 < 1 || temp_row - 1 > 8 || temp_col + 1 < 1 || temp_col + 1 > 8) {
-                // do nothing
-            }
-            else {
-                ChessPosition right_attack_position = new ChessPosition(temp_row - 1, temp_col + 1);
-                if (board.getPiece(right_attack_position) != null) {
-                    if (row + 1 == 7) {
-                        moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.QUEEN));
-                        moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.ROOK));
-                        moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.BISHOP));
-                        moves.add(new ChessMove(position, right_attack_position, ChessPiece.PieceType.KNIGHT));
+            if (temp_row - 1 >= 1 && temp_col - 1 >= 1) {
+                if (board.getPiece(new ChessPosition(temp_row - 1, temp_col - 1)) != null) {
+                    if (temp_row - 1 == 1) {
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row - 1, temp_col - 1), ChessPiece.PieceType.QUEEN));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row - 1, temp_col - 1), ChessPiece.PieceType.BISHOP));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row - 1, temp_col - 1), ChessPiece.PieceType.ROOK));
+                        moves.add(new ChessMove(position, new ChessPosition(temp_row - 1, temp_col - 1), ChessPiece.PieceType.KNIGHT));
                     } else {
-                        calculateMoves(board, position, 1, 1, moves, false);
+                        BaseCalc(board, position, 1, -1, moves, false);
                     }
                 }
             }
         }
+
         return moves;
     }
 }

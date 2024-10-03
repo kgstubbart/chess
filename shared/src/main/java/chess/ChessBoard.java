@@ -10,9 +10,31 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private final ChessPiece[][] squares = new ChessPiece[8][8];
+
+    private ChessPiece[][] squares = new ChessPiece[8][8];
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(squares, that.squares);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(squares);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessBoard{" +
+                "squares=" + Arrays.toString(squares) +
+                '}';
+    }
+
     public ChessBoard() {
-        
+
     }
 
     /**
@@ -36,86 +58,54 @@ public class ChessBoard {
         return squares[position.getRow()][position.getColumn()];
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChessBoard that = (ChessBoard) o;
-        return Objects.deepEquals(squares, that.squares);
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.deepHashCode(squares);
-    }
-
-    @Override
-    public String toString() {
-        return "ChessBoard{" +
-                "squares=" + Arrays.toString(squares) +
-                '}';
-    }
-
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        for (int i = 1; i <= 8; i++) {
-            for (int j = 1; j <= 8; j++) {
-                ChessPosition position = new ChessPosition(i, j);
-                squares[position.getRow()][position.getColumn()] = null;
-            }
-        }
-        for (int j = 1; j <= 8; j++) {
-            ChessPiece piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-            ChessPosition position = new ChessPosition(2, j);
-            squares[position.getRow()][position.getColumn()] = piece;
-        }
-        for (int j = 1; j <= 8; j++) {
-            ChessPiece piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
-            ChessPosition position = new ChessPosition(7, j);
-            squares[position.getRow()][position.getColumn()] = piece;
+        squares = new ChessPiece[8][8];
+
+        for (int col = 0; col <= 7; col++) {
+            squares[6][col] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         }
 
-        for (int k = 1; k <= 2; k++) {
-            int i;
-            ChessGame.TeamColor color;
-            if (k == 1){
-                i = 1;
-                color = ChessGame.TeamColor.WHITE;
-            }
-            else {
-                i = 8;
-                color = ChessGame.TeamColor.BLACK;
-            }
+        for (int col = 0; col <= 7; col++) {
+            squares[1][col] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+        }
 
-            for (int j = 1; j <= 8; j++) {
-                if (j == 1 || j == 8) {
-                    ChessPiece piece = new ChessPiece(color, ChessPiece.PieceType.ROOK);
-                    ChessPosition position = new ChessPosition(i, j);
-                    squares[position.getRow()][position.getColumn()] = piece;
-                }
-                if (j == 2 || j == 7) {
-                    ChessPiece piece = new ChessPiece(color, ChessPiece.PieceType.KNIGHT);
-                    ChessPosition position = new ChessPosition(i, j);
-                    squares[position.getRow()][position.getColumn()] = piece;
-                }
-                if (j == 3 || j == 6) {
-                    ChessPiece piece = new ChessPiece(color, ChessPiece.PieceType.BISHOP);
-                    ChessPosition position = new ChessPosition(i, j);
-                    squares[position.getRow()][position.getColumn()] = piece;
-                }
-                if (j == 4) {
-                    ChessPiece piece = new ChessPiece(color, ChessPiece.PieceType.QUEEN);
-                    ChessPosition position = new ChessPosition(i, j);
-                    squares[position.getRow()][position.getColumn()] = piece;
-                }
-                if (j == 5) {
-                    ChessPiece piece = new ChessPiece(color, ChessPiece.PieceType.KING);
-                    ChessPosition position = new ChessPosition(i, j);
-                    squares[position.getRow()][position.getColumn()] = piece;
-                }
+        for (int col = 0; col <= 7; col++) {
+            if (col == 0 || col == 7) {
+                squares[7][col] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+            }
+            if (col == 1 || col == 6) {
+                squares[7][col] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+            }
+            if (col == 2 || col == 5) {
+                squares[7][col] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+            }
+            if (col == 3) {
+                squares[7][col] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
+            }
+            if (col == 4) {
+                squares[7][col] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+            }
+        }
+
+        for (int col = 0; col <= 7; col++) {
+            if (col == 0 || col == 7) {
+                squares[0][col] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+            }
+            if (col == 1 || col == 6) {
+                squares[0][col] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+            }
+            if (col == 2 || col == 5) {
+                squares[0][col] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+            }
+            if (col == 3) {
+                squares[0][col] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+            }
+            if (col == 4) {
+                squares[0][col] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
             }
         }
     }

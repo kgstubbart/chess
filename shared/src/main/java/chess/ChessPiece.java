@@ -1,14 +1,7 @@
 package chess;
 
-import chess.movement.BishopMovement;
-import chess.movement.RookMovement;
-import chess.movement.QueenMovement;
-import chess.movement.KnightMovement;
-import chess.movement.KingMovement;
-import chess.movement.PawnMovement;
+import chess.movement.*;
 
-
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -22,11 +15,6 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
-
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-        this.pieceColor = pieceColor;
-        this.type = type;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -47,6 +35,12 @@ public class ChessPiece {
                 "pieceColor=" + pieceColor +
                 ", type=" + type +
                 '}';
+    }
+
+    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.pieceColor = pieceColor;
+        this.type = type;
+
     }
 
     /**
@@ -83,25 +77,25 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        switch(this.type) {
+        switch (board.getPiece(myPosition).type) {
             case KING:
-                KingMovement king_movement = new KingMovement(board, myPosition);
-                return king_movement.moves(board, myPosition);
+                KingMovement kingMovement = new KingMovement(board, myPosition);
+                return kingMovement.moves(board, myPosition);
             case QUEEN:
-                QueenMovement queen_movement = new QueenMovement(board, myPosition);
-                return queen_movement.moves(board, myPosition);
-            case BISHOP:
-                BishopMovement bishop_movement = new BishopMovement(board, myPosition);
-                return bishop_movement.moves(board, myPosition);
-            case KNIGHT:
-                KnightMovement knight_movement = new KnightMovement(board, myPosition);
-                return knight_movement.moves(board, myPosition);
+                QueenMovement queenMovement = new QueenMovement(board, myPosition);
+                return queenMovement.moves(board, myPosition);
             case ROOK:
-                RookMovement rook_movement = new RookMovement(board, myPosition);
-                return rook_movement.moves(board, myPosition);
+                RookMovement rookMovement = new RookMovement(board, myPosition);
+                return rookMovement.moves(board, myPosition);
+            case BISHOP:
+                BishopMovement bishopMovement = new BishopMovement(board, myPosition);
+                return bishopMovement.moves(board, myPosition);
+            case KNIGHT:
+                KnightMovement knightMovement = new KnightMovement(board, myPosition);
+                return knightMovement.moves(board, myPosition);
             case PAWN:
-                PawnMovement pawn_movement = new PawnMovement(board, myPosition);
-                return pawn_movement.moves(board, myPosition);
+                PawnMovement pawnMovement = new PawnMovement(board, myPosition);
+                return pawnMovement.moves(board, myPosition);
         }
         return null;
     }
