@@ -12,6 +12,8 @@ public class ChessGame {
 
     private int num_moves = 0;
     private TeamColor team;
+    private ChessPosition startPosition;
+    private ChessBoard board;
 
     public ChessGame() {
 
@@ -54,7 +56,8 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        this.startPosition = startPosition;
+        return null;
     }
 
     /**
@@ -104,7 +107,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
