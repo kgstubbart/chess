@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class KingDanger {
     private final ChessBoard board;
     private final ChessPosition pos;
@@ -36,7 +39,31 @@ public class KingDanger {
             // check for knight
 
             // check diagonal
+            int diagonal_row = temp_row;
+            int diagonal_col = temp_col;
 
+            List<Integer> row_Incs = List.of(1, 1, -1, -1);
+            List<Integer> col_Incs = List.of(1, -1, 1, -1);
+
+
+            for (int i = 0; i <= 3; i++) {
+                while (diagonal_row >= 1 && diagonal_row <= 8 && diagonal_col >= 1 && diagonal_col <= 8) {
+                    int rowInc = row_Incs.get(i);
+                    int colInc = row_Incs.get(i);
+                    diagonal_row += rowInc;
+                    diagonal_col += colInc;
+
+                    if (board.getPiece(new ChessPosition(diagonal_row, diagonal_col)) != null) {
+                        if (board.getPiece(new ChessPosition(diagonal_row, diagonal_col)).getTeamColor() == ChessGame.TeamColor.BLACK
+                                && (board.getPiece(new ChessPosition(diagonal_row, diagonal_col)).getPieceType() == ChessPiece.PieceType.BISHOP ||
+                                board.getPiece(new ChessPosition(diagonal_row, diagonal_col)).getPieceType() == ChessPiece.PieceType.QUEEN)) {
+                            return true;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
             // check straight
         }
         else {
