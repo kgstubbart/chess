@@ -12,6 +12,9 @@ public class KingDanger {
     }
 
     protected boolean BaseDanger(ChessBoard board, ChessPosition pos, ChessGame.TeamColor teamColor) {
+        int row = pos.getRow();
+        int col = pos.getColumn();
+
         // check for king (may be able to do pawn here too)
 
         // check for pawn

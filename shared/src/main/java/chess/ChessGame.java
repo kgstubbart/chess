@@ -13,7 +13,7 @@ public class ChessGame {
     private int num_moves = 0;
     private TeamColor team;
     private ChessPosition startPosition;
-    private ChessBoard board;
+    private ChessBoard board = new ChessBoard();
 
     public ChessGame() {
 
@@ -116,6 +116,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return this.board;
     }
 }
