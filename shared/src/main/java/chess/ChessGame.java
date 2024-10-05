@@ -18,7 +18,8 @@ public class ChessGame {
     private ChessBoard board = new ChessBoard();
 
     public ChessGame() {
-
+        this.board.resetBoard();
+        this.team = TeamColor.WHITE;
     }
 
     public ChessGame(ChessGame copy) {
@@ -233,7 +234,14 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        this.board = board;
+        if (board == null) {
+            this.board = new ChessBoard();
+            this.board.resetBoard();
+        }
+        else {
+            this.board = board;
+        }
+        this.team = TeamColor.WHITE;
     }
 
     /**
