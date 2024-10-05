@@ -127,11 +127,11 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPosition startPosition = move.getStartPosition();
-        if (board.getPiece(startPosition).getTeamColor() != getTeamTurn()) {
-            throw new InvalidMoveException("Invalid move - not your turn");
-        }
-        if (validMoves(startPosition) == null) {
+        if (validMoves(move.getStartPosition()) == null) {
             throw new InvalidMoveException("Invalid move: no piece at " + startPosition);
+        }
+        if (board.getPiece(move.getStartPosition()).getTeamColor() != getTeamTurn()) {
+            throw new InvalidMoveException("Invalid move - not your turn");
         }
         if (!validMoves(startPosition).contains(move)) {
             throw new InvalidMoveException("Invalid move: " + startPosition + " - " + move.getEndPosition());
