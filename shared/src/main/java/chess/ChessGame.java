@@ -81,17 +81,18 @@ public class ChessGame {
      *
      */
 
-    public ChessPiece findKing(TeamColor teamColor) {
+    public ChessPosition findKing(TeamColor teamColor) {
         for (int row = 0; row <= 7; row ++) {
             for (int col = 0; col <= 7; col++) {
                 if (getBoard().getPiece(new ChessPosition(row, col)) != null) {
                    ChessPiece piece = getBoard().getPiece(new ChessPosition(row, col));
                    if ((piece.getTeamColor() == teamColor) && (piece.getPieceType() == ChessPiece.PieceType.KING)) {
-                       return piece;
+                       return new ChessPosition(row, col);
                    }
                 }
             }
         }
+        return null;
     }
 
     /**
@@ -101,7 +102,11 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        /////////
+        ChessPosition king_position = findKing(teamColor);
+        if (king_position != null) {
+            KingDanger kingDanger = new KingDanger(board, king_position, teamColor);
+            return kingDanger.BaseDanger(board, king_position, teamColor);
+        }
         return false;
     }
 
