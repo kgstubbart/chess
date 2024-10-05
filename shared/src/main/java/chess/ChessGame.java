@@ -108,6 +108,9 @@ public class ChessGame {
                     validMoves.add(move);
                 }
             }
+            else {
+                validMoves.add(move);
+            }
         }
         return validMoves;
     }
@@ -128,7 +131,12 @@ public class ChessGame {
         }
         ChessPiece chessPiece = board.getPiece(startPosition);
         board.addPiece(startPosition, null);
-        board.addPiece(move.getEndPosition(), chessPiece);
+        if (move.getPromotionPiece() != null) {
+            board.addPiece(move.getEndPosition(), new ChessPiece(chessPiece.getTeamColor(), move.getPromotionPiece()));
+        }
+        else {
+            board.addPiece(move.getEndPosition(), chessPiece);
+        }
         this.num_moves++;
     }
 
