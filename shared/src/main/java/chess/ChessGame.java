@@ -77,6 +77,23 @@ public class ChessGame {
         this.num_moves++;
     }
 
+    /** @return position of king on the board
+     *
+     */
+
+    public ChessPiece findKing(TeamColor teamColor) {
+        for (int row = 0; row <= 7; row ++) {
+            for (int col = 0; col <= 7; col++) {
+                if (getBoard().getPiece(new ChessPosition(row, col)) != null) {
+                   ChessPiece piece = getBoard().getPiece(new ChessPosition(row, col));
+                   if ((piece.getTeamColor() == teamColor) && (piece.getPieceType() == ChessPiece.PieceType.KING)) {
+                       return piece;
+                   }
+                }
+            }
+        }
+    }
+
     /**
      * Determines if the given team is in check
      *
