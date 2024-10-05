@@ -230,8 +230,9 @@ public class ChessGame {
                     }
                 }
             }
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**
