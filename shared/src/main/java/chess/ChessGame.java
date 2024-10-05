@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -25,6 +26,30 @@ public class ChessGame {
         this.team = copy.team;
         this.startPosition = copy.startPosition;
         this.board = ChessBoard.copyOf(copy.board);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessGame chessGame = (ChessGame) o;
+        return num_moves == chessGame.num_moves && team == chessGame.team && Objects.equals(startPosition, chessGame.startPosition) && Objects.equals(board, chessGame.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(num_moves, team, startPosition, board);
+    }
+
+    @Override
+    public String
+    toString() {
+        return "ChessGame{" +
+                "num_moves=" + num_moves +
+                ", team=" + team +
+                ", startPosition=" + startPosition +
+                ", board=" + board +
+                '}';
     }
 
     /**
@@ -76,8 +101,12 @@ public class ChessGame {
             board_copy.addPiece(startPosition, null);
             board_copy.addPiece(move.getEndPosition(), chessPiece);
 
-            if(!isInCheck(teamColor)) {
-                validMoves.add(move);
+            ChessPosition king_position = findKing(board_copy, teamColor);
+            if (king_position != null) {
+                KingDanger kingDanger = new KingDanger(board_copy, king_position, teamColor);
+                if (!kingDanger.BaseDanger(board_copy, king_position, teamColor)){
+                    validMoves.add(move);
+                }
             }
         }
         return validMoves;
@@ -91,17 +120,20 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         this.num_moves++;
+        ChessPiece chessPiece = board.getPiece(startPosition);
+        board.addPiece(startPosition, null);
+        board.addPiece(move.getEndPosition(), chessPiece);
     }
 
     /** @return position of king on the board
      *
      */
 
-    public ChessPosition findKing(TeamColor teamColor) {
-        for (int row = 0; row <= 7; row ++) {
-            for (int col = 0; col <= 7; col++) {
-                if (getBoard().getPiece(new ChessPosition(row, col)) != null) {
-                   ChessPiece piece = getBoard().getPiece(new ChessPosition(row, col));
+    public ChessPosition findKing(ChessBoard board, TeamColor teamColor) {
+        for (int row = 1; row <= 8; row ++) {
+            for (int col = 1; col <= 8; col++) {
+                if (board.getPiece(new ChessPosition(row, col)) != null) {
+                   ChessPiece piece = board.getPiece(new ChessPosition(row, col));
                    if ((piece.getTeamColor() == teamColor) && (piece.getPieceType() == ChessPiece.PieceType.KING)) {
                        return new ChessPosition(row, col);
                    }
@@ -118,7 +150,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        ChessPosition king_position = findKing(teamColor);
+        ChessPosition king_position = findKing(board, teamColor);
         if (king_position != null) {
             KingDanger kingDanger = new KingDanger(board, king_position, teamColor);
             return kingDanger.BaseDanger(board, king_position, teamColor);
