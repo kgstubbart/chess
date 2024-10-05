@@ -19,6 +19,13 @@ public class ChessGame {
 
     }
 
+    public ChessGame(ChessGame copy) {
+        this.num_moves = copy.num_moves;
+        this.team = copy.team;
+        this.startPosition = copy.startPosition;
+        this.board = ChessBoard.copyOf(copy.board);
+    }
+
     /**
      * @return Which team's turn it is
      */
@@ -77,7 +84,6 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        board = getBoard();
         /////////
         return false;
     }

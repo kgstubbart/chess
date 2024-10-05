@@ -13,6 +13,23 @@ public class ChessBoard {
 
     private ChessPiece[][] squares = new ChessPiece[8][8];
 
+    public ChessBoard() {
+
+    }
+
+    public static ChessBoard copyOf(ChessBoard board) {
+        ChessBoard board_copy = new ChessBoard();
+        for (int row = 0; row <= 7; row++) {
+            for (int col = 0; col <= 7; col++) {
+                ChessPiece piece = board.squares[row][col];
+                if (piece != null) {
+                    board_copy.squares[row][col] = piece.clone();
+                }
+            }
+        }
+        return board_copy;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -31,10 +48,6 @@ public class ChessBoard {
         return "ChessBoard{" +
                 "squares=" + Arrays.toString(squares) +
                 '}';
-    }
-
-    public ChessBoard() {
-
     }
 
     /**
