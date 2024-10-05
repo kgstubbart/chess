@@ -118,18 +118,40 @@ public class KingDanger {
             }
         }
 
-
+        // check for pawn
         if (teamColor == ChessGame.TeamColor.WHITE) {
-            // check for king (may be able to do pawn here too)
-
-            // check for pawn
-
+            List<Integer> pawn_row_Incs = List.of(1, 1);
+            List<Integer> pawn_col_Incs = List.of(1, -1);
+            for (int i = 0; i <= 1; i++) {
+                int pawn_row = temp_row + pawn_row_Incs.get(i);
+                int pawn_col = temp_col + pawn_col_Incs.get(i);
+                if (pawn_row >= 1 && pawn_row <= 8 && pawn_col >= 1 && pawn_col <= 8) {
+                    ChessPiece piece = board.getPiece(new ChessPosition(pawn_row, pawn_col));
+                    if (piece != null) {
+                        if (piece.getTeamColor() != teamColor
+                                && (piece.getPieceType() == ChessPiece.PieceType.PAWN)) {
+                            return true;
+                        }
+                    }
+                }
+            }
         }
         else {
-            // check for king (may be able to do pawn here too)
-
-            // check for pawn
-
+            List<Integer> pawn_row_Incs = List.of(-1, -1);
+            List<Integer> pawn_col_Incs = List.of(1, -1);
+            for (int i = 0; i <= 1; i++) {
+                int pawn_row = temp_row + pawn_row_Incs.get(i);
+                int pawn_col = temp_col + pawn_col_Incs.get(i);
+                if (pawn_row >= 1 && pawn_row <= 8 && pawn_col >= 1 && pawn_col <= 8) {
+                    ChessPiece piece = board.getPiece(new ChessPosition(pawn_row, pawn_col));
+                    if (piece != null) {
+                        if (piece.getTeamColor() != teamColor
+                                && (piece.getPieceType() == ChessPiece.PieceType.PAWN)) {
+                            return true;
+                        }
+                    }
+                }
+            }
         }
         return false;
     }
