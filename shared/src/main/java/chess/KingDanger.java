@@ -102,6 +102,21 @@ public class KingDanger {
         }
 
         // check for king
+        List<Integer> king_row_Incs = List.of(1, 1, -1, -1, 1, 0, -1, 0);
+        List<Integer> king_col_Incs = List.of(1, -1, 1, -1, 0, 1, 0, -1);
+        for (int i = 0; i <= 7; i++) {
+            int king_row = temp_row + king_row_Incs.get(i);
+            int king_col = temp_col + king_col_Incs.get(i);
+            if (king_row >= 1 && king_row <= 8 && king_col >= 1 && king_col <= 8) {
+                ChessPiece piece = board.getPiece(new ChessPosition(king_row, king_col));
+                if (piece != null) {
+                    if (piece.getTeamColor() != teamColor
+                            && (piece.getPieceType() == ChessPiece.PieceType.KING)) {
+                        return true;
+                    }
+                }
+            }
+        }
 
 
         if (teamColor == ChessGame.TeamColor.WHITE) {
