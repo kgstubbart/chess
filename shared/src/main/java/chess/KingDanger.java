@@ -87,9 +87,9 @@ public class KingDanger {
         // check straight
         int knight_row = temp_row;
         int knight_col = temp_col;
-        List<Integer> knight_row_Incs = List.of(1, -1, 0, 0);
-        List<Integer> knight_col_Incs = List.of(0, 0, 1, -1);
-        for (int i = 0; i <= 3; i++) {
+        List<Integer> knight_row_Incs = List.of(2, 1, -2, 1, 2, -1, -2, -1);
+        List<Integer> knight_col_Incs = List.of(1, 2, 1, -2, -1, 2, -1, -2);
+        for (int i = 0; i <= 7; i++) {
             while (knight_row >= 1 && knight_row <= 8 && knight_col >= 1 && knight_col <= 8) {
                 int rowInc = knight_row_Incs.get(i);
                 int colInc = knight_col_Incs.get(i);
