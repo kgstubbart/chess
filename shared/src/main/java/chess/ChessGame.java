@@ -119,10 +119,17 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        this.num_moves++;
+        ChessPosition startPosition = move.getStartPosition();
+        if (validMoves(startPosition) == null) {
+            throw new InvalidMoveException("Invalid move: no piece at " + startPosition);
+        }
+        if (!validMoves(startPosition).contains(move)) {
+            throw new InvalidMoveException("Invalid move: " + startPosition + " - " + move.getEndPosition());
+        }
         ChessPiece chessPiece = board.getPiece(startPosition);
         board.addPiece(startPosition, null);
         board.addPiece(move.getEndPosition(), chessPiece);
+        this.num_moves++;
     }
 
     /** @return position of king on the board
