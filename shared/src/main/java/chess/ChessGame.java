@@ -19,7 +19,7 @@ public class ChessGame {
 
     public ChessGame() {
         this.board.resetBoard();
-        this.team = TeamColor.WHITE;
+        this.team = getTeamTurn();
     }
 
     public ChessGame(ChessGame copy) {
@@ -71,6 +71,9 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
+        if (team == TeamColor.BLACK) {
+            num_moves++;
+        }
         this.team = team;
     }
 
@@ -124,6 +127,9 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPosition startPosition = move.getStartPosition();
+        if (board.getPiece(startPosition).getTeamColor() != getTeamTurn()) {
+            throw new InvalidMoveException("Invalid move - not your turn");
+        }
         if (validMoves(startPosition) == null) {
             throw new InvalidMoveException("Invalid move: no piece at " + startPosition);
         }
@@ -241,7 +247,7 @@ public class ChessGame {
         else {
             this.board = board;
         }
-        this.team = TeamColor.WHITE;
+        this.num_moves = 0;
     }
 
     /**
