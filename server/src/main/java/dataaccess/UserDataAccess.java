@@ -1,9 +1,9 @@
 package dataaccess;
 
 import model.UserData;
-import model.GameData;
-import model.AuthData;
 
-public interface DataAccess {
+public interface UserDataAccess {
     UserData getUser(String userName);
+
+    void clear();
 }

@@ -1,8 +1,8 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.DataAccess;
-import dataaccess.MemoryDataAccess;
+import dataaccess.UserDataAccess;
+import dataaccess.MemoryUserDataAccess;
 import model.UserData;
 import spark.*;
 import service.Service;
@@ -10,8 +10,8 @@ import service.Service;
 import java.util.Map;
 
 public class Server {
-    private final DataAccess dataAccess = new MemoryDataAccess();
-    private final Service service = new Service(dataAccess);
+    private final UserDataAccess userDataAccess = new MemoryUserDataAccess();
+    private final Service user_service = new Service(userDataAccess);
     private final Gson serializer = new Gson();
 
     public int run(int desiredPort) {
@@ -30,7 +30,7 @@ public class Server {
 
     private String createUser(Request request, Response response) throws Exception {
         var newUser = serializer.fromJson(request.body(), UserData.class);
-        var result = service.registerUser(newUser);
+        var result = user_service.registerUser(newUser);
         return serializer.toJson(result);
     }
 

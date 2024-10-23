@@ -1,17 +1,17 @@
 package service;
 
-import dataaccess.DataAccess;
+import dataaccess.UserDataAccess;
 import model.UserData;
 
 public class Service {
-    private final DataAccess dataAccess;
+    private final UserDataAccess userDataAccess;
 
-    public Service(DataAccess dataAccess) {
-        this.dataAccess = dataAccess;
+    public Service(UserDataAccess userDataAccess) {
+        this.userDataAccess = userDataAccess;
     }
 
     public UserData registerUser(UserData newUser) throws ServiceException {
-        if (dataAccess.getUser(newUser.username()) != null) {
+        if (userDataAccess.getUser(newUser.username()) != null) {
             throw new ServiceException("User already exists");
         }
 
