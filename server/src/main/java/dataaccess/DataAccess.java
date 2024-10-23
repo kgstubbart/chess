@@ -4,6 +4,6 @@ import model.UserData;
 import model.GameData;
 import model.AuthData;
 
-public class DataAccess {
-    //
+public interface DataAccess {
+    UserData getUser(String userName);
 }
