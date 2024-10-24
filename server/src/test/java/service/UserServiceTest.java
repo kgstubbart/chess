@@ -27,7 +27,7 @@ class UserServiceTest {
 
     @Test
     void negative_registerUser() throws ServiceException {
-        UserData userData = new UserData("cheese", null, "cracker@mail");
+        UserData userData = new UserData("cheese", null, "crackers@mail");
 
         ServiceException exception = assertThrows(
             ServiceException.class,
@@ -49,7 +49,17 @@ class UserServiceTest {
     }
 
     @Test
-    void negative_loginUser() {
+    void negative_loginUser() throws ServiceException {
+        UserData userData = new UserData("cheese", "bread", "crackers@mail");
+        service.registerUser(userData);
+        UserData userLoginData = new UserData("cheese", "banana", null);
+
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> service.loginUser(userLoginData),
+                "Expected ServiceException due to invalid user data."
+        );
+        assertEquals("Error: unauthorized", exception.getMessage());
     }
 
     @Test
