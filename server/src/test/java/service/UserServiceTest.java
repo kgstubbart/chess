@@ -27,7 +27,7 @@ class UserServiceTest {
 
     @Test
     void negative_registerUser() throws ServiceException {
-        UserData userData = new UserData("apple", null, "pear@mail");
+        UserData userData = new UserData("cheese", null, "cracker@mail");
 
         ServiceException exception = assertThrows(
             ServiceException.class,
@@ -38,7 +38,14 @@ class UserServiceTest {
     }
 
     @Test
-    void positive_loginUser() {
+    void positive_loginUser() throws ServiceException {
+        UserData userData = new UserData("apple", "banana", "pear@mail");
+        service.registerUser(userData);
+        UserData userLoginData = new UserData("apple", "banana", null);
+        AuthData authData = service.loginUser(userLoginData);
+
+        assertEquals(userData.username(), authData.username());
+        assertNotNull(authData.authToken());
     }
 
     @Test
