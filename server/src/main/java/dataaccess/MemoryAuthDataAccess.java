@@ -21,6 +21,9 @@ public class MemoryAuthDataAccess implements AuthDataAccess {
     @Override
     public AuthData getAuth(String authToken) {
         UserData userData = auths.get(authToken);
+        if (userData == null) {
+            return null;
+        }
         return new AuthData(authToken, userData.username());
     }
 

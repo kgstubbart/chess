@@ -41,6 +41,10 @@ public class UserService {
     }
 
     public void logoutUser(String auth_token) throws ServiceException {
+        if (authDataAccess.getAuth(auth_token) == null) {
+            throw new ServiceException("Error: unauthorized");
+        }
+
         AuthData authorization = authDataAccess.getAuth(auth_token);
         authDataAccess.deleteAuth(authorization);
     }
