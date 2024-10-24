@@ -73,6 +73,7 @@ public class Server {
 
     private String clearApplication(Request request, Response response) throws Exception {
         user_service.clearUsers();
+        game_service.clearGames();
         response.status(200);
         return "";
     }

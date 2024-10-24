@@ -45,4 +45,9 @@ public class GameService {
 
         return game;
     }
+
+    public void clearGames() throws ServiceException {
+        gameDataAccess.clear();
+        authDataAccess.clear();
+    }
 }
