@@ -45,8 +45,19 @@ public class Server {
     }
 
     private void exceptionHandler(Exception exception, Request request, Response response) {
-        response.status(500);
-        response.body(serializer.toJson(Map.of("message", exception.getMessage())));
+        String message = exception.getMessage();
+        if (message.equals("Error: bad request")) {
+            response.status(400);
+            response.body(serializer.toJson(Map.of("message", message)));
+        }
+        else if (message.equals("Error: already taken")) {
+            response.status(403);
+            response.body(serializer.toJson(Map.of("message", message)));
+        }
+        else {
+            response.status(500);
+            response.body(serializer.toJson(Map.of("message", "Error: " + message)));
+        }
         exception.printStackTrace(System.err);
     }
 

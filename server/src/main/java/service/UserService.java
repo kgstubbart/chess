@@ -15,8 +15,13 @@ public class UserService {
     }
 
     public AuthData registerUser(UserData newUser) throws ServiceException {
+        if (newUser == null || newUser.username() == null || newUser.username().isEmpty() || newUser.password() == null
+                || newUser.password().isEmpty() || newUser.email() == null || newUser.email().isEmpty()) {
+            throw new ServiceException("Error: bad request");
+        }
+
         if (userDataAccess.getUser(newUser.username()) != null) {
-            throw new ServiceException("User already exists");
+            throw new ServiceException("Error: already taken");
         }
 
         userDataAccess.createUser(newUser);
