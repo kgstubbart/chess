@@ -61,6 +61,10 @@ public class Server {
             response.status(403);
             response.body(serializer.toJson(Map.of("message", message)));
         }
+        else if (message.equals("Error: unauthorized")) {
+            response.status(401);
+            response.body(serializer.toJson(Map.of("message", message)));
+        }
         else {
             response.status(500);
             response.body(serializer.toJson(Map.of("message", "Error: " + message)));

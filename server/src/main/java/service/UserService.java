@@ -30,6 +30,10 @@ public class UserService {
     }
 
     public AuthData loginUser(UserData user) throws ServiceException {
+        if (userDataAccess.getUser(user.username()) == null) {
+            throw new ServiceException("Error: unauthorized");
+        }
+
         String authToken = authDataAccess.createAuth(user);
         return authDataAccess.getAuth(authToken);
     }
