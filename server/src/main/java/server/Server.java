@@ -28,6 +28,7 @@ public class Server {
         Spark.post("/session", this::loginUser);
         Spark.delete("/session", this::logoutUser);
         Spark.post("/game", this::createGame);
+        Spark.put("/game", this::joinGame);
         Spark.delete("/db", this::clearApplication);
         Spark.exception(Exception.class, this::exceptionHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint
@@ -59,6 +60,15 @@ public class Server {
         String auth_token = request.headers("Authorization");
         var gameName = serializer.fromJson(request.body(), GameData.class);
         var result = game_service.createGame(auth_token, gameName);
+        return serializer.toJson(result);
+    }
+
+    private String joinGame(Request request, Response response) throws Exception {
+        String auth_token = request.headers("Authorization");
+        var gameBaseData = serializer.fromJson(request.body(), Map.class);
+        String playerColor = (String) gameBaseData.get("playerColor");
+        int gameID = ((Double) gameBaseData.get("gameID")).intValue();
+        var result = game_service.joinGame(auth_token, playerColor, gameID);
         return serializer.toJson(result);
     }
 

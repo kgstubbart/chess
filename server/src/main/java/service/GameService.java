@@ -18,6 +18,15 @@ public class GameService {
         if (authDataAccess.getAuth(authToken) == null) {
             throw new ServiceException("Error: unauthorized");
         }
-        return gameDataAccess.createGame(authToken, nameOfGame);
+        return gameDataAccess.createGame(nameOfGame);
+    }
+
+    public GameData joinGame(String authToken, String playerColor, int gameID) throws ServiceException {
+        if (authDataAccess.getAuth(authToken) == null) {
+            throw new ServiceException("Error: unauthorized");
+        }
+
+        GameData gameData = gameDataAccess.getGame(gameID);
+        return gameDataAccess.updateGame(authDataAccess.getAuth(authToken).username(), playerColor, gameID, gameData);
     }
 }

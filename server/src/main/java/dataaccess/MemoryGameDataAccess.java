@@ -1,16 +1,47 @@
 package dataaccess;
 
 import chess.ChessGame;
-import model.AuthData;
 import model.GameData;
-import model.UserData;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class MemoryGameDataAccess implements GameDataAccess {
     private int gameID = 0;
+    final private Map<String, GameData> games = new HashMap<>();
 
     @Override
-    public GameData createGame(String authToken, String gameName) {;
+    public GameData createGame(String gameName) {
         gameID++;
-        return new GameData(gameID, null, null, gameName, new ChessGame());
+        GameData game = new GameData(gameID, null, null, gameName, new ChessGame());
+        String str_gameID = Integer.toString(gameID);
+        games.put(str_gameID, game);
+        return game;
+    }
+
+    @Override
+    public GameData getGame(int gameID) {
+        String str_gameID = Integer.toString(gameID);
+        return games.get(str_gameID);
+    }
+
+    @Override
+    public GameData updateGame(String username, String playerColor, int gameID, GameData gameData) {
+        String str_gameID = Integer.toString(gameID);
+        GameData game;
+        if (Objects.equals(playerColor, "WHITE")) {
+            game = new GameData(gameData.gameID(), username, gameData.blackUsername(), gameData.gameName(), gameData.game());
+        }
+        else {
+            game = new GameData(gameData.gameID(), gameData.whiteUsername(), username, gameData.gameName(), gameData.game());
+        }
+        games.put(str_gameID, game);
+        return game;
+    }
+
+    @Override
+    public void clear() {
+        games.clear();
     }
 }
