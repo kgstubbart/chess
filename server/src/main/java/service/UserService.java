@@ -3,10 +3,10 @@ package service;
 import dataaccess.UserDataAccess;
 import model.UserData;
 
-public class Service {
+public class UserService {
     private final UserDataAccess userDataAccess;
 
-    public Service(UserDataAccess userDataAccess) {
+    public UserService(UserDataAccess userDataAccess) {
         this.userDataAccess = userDataAccess;
     }
 
@@ -17,5 +17,9 @@ public class Service {
 
         userDataAccess.saveUser(newUser);
         return newUser;
+    }
+
+    public void clearUsers() throws ServiceException {
+        userDataAccess.clear();
     }
 }

@@ -5,13 +5,13 @@ import dataaccess.UserDataAccess;
 import dataaccess.MemoryUserDataAccess;
 import model.UserData;
 import spark.*;
-import service.Service;
+import service.UserService;
 
 import java.util.Map;
 
 public class Server {
     private final UserDataAccess userDataAccess = new MemoryUserDataAccess();
-    private final Service user_service = new Service(userDataAccess);
+    private final UserService user_service = new UserService(userDataAccess);
     private final Gson serializer = new Gson();
 
     public int run(int desiredPort) {
@@ -21,6 +21,7 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::createUser);
+        Spark.delete("/db", this::clearApplication);
         Spark.exception(Exception.class, this::exceptionHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint
 
@@ -32,6 +33,12 @@ public class Server {
         var newUser = serializer.fromJson(request.body(), UserData.class);
         var result = user_service.registerUser(newUser);
         return serializer.toJson(result);
+    }
+
+    private String clearApplication(Request request, Response response) throws Exception {
+        user_service.clearUsers();
+        response.status(200);
+        return "";
     }
 
     private void exceptionHandler(Exception exception, Request request, Response response) {
