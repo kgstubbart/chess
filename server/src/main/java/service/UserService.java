@@ -5,6 +5,8 @@ import dataaccess.UserDataAccess;
 import model.AuthData;
 import model.UserData;
 
+import java.util.Objects;
+
 public class UserService {
     private final UserDataAccess userDataAccess;
     private final AuthDataAccess authDataAccess;
@@ -30,7 +32,7 @@ public class UserService {
     }
 
     public AuthData loginUser(UserData user) throws ServiceException {
-        if (userDataAccess.getUser(user.username()) == null) {
+        if ((userDataAccess.getUser(user.username()) == null) || (!Objects.equals(user.password(), userDataAccess.getUser(user.username()).password()))) {
             throw new ServiceException("Error: unauthorized");
         }
 
