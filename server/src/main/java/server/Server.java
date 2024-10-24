@@ -1,6 +1,8 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.AuthDataAccess;
+import dataaccess.MemoryAuthDataAccess;
 import dataaccess.UserDataAccess;
 import dataaccess.MemoryUserDataAccess;
 import model.UserData;
@@ -11,7 +13,8 @@ import java.util.Map;
 
 public class Server {
     private final UserDataAccess userDataAccess = new MemoryUserDataAccess();
-    private final UserService user_service = new UserService(userDataAccess);
+    private final AuthDataAccess authDataAccess = new MemoryAuthDataAccess();
+    private final UserService user_service = new UserService(userDataAccess, authDataAccess);
     private final Gson serializer = new Gson();
 
     public int run(int desiredPort) {
@@ -20,7 +23,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.post("/user", this::createUser);
+        Spark.post("/user", this::registerUser);
         Spark.delete("/db", this::clearApplication);
         Spark.exception(Exception.class, this::exceptionHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint
@@ -29,7 +32,7 @@ public class Server {
         return Spark.port();
     }
 
-    private String createUser(Request request, Response response) throws Exception {
+    private String registerUser(Request request, Response response) throws Exception {
         var newUser = serializer.fromJson(request.body(), UserData.class);
         var result = user_service.registerUser(newUser);
         return serializer.toJson(result);
