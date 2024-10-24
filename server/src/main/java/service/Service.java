@@ -15,6 +15,7 @@ public class Service {
             throw new ServiceException("User already exists");
         }
 
+        userDataAccess.saveUser(newUser);
         return newUser;
     }
 }
