@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.AuthDataAccess;
 import dataaccess.MemoryAuthDataAccess;
 import dataaccess.MemoryUserDataAccess;
 import model.AuthData;
@@ -63,11 +64,25 @@ class UserServiceTest {
     }
 
     @Test
-    void positive_logoutUser() {
+    void positive_logoutUser() throws ServiceException {
+        UserData userData = new UserData("apple", "banana", "pear@mail");
+        service.registerUser(userData);
+        UserData userLoginData = new UserData("apple", "banana", null);
+        AuthData authData = service.loginUser(userLoginData);
+        String authToken = authData.authToken();
+        service.logoutUser(authToken);
+
+        assertNull(service.authDataAccess.getAuth(authToken));
     }
 
     @Test
     void negative_logoutUser() {
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> service.logoutUser("bad_token"),
+                "Expected ServiceException due to invalid auth token."
+        );
+        assertEquals("Error: unauthorized", exception.getMessage());
     }
 
     @Test

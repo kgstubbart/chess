@@ -9,7 +9,7 @@ import java.util.Objects;
 
 public class UserService {
     private final UserDataAccess userDataAccess;
-    private final AuthDataAccess authDataAccess;
+    final AuthDataAccess authDataAccess;
 
     public UserService(UserDataAccess userDataAccess, AuthDataAccess authDataAccess) {
         this.userDataAccess = userDataAccess;
