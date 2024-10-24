@@ -24,6 +24,7 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::registerUser);
+        Spark.post("/session", this::loginUser);
         Spark.delete("/db", this::clearApplication);
         Spark.exception(Exception.class, this::exceptionHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint
@@ -35,6 +36,12 @@ public class Server {
     private String registerUser(Request request, Response response) throws Exception {
         var newUser = serializer.fromJson(request.body(), UserData.class);
         var result = user_service.registerUser(newUser);
+        return serializer.toJson(result);
+    }
+
+    private String loginUser(Request request, Response response) throws Exception {
+        var user = serializer.fromJson(request.body(), UserData.class);
+        var result = user_service.loginUser(user);
         return serializer.toJson(result);
     }
 

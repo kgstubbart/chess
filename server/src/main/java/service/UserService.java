@@ -29,6 +29,11 @@ public class UserService {
         return authDataAccess.getAuth(authToken);
     }
 
+    public AuthData loginUser(UserData user) throws ServiceException {
+        String authToken = authDataAccess.createAuth(user);
+        return authDataAccess.getAuth(authToken);
+    }
+
     public void clearUsers() throws ServiceException {
         userDataAccess.clear();
     }
