@@ -3,9 +3,7 @@ package dataaccess;
 import chess.ChessGame;
 import model.GameData;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class MemoryGameDataAccess implements GameDataAccess {
     private int gameID = 0;
@@ -44,6 +42,11 @@ public class MemoryGameDataAccess implements GameDataAccess {
         }
         games.put(str_gameID, game);
         return game;
+    }
+
+    @Override
+    public Collection<GameData> listGames() {
+        return games.values();
     }
 
     @Override

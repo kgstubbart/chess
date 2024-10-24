@@ -6,6 +6,7 @@ import dataaccess.GameDataAccess;
 import model.GameData;
 import model.JoinGameData;
 
+import java.util.Collection;
 import java.util.Map;
 
 public class GameService {
@@ -44,6 +45,14 @@ public class GameService {
         }
 
         return game;
+    }
+
+    public Collection<GameData> listGames(String authToken) throws ServiceException {
+        if (authDataAccess.getAuth(authToken) == null) {
+            throw new ServiceException("Error: unauthorized");
+        }
+
+        return gameDataAccess.listGames();
     }
 
     public void clearGames() throws ServiceException {

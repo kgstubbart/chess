@@ -9,6 +9,8 @@ import service.GameService;
 import spark.*;
 import service.UserService;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Server {
@@ -30,6 +32,7 @@ public class Server {
         Spark.delete("/session", this::logoutUser);
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
+        Spark.get("/game", this::listGames);
         Spark.delete("/db", this::clearApplication);
         Spark.exception(Exception.class, this::exceptionHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint
@@ -69,6 +72,14 @@ public class Server {
         var joinGameData = serializer.fromJson(request.body(), JoinGameData.class);
         var result = game_service.joinGame(auth_token, joinGameData);
         return serializer.toJson(result);
+    }
+
+    private String listGames(Request request, Response response) throws Exception {
+        String auth_token = request.headers("Authorization");
+        Collection<GameData> result = game_service.listGames(auth_token);
+        Map<String, Object> Map = new HashMap<>();
+        Map.put("games", result);
+        return serializer.toJson(Map);
     }
 
     private String clearApplication(Request request, Response response) throws Exception {
