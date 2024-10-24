@@ -40,6 +40,11 @@ public class UserService {
         return authDataAccess.getAuth(authToken);
     }
 
+    public void logoutUser(String auth_token) throws ServiceException {
+        AuthData authorization = authDataAccess.getAuth(auth_token);
+        authDataAccess.deleteAuth(authorization);
+    }
+
     public void clearUsers() throws ServiceException {
         userDataAccess.clear();
     }
