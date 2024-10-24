@@ -15,7 +15,7 @@ public class Server {
     private final AuthDataAccess authDataAccess = new MemoryAuthDataAccess();
     private final GameDataAccess gameDataAccess = new MemoryGameDataAccess();
     private final UserService user_service = new UserService(userDataAccess, authDataAccess);
-    private final GameService game_service = new GameService(gameDataAccess);
+    private final GameService game_service = new GameService(gameDataAccess, authDataAccess);
     private final Gson serializer = new Gson();
 
     public int run(int desiredPort) {
