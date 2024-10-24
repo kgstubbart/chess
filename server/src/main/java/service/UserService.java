@@ -8,7 +8,7 @@ import model.UserData;
 import java.util.Objects;
 
 public class UserService {
-    private final UserDataAccess userDataAccess;
+    final UserDataAccess userDataAccess;
     final AuthDataAccess authDataAccess;
 
     public UserService(UserDataAccess userDataAccess, AuthDataAccess authDataAccess) {

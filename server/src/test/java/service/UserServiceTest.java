@@ -76,7 +76,7 @@ class UserServiceTest {
     }
 
     @Test
-    void negative_logoutUser() {
+    void negative_logoutUser() throws ServiceException {
         ServiceException exception = assertThrows(
                 ServiceException.class,
                 () -> service.logoutUser("bad_token"),
@@ -86,6 +86,15 @@ class UserServiceTest {
     }
 
     @Test
-    void clearUsers() {
+    void clearUsers() throws ServiceException {
+        UserData userData = new UserData("apple", "banana", "pear@mail");
+        service.registerUser(userData);
+        UserData userLoginData = new UserData("apple", "banana", null);
+        AuthData authData = service.loginUser(userLoginData);
+        String authToken = authData.authToken();
+        service.clearUsers();
+
+        assertNull(service.userDataAccess.getUser(userData.username()));
+        assertNull(service.authDataAccess.getAuth(authToken));
     }
 }
