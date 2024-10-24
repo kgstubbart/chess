@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import model.GameData;
+import model.JoinGameData;
 import model.UserData;
 import service.GameService;
 import spark.*;
@@ -65,10 +66,8 @@ public class Server {
 
     private String joinGame(Request request, Response response) throws Exception {
         String auth_token = request.headers("Authorization");
-        var gameBaseData = serializer.fromJson(request.body(), Map.class);
-        String playerColor = (String) gameBaseData.get("playerColor");
-        int gameID = ((Double) gameBaseData.get("gameID")).intValue();
-        var result = game_service.joinGame(auth_token, playerColor, gameID);
+        var joinGameData = serializer.fromJson(request.body(), JoinGameData.class);
+        var result = game_service.joinGame(auth_token, joinGameData);
         return serializer.toJson(result);
     }
 

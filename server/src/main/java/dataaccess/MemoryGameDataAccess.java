@@ -27,13 +27,19 @@ public class MemoryGameDataAccess implements GameDataAccess {
     }
 
     @Override
-    public GameData updateGame(String username, String playerColor, int gameID, GameData gameData) {
+    public GameData updateGame(String username, ChessGame.TeamColor playerColor, int gameID, GameData gameData) {
         String str_gameID = Integer.toString(gameID);
         GameData game;
-        if (Objects.equals(playerColor, "WHITE")) {
+        if (Objects.equals(playerColor, ChessGame.TeamColor.WHITE)) {
+            if (gameData.whiteUsername() != null) {
+                return null;
+            }
             game = new GameData(gameData.gameID(), username, gameData.blackUsername(), gameData.gameName(), gameData.game());
         }
         else {
+            if (gameData.blackUsername() != null) {
+                return null;
+            }
             game = new GameData(gameData.gameID(), gameData.whiteUsername(), username, gameData.gameName(), gameData.game());
         }
         games.put(str_gameID, game);
