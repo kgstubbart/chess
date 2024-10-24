@@ -51,5 +51,6 @@ public class UserService {
 
     public void clearUsers() throws ServiceException {
         userDataAccess.clear();
+        authDataAccess.clear();
     }
 }

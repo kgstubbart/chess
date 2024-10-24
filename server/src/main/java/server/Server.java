@@ -1,11 +1,10 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.AuthDataAccess;
-import dataaccess.MemoryAuthDataAccess;
-import dataaccess.UserDataAccess;
-import dataaccess.MemoryUserDataAccess;
+import dataaccess.*;
+import model.GameData;
 import model.UserData;
+import service.GameService;
 import spark.*;
 import service.UserService;
 
@@ -14,7 +13,9 @@ import java.util.Map;
 public class Server {
     private final UserDataAccess userDataAccess = new MemoryUserDataAccess();
     private final AuthDataAccess authDataAccess = new MemoryAuthDataAccess();
+    private final GameDataAccess gameDataAccess = new MemoryGameDataAccess();
     private final UserService user_service = new UserService(userDataAccess, authDataAccess);
+    private final GameService game_service = new GameService(gameDataAccess);
     private final Gson serializer = new Gson();
 
     public int run(int desiredPort) {
@@ -26,6 +27,7 @@ public class Server {
         Spark.post("/user", this::registerUser);
         Spark.post("/session", this::loginUser);
         Spark.delete("/session", this::logoutUser);
+        Spark.post("/game", this::createGame);
         Spark.delete("/db", this::clearApplication);
         Spark.exception(Exception.class, this::exceptionHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint
@@ -51,6 +53,13 @@ public class Server {
         user_service.logoutUser(auth_token);
         response.status(200);
         return "";
+    }
+
+    private String createGame(Request request, Response response) throws Exception {
+        String auth_token = request.headers("Authorization");
+        var gameName = serializer.fromJson(request.body(), GameData.class);
+        var result = game_service.createGame(auth_token, gameName);
+        return serializer.toJson(result);
     }
 
     private String clearApplication(Request request, Response response) throws Exception {
