@@ -26,7 +26,15 @@ class UserServiceTest {
     }
 
     @Test
-    void negative_registerUser() {
+    void negative_registerUser() throws ServiceException {
+        UserData userData = new UserData("apple", null, "pear@mail");
+
+        ServiceException exception = assertThrows(
+            ServiceException.class,
+            () -> service.registerUser(userData),
+            "Expected ServiceException due to invalid user data."
+        );
+        assertEquals("Error: bad request", exception.getMessage());
     }
 
     @Test
