@@ -103,6 +103,12 @@ class ServiceUnitTests {
 
     @Test
     void negative_createGame() {
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> gameService.createGame("bad_token", new GameData(0, null, null, "Best Game Ever", null)),
+                "Expected ServiceException due to invalid auth token."
+        );
+        assertEquals("Error: unauthorized", exception.getMessage());
     }
 
     @Test
