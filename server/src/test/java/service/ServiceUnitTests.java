@@ -1,26 +1,29 @@
 package service;
 
-import dataaccess.AuthDataAccess;
 import dataaccess.MemoryAuthDataAccess;
+import dataaccess.MemoryGameDataAccess;
 import dataaccess.MemoryUserDataAccess;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserServiceTest {
-    static final UserService service = new UserService(new MemoryUserDataAccess(), new MemoryAuthDataAccess());
+class ServiceUnitTests {
+    static final MemoryAuthDataAccess authDataAccess = new MemoryAuthDataAccess();
+    static final UserService userService = new UserService(new MemoryUserDataAccess(), authDataAccess);
+    static final GameService gameService = new GameService(new MemoryGameDataAccess(), authDataAccess);
 
     @BeforeEach
     void clear() throws ServiceException {
-        service.clearUsers();
+        userService.clearUsers();
     }
 
     @Test
     void positive_registerUser() throws ServiceException {
         UserData userData = new UserData("apple", "banana", "pear@mail");
-        AuthData authData = service.registerUser(userData);
+        AuthData authData = userService.registerUser(userData);
 
         assertEquals(userData.username(), authData.username());
         assertNotNull(authData.authToken());
@@ -32,7 +35,7 @@ class UserServiceTest {
 
         ServiceException exception = assertThrows(
             ServiceException.class,
-            () -> service.registerUser(userData),
+            () -> userService.registerUser(userData),
             "Expected ServiceException due to invalid user data."
         );
         assertEquals("Error: bad request", exception.getMessage());
@@ -41,9 +44,9 @@ class UserServiceTest {
     @Test
     void positive_loginUser() throws ServiceException {
         UserData userData = new UserData("apple", "banana", "pear@mail");
-        service.registerUser(userData);
+        userService.registerUser(userData);
         UserData userLoginData = new UserData("apple", "banana", null);
-        AuthData authData = service.loginUser(userLoginData);
+        AuthData authData = userService.loginUser(userLoginData);
 
         assertEquals(userData.username(), authData.username());
         assertNotNull(authData.authToken());
@@ -52,12 +55,12 @@ class UserServiceTest {
     @Test
     void negative_loginUser() throws ServiceException {
         UserData userData = new UserData("cheese", "bread", "crackers@mail");
-        service.registerUser(userData);
+        userService.registerUser(userData);
         UserData userLoginData = new UserData("cheese", "banana", null);
 
         ServiceException exception = assertThrows(
                 ServiceException.class,
-                () -> service.loginUser(userLoginData),
+                () -> userService.loginUser(userLoginData),
                 "Expected ServiceException due to invalid user data."
         );
         assertEquals("Error: unauthorized", exception.getMessage());
@@ -66,35 +69,68 @@ class UserServiceTest {
     @Test
     void positive_logoutUser() throws ServiceException {
         UserData userData = new UserData("apple", "banana", "pear@mail");
-        service.registerUser(userData);
+        userService.registerUser(userData);
         UserData userLoginData = new UserData("apple", "banana", null);
-        AuthData authData = service.loginUser(userLoginData);
+        AuthData authData = userService.loginUser(userLoginData);
         String authToken = authData.authToken();
-        service.logoutUser(authToken);
+        userService.logoutUser(authToken);
 
-        assertNull(service.authDataAccess.getAuth(authToken));
+        assertNull(userService.authDataAccess.getAuth(authToken));
     }
 
     @Test
     void negative_logoutUser() throws ServiceException {
         ServiceException exception = assertThrows(
                 ServiceException.class,
-                () -> service.logoutUser("bad_token"),
+                () -> userService.logoutUser("bad_token"),
                 "Expected ServiceException due to invalid auth token."
         );
         assertEquals("Error: unauthorized", exception.getMessage());
     }
 
     @Test
+    void positive_createGame() throws ServiceException {
+        UserData userData = new UserData("apple", "banana", "pear@mail");
+        userService.registerUser(userData);
+        UserData userLoginData = new UserData("apple", "banana", null);
+        AuthData authData = userService.loginUser(userLoginData);
+        String authToken = authData.authToken();
+        GameData gameName = new GameData(0, null, null, "Best Game Ever", null);
+        GameData game = gameService.createGame(authToken, gameName);
+
+        assertTrue(game.gameID() > 0);
+    }
+
+    @Test
+    void negative_createGame() {
+    }
+
+    @Test
+    void positive_joinGame() {
+    }
+
+    @Test
+    void negative_joinGame() {
+    }
+
+    @Test
+    void positive_listGames() {
+    }
+
+    @Test
+    void negative_listGames() {
+    }
+
+    @Test
     void clearUsers() throws ServiceException {
         UserData userData = new UserData("apple", "banana", "pear@mail");
-        service.registerUser(userData);
+        userService.registerUser(userData);
         UserData userLoginData = new UserData("apple", "banana", null);
-        AuthData authData = service.loginUser(userLoginData);
+        AuthData authData = userService.loginUser(userLoginData);
         String authToken = authData.authToken();
-        service.clearUsers();
+        userService.clearUsers();
 
-        assertNull(service.userDataAccess.getUser(userData.username()));
-        assertNull(service.authDataAccess.getAuth(authToken));
+        assertNull(userService.userDataAccess.getUser(userData.username()));
+        assertNull(userService.authDataAccess.getAuth(authToken));
     }
 }
