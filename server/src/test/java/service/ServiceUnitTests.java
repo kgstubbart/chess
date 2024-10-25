@@ -8,6 +8,10 @@ import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ServiceUnitTests {
@@ -120,7 +124,20 @@ class ServiceUnitTests {
     }
 
     @Test
-    void positive_listGames() {
+    void positive_listGames() throws ServiceException {
+        UserData userData = new UserData("apple", "banana", "pear@mail");
+        userService.registerUser(userData);
+        UserData userLoginData = new UserData("apple", "banana", null);
+        AuthData authData = userService.loginUser(userLoginData);
+        String authToken = authData.authToken();
+
+        Map<String, GameData> expected_games = new HashMap<>();
+        expected_games.put("1", gameService.createGame(authToken, new GameData(0, null, null, "Best Game Ever", null)));
+        expected_games.put("2", gameService.createGame(authToken, new GameData(0, null, null, "Decent Game", null)));
+        expected_games.put("3", gameService.createGame(authToken, new GameData(0, null, null, "Good Game", null)));
+
+        var actual = gameService.listGames(authToken);
+        assertIterableEquals(expected_games.values(), actual);
     }
 
     @Test
