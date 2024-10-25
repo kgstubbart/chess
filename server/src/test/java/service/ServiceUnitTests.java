@@ -108,7 +108,7 @@ class ServiceUnitTests {
     }
 
     @Test
-    void negative_createGame() {
+    void negative_createGame() throws ServiceException {
         ServiceException exception = assertThrows(
                 ServiceException.class,
                 () -> gameService.createGame("bad_token", new GameData(0, null, null, "Best Game Ever", null)),
@@ -118,7 +118,17 @@ class ServiceUnitTests {
     }
 
     @Test
-    void positive_joinGame() {
+    void positive_joinGame() throws ServiceException {
+        UserData userData = new UserData("apple", "banana", "pear@mail");
+        userService.registerUser(userData);
+        UserData userLoginData = new UserData("apple", "banana", null);
+        AuthData authData = userService.loginUser(userLoginData);
+        String authToken = authData.authToken();
+        GameData gameName = new GameData(0, null, null, "Best Game Ever", null);
+        gameService.createGame(authToken, gameName);
+        GameData joined_game = gameService.joinGame(authToken, new JoinGameData(ChessGame.TeamColor.BLACK, 1));
+
+        assertEquals(joined_game.blackUsername(), "apple");
     }
 
     @Test
