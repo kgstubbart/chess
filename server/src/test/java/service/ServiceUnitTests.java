@@ -1,10 +1,12 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.MemoryAuthDataAccess;
 import dataaccess.MemoryGameDataAccess;
 import dataaccess.MemoryUserDataAccess;
 import model.AuthData;
 import model.GameData;
+import model.JoinGameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -121,6 +123,12 @@ class ServiceUnitTests {
 
     @Test
     void negative_joinGame() {
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> gameService.joinGame("bad_token", new JoinGameData(ChessGame.TeamColor.BLACK, 1234)),
+                "Expected ServiceException due to invalid auth token."
+        );
+        assertEquals("Error: bad request", exception.getMessage());
     }
 
     @Test
