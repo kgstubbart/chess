@@ -24,6 +24,7 @@ class ServiceUnitTests {
     @BeforeEach
     void clear() throws ServiceException {
         userService.clearUsers();
+        gameService.clearGames();
     }
 
     @Test
@@ -36,7 +37,7 @@ class ServiceUnitTests {
     }
 
     @Test
-    void negative_registerUser() throws ServiceException {
+    void negative_registerUser() {
         UserData userData = new UserData("cheese", null, "crackers@mail");
 
         ServiceException exception = assertThrows(
@@ -85,7 +86,7 @@ class ServiceUnitTests {
     }
 
     @Test
-    void negative_logoutUser() throws ServiceException {
+    void negative_logoutUser() {
         ServiceException exception = assertThrows(
                 ServiceException.class,
                 () -> userService.logoutUser("bad_token"),
@@ -108,7 +109,7 @@ class ServiceUnitTests {
     }
 
     @Test
-    void negative_createGame() throws ServiceException {
+    void negative_createGame() {
         ServiceException exception = assertThrows(
                 ServiceException.class,
                 () -> gameService.createGame("bad_token", new GameData(0, null, null, "Best Game Ever", null)),
@@ -169,13 +170,14 @@ class ServiceUnitTests {
     }
 
     @Test
-    void clearUsers() throws ServiceException {
+    void clearUsersGamesAuths() throws ServiceException {
         UserData userData = new UserData("apple", "banana", "pear@mail");
         userService.registerUser(userData);
         UserData userLoginData = new UserData("apple", "banana", null);
         AuthData authData = userService.loginUser(userLoginData);
         String authToken = authData.authToken();
         userService.clearUsers();
+        gameService.clearGames();
 
         assertNull(userService.userDataAccess.getUser(userData.username()));
         assertNull(userService.authDataAccess.getAuth(authToken));

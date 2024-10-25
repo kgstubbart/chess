@@ -52,5 +52,6 @@ public class MemoryGameDataAccess implements GameDataAccess {
     @Override
     public void clear() {
         games.clear();
+        gameID = 0;
     }
 }
