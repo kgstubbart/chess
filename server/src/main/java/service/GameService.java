@@ -57,6 +57,5 @@ public class GameService {
 
     public void clearGames() throws ServiceException {
         gameDataAccess.clear();
-        authDataAccess.clear();
     }
 }

@@ -11,6 +11,7 @@ import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -176,9 +177,11 @@ class ServiceUnitTests {
         UserData userLoginData = new UserData("apple", "banana", null);
         AuthData authData = userService.loginUser(userLoginData);
         String authToken = authData.authToken();
-        userService.clearUsers();
         gameService.clearGames();
+        Collection<GameData> games = gameService.listGames(authToken);
+        assertTrue(games.isEmpty());
 
+        userService.clearUsers();
         assertNull(userService.userDataAccess.getUser(userData.username()));
         assertNull(userService.authDataAccess.getAuth(authToken));
     }
