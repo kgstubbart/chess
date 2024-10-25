@@ -15,7 +15,7 @@ public class BaseMovement {
         this.pos = pos;
     }
 
-    protected void BaseCalc(ChessBoard board, ChessPosition pos, int rowInc, int colInc,
+    protected void baseCalc(ChessBoard board, ChessPosition pos, int rowInc, int colInc,
                             Collection<ChessMove> moves, boolean allowDistance) {
         if (allowDistance) {
             int row = pos.getRow();
@@ -26,8 +26,8 @@ public class BaseMovement {
                 col += colInc;
 
                 if (row >= 0 && row <= 7 && col >= 0 && col <= 7) {
-                    int temp_col = col + 1;
-                    int temp_row = switch (row) {
+                    int tempCol = col + 1;
+                    int tempRow = switch (row) {
                         case 7 -> 1;
                         case 6 -> 2;
                         case 5 -> 3;
@@ -39,12 +39,12 @@ public class BaseMovement {
                         default -> row;
                     };
 
-                    if (board.getPiece(new ChessPosition(temp_row, temp_col)) == null) {
-                        moves.add(new ChessMove(pos, new ChessPosition(temp_row, temp_col), null));
+                    if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
+                        moves.add(new ChessMove(pos, new ChessPosition(tempRow, tempCol), null));
                     }
                     else {
-                        if (board.getPiece(new ChessPosition(temp_row, temp_col)).getTeamColor() != board.getPiece(pos).getTeamColor()) {
-                            moves.add(new ChessMove(pos, new ChessPosition(temp_row, temp_col), null));
+                        if (board.getPiece(new ChessPosition(tempRow, tempCol)).getTeamColor() != board.getPiece(pos).getTeamColor()) {
+                            moves.add(new ChessMove(pos, new ChessPosition(tempRow, tempCol), null));
                             break;
                         }
                         else {
@@ -62,8 +62,8 @@ public class BaseMovement {
             col += colInc;
 
             if (row >= 0 && row <= 7 && col >= 0 && col <= 7) {
-                int temp_col = col + 1;
-                int temp_row = switch (row) {
+                int tempCol = col + 1;
+                int tempRow = switch (row) {
                     case 7 -> 1;
                     case 6 -> 2;
                     case 5 -> 3;
@@ -75,12 +75,12 @@ public class BaseMovement {
                     default -> row;
                 };
 
-                if (board.getPiece(new ChessPosition(temp_row, temp_col)) == null) {
-                    moves.add(new ChessMove(pos, new ChessPosition(temp_row, temp_col), null));
+                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
+                    moves.add(new ChessMove(pos, new ChessPosition(tempRow, tempCol), null));
                 }
                 else {
-                    if (board.getPiece(new ChessPosition(temp_row, temp_col)).getTeamColor() != board.getPiece(pos).getTeamColor()) {
-                        moves.add(new ChessMove(pos, new ChessPosition(temp_row, temp_col), null));
+                    if (board.getPiece(new ChessPosition(tempRow, tempCol)).getTeamColor() != board.getPiece(pos).getTeamColor()) {
+                        moves.add(new ChessMove(pos, new ChessPosition(tempRow, tempCol), null));
                     }
                 }
             }

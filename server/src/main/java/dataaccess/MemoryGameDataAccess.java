@@ -13,20 +13,20 @@ public class MemoryGameDataAccess implements GameDataAccess {
     public GameData createGame(String gameName) {
         gameID++;
         GameData game = new GameData(gameID, null, null, gameName, new ChessGame());
-        String str_gameID = Integer.toString(gameID);
-        games.put(str_gameID, game);
+        String strGameID = Integer.toString(gameID);
+        games.put(strGameID, game);
         return game;
     }
 
     @Override
     public GameData getGame(int gameID) {
-        String str_gameID = Integer.toString(gameID);
-        return games.get(str_gameID);
+        String strGameID = Integer.toString(gameID);
+        return games.get(strGameID);
     }
 
     @Override
     public GameData updateGame(String username, ChessGame.TeamColor playerColor, int gameID, GameData gameData) {
-        String str_gameID = Integer.toString(gameID);
+        String strGameID = Integer.toString(gameID);
         GameData game;
         if (Objects.equals(playerColor, ChessGame.TeamColor.WHITE)) {
             if (gameData.whiteUsername() != null) {
@@ -40,7 +40,7 @@ public class MemoryGameDataAccess implements GameDataAccess {
             }
             game = new GameData(gameData.gameID(), gameData.whiteUsername(), username, gameData.gameName(), gameData.game());
         }
-        games.put(str_gameID, game);
+        games.put(strGameID, game);
         return game;
     }
 

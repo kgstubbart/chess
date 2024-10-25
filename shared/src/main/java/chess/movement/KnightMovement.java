@@ -14,14 +14,14 @@ public class KnightMovement extends BaseMovement {
 
     public Collection<ChessMove> moves(ChessBoard board, ChessPosition position) {
         var moves = new HashSet<ChessMove>();
-        BaseCalc(board, position, 2, 1, moves, false);
-        BaseCalc(board, position, 1, 2, moves, false);
-        BaseCalc(board, position, -2, 1, moves, false);
-        BaseCalc(board, position, 1, -2, moves, false);
-        BaseCalc(board, position, 2, -1, moves, false);
-        BaseCalc(board, position, -1, 2, moves, false);
-        BaseCalc(board, position, -2, -1, moves, false);
-        BaseCalc(board, position, -1, -2, moves, false);
+        baseCalc(board, position, 2, 1, moves, false);
+        baseCalc(board, position, 1, 2, moves, false);
+        baseCalc(board, position, -2, 1, moves, false);
+        baseCalc(board, position, 1, -2, moves, false);
+        baseCalc(board, position, 2, -1, moves, false);
+        baseCalc(board, position, -1, 2, moves, false);
+        baseCalc(board, position, -2, -1, moves, false);
+        baseCalc(board, position, -1, -2, moves, false);
         return moves;
     }
 }

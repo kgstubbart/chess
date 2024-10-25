@@ -15,7 +15,7 @@ public class ChessPosition {
 
     public ChessPosition(int row, int col) {
         this.col = col - 1;
-        int temp_row = switch (row) {
+        int tempRow = switch (row) {
             case 1 -> 7;
             case 2 -> 6;
             case 3 -> 5;
@@ -26,13 +26,13 @@ public class ChessPosition {
             case 8 -> 0;
             default -> row;
         };
-        this.row = temp_row;
+        this.row = tempRow;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         ChessPosition position = (ChessPosition) o;
         return row == position.row && col == position.col;
     }

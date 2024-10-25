@@ -17,8 +17,8 @@ public class Server {
     private final UserDataAccess userDataAccess = new MemoryUserDataAccess();
     private final AuthDataAccess authDataAccess = new MemoryAuthDataAccess();
     private final GameDataAccess gameDataAccess = new MemoryGameDataAccess();
-    private final UserService user_service = new UserService(userDataAccess, authDataAccess);
-    private final GameService game_service = new GameService(gameDataAccess, authDataAccess);
+    private final UserService userService = new UserService(userDataAccess, authDataAccess);
+    private final GameService gameService = new GameService(gameDataAccess, authDataAccess);
     private final Gson serializer = new Gson();
 
     public int run(int desiredPort) {
@@ -43,48 +43,48 @@ public class Server {
 
     private String registerUser(Request request, Response response) throws Exception {
         var newUser = serializer.fromJson(request.body(), UserData.class);
-        var result = user_service.registerUser(newUser);
+        var result = userService.registerUser(newUser);
         return serializer.toJson(result);
     }
 
     private String loginUser(Request request, Response response) throws Exception {
         var user = serializer.fromJson(request.body(), UserData.class);
-        var result = user_service.loginUser(user);
+        var result = userService.loginUser(user);
         return serializer.toJson(result);
     }
 
     private String logoutUser(Request request, Response response) throws Exception {
-        String auth_token = request.headers("Authorization");
-        user_service.logoutUser(auth_token);
+        String authToken = request.headers("Authorization");
+        userService.logoutUser(authToken);
         response.status(200);
         return "";
     }
 
     private String createGame(Request request, Response response) throws Exception {
-        String auth_token = request.headers("Authorization");
+        String authToken = request.headers("Authorization");
         var gameName = serializer.fromJson(request.body(), GameData.class);
-        var result = game_service.createGame(auth_token, gameName);
+        var result = gameService.createGame(authToken, gameName);
         return serializer.toJson(result);
     }
 
     private String joinGame(Request request, Response response) throws Exception {
-        String auth_token = request.headers("Authorization");
+        String authToken = request.headers("Authorization");
         var joinGameData = serializer.fromJson(request.body(), JoinGameData.class);
-        var result = game_service.joinGame(auth_token, joinGameData);
+        var result = gameService.joinGame(authToken, joinGameData);
         return serializer.toJson(result);
     }
 
     private String listGames(Request request, Response response) throws Exception {
-        String auth_token = request.headers("Authorization");
-        Collection<GameData> result = game_service.listGames(auth_token);
-        Map<String, Object> Map = new HashMap<>();
-        Map.put("games", result);
-        return serializer.toJson(Map);
+        String authToken = request.headers("Authorization");
+        Collection<GameData> result = gameService.listGames(authToken);
+        Map<String, Object> mapList = new HashMap<>();
+        mapList.put("games", result);
+        return serializer.toJson(mapList);
     }
 
     private String clearApplication(Request request, Response response) throws Exception {
-        user_service.clearUsers();
-        game_service.clearGames();
+        userService.clearUsers();
+        gameService.clearGames();
         response.status(200);
         return "";
     }

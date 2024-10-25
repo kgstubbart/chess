@@ -13,12 +13,12 @@ public class KingDanger {
         this.teamColor = teamColor;
     }
 
-    protected boolean BaseDanger(ChessBoard board, ChessPosition pos, ChessGame.TeamColor teamColor) {
+    protected boolean baseDanger(ChessBoard board, ChessPosition pos, ChessGame.TeamColor teamColor) {
         int row = pos.getRow();
         int col = pos.getColumn();
 
-        int temp_col = col + 1;
-        int temp_row = switch (row) {
+        int tempCol = col + 1;
+        int tempRow = switch (row) {
             case 7 -> 1;
             case 6 -> 2;
             case 5 -> 3;
@@ -31,20 +31,20 @@ public class KingDanger {
         };
 
         // check diagonal
-        List<Integer> diagonal_row_Incs = List.of(1, 1, -1, -1);
-        List<Integer> diagonal_col_Incs = List.of(1, -1, 1, -1);
+        List<Integer> diagonalRowIncs = List.of(1, 1, -1, -1);
+        List<Integer> diagonalColIncs = List.of(1, -1, 1, -1);
         for (int i = 0; i <= 3; i++) {
-            int diagonal_row = temp_row;
-            int diagonal_col = temp_col;
-            while (diagonal_row >= 1 && diagonal_row <= 8 && diagonal_col >= 1 && diagonal_col <= 8) {
-                int rowInc = diagonal_row_Incs.get(i);
-                int colInc = diagonal_col_Incs.get(i);
-                diagonal_row += rowInc;
-                diagonal_col += colInc;
-                if (diagonal_row < 1 || diagonal_row > 8 || diagonal_col < 1 || diagonal_col > 8) {
+            int diagonalRow = tempRow;
+            int diagonalCol = tempCol;
+            while (diagonalRow >= 1 && diagonalRow <= 8 && diagonalCol >= 1 && diagonalCol <= 8) {
+                int rowInc = diagonalRowIncs.get(i);
+                int colInc = diagonalColIncs.get(i);
+                diagonalRow += rowInc;
+                diagonalCol += colInc;
+                if (diagonalRow < 1 || diagonalRow > 8 || diagonalCol < 1 || diagonalCol > 8) {
                     break;
                 }
-                ChessPiece piece = board.getPiece(new ChessPosition(diagonal_row, diagonal_col));
+                ChessPiece piece = board.getPiece(new ChessPosition(diagonalRow, diagonalCol));
                 if (piece != null) {
                     if (piece.getTeamColor() != teamColor
                             && (piece.getPieceType() == ChessPiece.PieceType.BISHOP ||
@@ -58,20 +58,20 @@ public class KingDanger {
         }
 
         // check straight
-        List<Integer> straight_row_Incs = List.of(1, -1, 0, 0);
-        List<Integer> straight_col_Incs = List.of(0, 0, 1, -1);
+        List<Integer> straightRowIncs = List.of(1, -1, 0, 0);
+        List<Integer> straightColIncs = List.of(0, 0, 1, -1);
         for (int i = 0; i <= 3; i++) {
-            int straight_row = temp_row;
-            int straight_col = temp_col;
-            while (straight_row >= 1 && straight_row <= 8 && straight_col >= 1 && straight_col <= 8) {
-                int rowInc = straight_row_Incs.get(i);
-                int colInc = straight_col_Incs.get(i);
-                straight_row += rowInc;
-                straight_col += colInc;
-                if (straight_row < 1 || straight_row > 8 || straight_col < 1 || straight_col > 8) {
+            int straightRow = tempRow;
+            int straightCol = tempCol;
+            while (straightRow >= 1 && straightRow <= 8 && straightCol >= 1 && straightCol <= 8) {
+                int rowInc = straightRowIncs.get(i);
+                int colInc = straightColIncs.get(i);
+                straightRow += rowInc;
+                straightCol += colInc;
+                if (straightRow < 1 || straightRow > 8 || straightCol < 1 || straightCol > 8) {
                     break;
                 }
-                ChessPiece piece = board.getPiece(new ChessPosition(straight_row, straight_col));
+                ChessPiece piece = board.getPiece(new ChessPosition(straightRow, straightCol));
                 if (piece != null) {
                     if (piece.getTeamColor() != teamColor
                             && (piece.getPieceType() == ChessPiece.PieceType.ROOK ||
@@ -85,13 +85,13 @@ public class KingDanger {
         }
 
         // check knight
-        List<Integer> knight_row_Incs = List.of(2, 1, -2, 1, 2, -1, -2, -1);
-        List<Integer> knight_col_Incs = List.of(1, 2, 1, -2, -1, 2, -1, -2);
+        List<Integer> knightRowIncs = List.of(2, 1, -2, 1, 2, -1, -2, -1);
+        List<Integer> knightColIncs = List.of(1, 2, 1, -2, -1, 2, -1, -2);
         for (int i = 0; i <= 7; i++) {
-            int knight_row = temp_row + knight_row_Incs.get(i);
-            int knight_col = temp_col + knight_col_Incs.get(i);
-            if (knight_row >= 1 && knight_row <= 8 && knight_col >= 1 && knight_col <= 8) {
-                ChessPiece piece = board.getPiece(new ChessPosition(knight_row, knight_col));
+            int knightRow = tempRow + knightRowIncs.get(i);
+            int knightCol = tempCol + knightColIncs.get(i);
+            if (knightRow >= 1 && knightRow <= 8 && knightCol >= 1 && knightCol <= 8) {
+                ChessPiece piece = board.getPiece(new ChessPosition(knightRow, knightCol));
                 if (piece != null) {
                     if (piece.getTeamColor() != teamColor
                             && (piece.getPieceType() == ChessPiece.PieceType.KNIGHT)) {
@@ -102,13 +102,13 @@ public class KingDanger {
         }
 
         // check for king
-        List<Integer> king_row_Incs = List.of(1, 1, -1, -1, 1, 0, -1, 0);
-        List<Integer> king_col_Incs = List.of(1, -1, 1, -1, 0, 1, 0, -1);
+        List<Integer> kingRowIncs = List.of(1, 1, -1, -1, 1, 0, -1, 0);
+        List<Integer> kingColIncs = List.of(1, -1, 1, -1, 0, 1, 0, -1);
         for (int i = 0; i <= 7; i++) {
-            int king_row = temp_row + king_row_Incs.get(i);
-            int king_col = temp_col + king_col_Incs.get(i);
-            if (king_row >= 1 && king_row <= 8 && king_col >= 1 && king_col <= 8) {
-                ChessPiece piece = board.getPiece(new ChessPosition(king_row, king_col));
+            int kingRow = tempRow + kingRowIncs.get(i);
+            int kingCol = tempCol + kingColIncs.get(i);
+            if (kingRow >= 1 && kingRow <= 8 && kingCol >= 1 && kingCol <= 8) {
+                ChessPiece piece = board.getPiece(new ChessPosition(kingRow, kingCol));
                 if (piece != null) {
                     if (piece.getTeamColor() != teamColor
                             && (piece.getPieceType() == ChessPiece.PieceType.KING)) {
@@ -120,16 +120,15 @@ public class KingDanger {
 
         // check for pawn
         if (teamColor == ChessGame.TeamColor.WHITE) {
-            List<Integer> pawn_row_Incs = List.of(1, 1);
-            List<Integer> pawn_col_Incs = List.of(1, -1);
+            List<Integer> pawnRowIncs = List.of(1, 1);
+            List<Integer> pawnColIncs = List.of(1, -1);
             for (int i = 0; i <= 1; i++) {
-                int pawn_row = temp_row + pawn_row_Incs.get(i);
-                int pawn_col = temp_col + pawn_col_Incs.get(i);
-                if (pawn_row >= 1 && pawn_row <= 8 && pawn_col >= 1 && pawn_col <= 8) {
-                    ChessPiece piece = board.getPiece(new ChessPosition(pawn_row, pawn_col));
+                int pawnRow = tempRow + pawnRowIncs.get(i);
+                int pawnCol = tempCol + pawnColIncs.get(i);
+                if (pawnRow >= 1 && pawnRow <= 8 && pawnCol >= 1 && pawnCol <= 8) {
+                    ChessPiece piece = board.getPiece(new ChessPosition(pawnRow, pawnCol));
                     if (piece != null) {
-                        if (piece.getTeamColor() != teamColor
-                                && (piece.getPieceType() == ChessPiece.PieceType.PAWN)) {
+                        if (piece.getTeamColor() != teamColor && (piece.getPieceType() == ChessPiece.PieceType.PAWN)) {
                             return true;
                         }
                     }
@@ -137,16 +136,15 @@ public class KingDanger {
             }
         }
         else {
-            List<Integer> pawn_row_Incs = List.of(-1, -1);
-            List<Integer> pawn_col_Incs = List.of(1, -1);
+            List<Integer> pawnRowIncs = List.of(-1, -1);
+            List<Integer> pawnColIncs = List.of(1, -1);
             for (int i = 0; i <= 1; i++) {
-                int pawn_row = temp_row + pawn_row_Incs.get(i);
-                int pawn_col = temp_col + pawn_col_Incs.get(i);
-                if (pawn_row >= 1 && pawn_row <= 8 && pawn_col >= 1 && pawn_col <= 8) {
-                    ChessPiece piece = board.getPiece(new ChessPosition(pawn_row, pawn_col));
+                int pawnRow = tempRow + pawnRowIncs.get(i);
+                int pawnCol = tempCol + pawnColIncs.get(i);
+                if (pawnRow >= 1 && pawnRow <= 8 && pawnCol >= 1 && pawnCol <= 8) {
+                    ChessPiece piece = board.getPiece(new ChessPosition(pawnRow, pawnCol));
                     if (piece != null) {
-                        if (piece.getTeamColor() != teamColor
-                                && (piece.getPieceType() == ChessPiece.PieceType.PAWN)) {
+                        if (piece.getTeamColor() != teamColor && (piece.getPieceType() == ChessPiece.PieceType.PAWN)) {
                             return true;
                         }
                     }

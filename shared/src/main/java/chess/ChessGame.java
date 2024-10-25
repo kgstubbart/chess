@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class ChessGame {
 
-    private int num_moves = 0;
+    private int numMoves = 0;
     private TeamColor team;
     private ChessPosition startPosition;
     private ChessBoard board = new ChessBoard();
@@ -23,7 +23,7 @@ public class ChessGame {
     }
 
     public ChessGame(ChessGame copy) {
-        this.num_moves = copy.num_moves;
+        this.numMoves = copy.numMoves;
         this.team = copy.team;
         this.startPosition = copy.startPosition;
         this.board = ChessBoard.copyOf(copy.board);
@@ -31,22 +31,23 @@ public class ChessGame {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         ChessGame chessGame = (ChessGame) o;
-        return num_moves == chessGame.num_moves && team == chessGame.team && Objects.equals(startPosition, chessGame.startPosition) && Objects.equals(board, chessGame.board);
+        return numMoves == chessGame.numMoves && team == chessGame.team &&
+                Objects.equals(startPosition, chessGame.startPosition) && Objects.equals(board, chessGame.board);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(num_moves, team, startPosition, board);
+        return Objects.hash(numMoves, team, startPosition, board);
     }
 
     @Override
     public String
     toString() {
         return "ChessGame{" +
-                "num_moves=" + num_moves +
+                "numMoves=" + numMoves +
                 ", team=" + team +
                 ", startPosition=" + startPosition +
                 ", board=" + board +
@@ -57,7 +58,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        if (this.num_moves % 2 == 0) {
+        if (this.numMoves % 2 == 0) {
             return TeamColor.WHITE;
         }
         else {
@@ -72,7 +73,7 @@ public class ChessGame {
      */
     public void setTeamTurn(TeamColor team) {
         if (team == TeamColor.BLACK) {
-            num_moves++;
+            numMoves++;
         }
         this.team = team;
     }
@@ -101,14 +102,14 @@ public class ChessGame {
         Collection<ChessMove> moves = chessPiece.pieceMoves(board, startPosition);
         Collection<ChessMove> validMoves = new HashSet<ChessMove>();
         for (ChessMove move : moves) {
-            ChessBoard board_copy = ChessBoard.copyOf(board);
-            board_copy.addPiece(startPosition, null);
-            board_copy.addPiece(move.getEndPosition(), chessPiece);
+            ChessBoard boardCopy = ChessBoard.copyOf(board);
+            boardCopy.addPiece(startPosition, null);
+            boardCopy.addPiece(move.getEndPosition(), chessPiece);
 
-            ChessPosition king_position = findKing(board_copy, teamColor);
-            if (king_position != null) {
-                KingDanger kingDanger = new KingDanger(board_copy, king_position, teamColor);
-                if (!kingDanger.BaseDanger(board_copy, king_position, teamColor)){
+            ChessPosition kingPosition = findKing(boardCopy, teamColor);
+            if (kingPosition != null) {
+                KingDanger kingDanger = new KingDanger(boardCopy, kingPosition, teamColor);
+                if (!kingDanger.baseDanger(boardCopy, kingPosition, teamColor)){
                     validMoves.add(move);
                 }
             }
@@ -144,7 +145,7 @@ public class ChessGame {
         else {
             board.addPiece(move.getEndPosition(), chessPiece);
         }
-        this.num_moves++;
+        this.numMoves++;
     }
 
     /** @return position of king on the board
@@ -172,10 +173,10 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        ChessPosition king_position = findKing(board, teamColor);
-        if (king_position != null) {
-            KingDanger kingDanger = new KingDanger(board, king_position, teamColor);
-            return kingDanger.BaseDanger(board, king_position, teamColor);
+        ChessPosition kingPosition = findKing(board, teamColor);
+        if (kingPosition != null) {
+            KingDanger kingDanger = new KingDanger(board, kingPosition, teamColor);
+            return kingDanger.baseDanger(board, kingPosition, teamColor);
         }
         return false;
     }
@@ -248,7 +249,7 @@ public class ChessGame {
         else {
             this.board = board;
         }
-        this.num_moves = 0;
+        this.numMoves = 0;
     }
 
     /**

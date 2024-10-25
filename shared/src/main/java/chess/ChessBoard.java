@@ -18,22 +18,22 @@ public class ChessBoard {
     }
 
     public static ChessBoard copyOf(ChessBoard board) {
-        ChessBoard board_copy = new ChessBoard();
+        ChessBoard boardCopy = new ChessBoard();
         for (int row = 0; row <= 7; row++) {
             for (int col = 0; col <= 7; col++) {
                 ChessPiece piece = board.squares[row][col];
                 if (piece != null) {
-                    board_copy.squares[row][col] = piece.clone();
+                    boardCopy.squares[row][col] = piece.clone();
                 }
             }
         }
-        return board_copy;
+        return boardCopy;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         ChessBoard that = (ChessBoard) o;
         return Objects.deepEquals(squares, that.squares);
     }

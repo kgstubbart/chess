@@ -32,7 +32,8 @@ public class UserService {
     }
 
     public AuthData loginUser(UserData user) throws ServiceException {
-        if ((userDataAccess.getUser(user.username()) == null) || (!Objects.equals(user.password(), userDataAccess.getUser(user.username()).password()))) {
+        if ((userDataAccess.getUser(user.username()) == null) ||
+                (!Objects.equals(user.password(), userDataAccess.getUser(user.username()).password()))) {
             throw new ServiceException("Error: unauthorized");
         }
 
@@ -40,12 +41,12 @@ public class UserService {
         return authDataAccess.getAuth(authToken);
     }
 
-    public void logoutUser(String auth_token) throws ServiceException {
-        if (authDataAccess.getAuth(auth_token) == null) {
+    public void logoutUser(String authToken) throws ServiceException {
+        if (authDataAccess.getAuth(authToken) == null) {
             throw new ServiceException("Error: unauthorized");
         }
 
-        AuthData authorization = authDataAccess.getAuth(auth_token);
+        AuthData authorization = authDataAccess.getAuth(authToken);
         authDataAccess.deleteAuth(authorization);
     }
 
