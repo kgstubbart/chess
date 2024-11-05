@@ -77,8 +77,25 @@ public class MySqlGameDataAccess implements GameDataAccess {
         return gameData;
     }
 
-    public GameData getGame(int gameID) {
-        return null;
+    public GameData getGame(int gameID) throws ServiceException {
+        GameData gameData = null;
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT whiteUsername, blackUsername, gameName, game FROM GameData WHERE gameID = ?")) {
+                preparedStatement.setInt(1, gameID);
+                try (var rs = preparedStatement.executeQuery()) {
+                    if (rs.next()) {
+                        String whiteUsername = rs.getString("whiteUsername");
+                        String blackUsername = rs.getString("blackUsername");
+                        String gameName = rs.getString("gameName");
+                        String game = rs.getString("game");
+                        gameData = new GameData(gameID, whiteUsername, blackUsername, gameName, new Gson().fromJson(game, ChessGame.class));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException(String.format("Unable to get game: %s", e.getMessage()));
+        }
+        return gameData;
     }
 
     public GameData updateGame(String username, ChessGame.TeamColor playerColor, int gameID, GameData gameData) {
