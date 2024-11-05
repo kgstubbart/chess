@@ -9,8 +9,12 @@ import java.sql.*;
 import java.util.UUID;
 
 public class MySqlUserDataAccess implements UserDataAccess {
-    public MySqlUserDataAccess() throws DataAccessException {
-        configureDatabase();
+    public MySqlUserDataAccess() {
+        try {
+            configureDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private final String[] createStatements = {

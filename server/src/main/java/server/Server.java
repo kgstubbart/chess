@@ -14,12 +14,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Server {
-    private final UserDataAccess userDataAccess = new MemoryUserDataAccess();
-    private final AuthDataAccess authDataAccess = new MemoryAuthDataAccess();
-    private final GameDataAccess gameDataAccess = new MemoryGameDataAccess();
+    private UserDataAccess userDataAccess = new MySqlUserDataAccess();
+    private AuthDataAccess authDataAccess = new MemoryAuthDataAccess();
+    private GameDataAccess gameDataAccess = new MemoryGameDataAccess();
     private final UserService userService = new UserService(userDataAccess, authDataAccess);
     private final GameService gameService = new GameService(gameDataAccess, authDataAccess);
     private final Gson serializer = new Gson();
+
+    public Server() {
+        //
+    }
+
+    public Server(int memory) {
+        userDataAccess = new MemoryUserDataAccess();
+        authDataAccess = new MemoryAuthDataAccess();
+        gameDataAccess = new MemoryGameDataAccess();
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
