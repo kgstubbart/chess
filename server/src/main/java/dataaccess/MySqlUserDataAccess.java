@@ -1,6 +1,5 @@
 package dataaccess;
 
-import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 import service.ServiceException;
@@ -19,13 +18,13 @@ public class MySqlUserDataAccess implements UserDataAccess {
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  user (
+            CREATE TABLE IF NOT EXISTS  UserData (
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
-              `auth` varchar(256) NOT NULL,
+              `email` varchar(256) NOT NULL,
               PRIMARY KEY (`username`),
               INDEX(password),
-              INDEX(auth)
+              INDEX(email)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
@@ -47,16 +46,16 @@ public class MySqlUserDataAccess implements UserDataAccess {
         return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
     }
 
-    boolean verifyUser(String username, String providedClearTextPassword) throws ServiceException {
-        // read the previously hashed password from the database
-        var hashedPassword = readHashedPasswordFromDatabase(username);
-        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
-    }
+//    boolean verifyUser(String username, String providedClearTextPassword) throws ServiceException {
+//        // read the previously hashed password from the database
+//        var hashedPassword = readHashedPasswordFromDatabase(username);
+//        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
+//    }
 
     private String readHashedPasswordFromDatabase(String username) throws ServiceException {
         String hashedPassword = null;
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT password FROM user WHERE username = ?")) {
+            try (var preparedStatement = conn.prepareStatement("SELECT password FROM UserData WHERE username = ?")) {
                 preparedStatement.setString(1, username);
                 try (var rs = preparedStatement.executeQuery()) {
                     if (rs.next()) {
@@ -70,22 +69,16 @@ public class MySqlUserDataAccess implements UserDataAccess {
         return hashedPassword;
     }
 
-    public String createAuth(UserData userData) {
-        String authToken = UUID.randomUUID().toString();
-        new AuthData(authToken, userData.username());
-        return authToken;
-    }
-
     public UserData getUser(String username) throws ServiceException {
         UserData userData = null;
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT password, auth FROM user WHERE username = ?")) {
+            try (var preparedStatement = conn.prepareStatement("SELECT password, email FROM UserData WHERE username = ?")) {
                 preparedStatement.setString(1, username);
                 try (var rs = preparedStatement.executeQuery()) {
                     if (rs.next()) {
                         String password = rs.getString("password");
-                        String auth = rs.getString("auth");
-                        userData = new UserData(username, password, auth);
+                        String email = rs.getString("email");
+                        userData = new UserData(username, password, email);
                     }
                 }
             }
@@ -103,11 +96,11 @@ public class MySqlUserDataAccess implements UserDataAccess {
             }
             String password = userData.password();
             String hashedPassword = hashUserPassword(password);
-            String authToken = createAuth(userData);
-            try (var preparedStatement = conn.prepareStatement("INSERT INTO user (username, password, auth) VALUES (?, ?, ?)")) {
+            String email = userData.email();
+            try (var preparedStatement = conn.prepareStatement("INSERT INTO UserData (username, password, email) VALUES (?, ?, ?)")) {
                 preparedStatement.setString(1, username);
                 preparedStatement.setString(2, hashedPassword);
-                preparedStatement.setString(3, authToken);
+                preparedStatement.setString(3, email);
                 preparedStatement.executeUpdate();
             }
         } catch (Exception e) {
@@ -117,7 +110,7 @@ public class MySqlUserDataAccess implements UserDataAccess {
 
     public void clear() throws ServiceException {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("DELETE FROM user")) {
+            try (var preparedStatement = conn.prepareStatement("DELETE FROM UserData")) {
                 preparedStatement.executeUpdate();
             }
         } catch (Exception e) {
