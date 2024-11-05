@@ -23,15 +23,11 @@ public class MySqlGameDataAccess implements GameDataAccess {
             """
             CREATE TABLE IF NOT EXISTS  GameData (
               `gameID` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(256) NOT NULL,
-              `blackUsername` varchar(256) NOT NULL,
+              `whiteUsername` varchar(256) DEFAULT NULL,
+              `blackUsername` varchar(256) DEFAULT NULL,
               `gameName` varchar(256) NOT NULL,
-              `game` varchar(256) DEFAULT NULL,
-              PRIMARY KEY (`gameID`),
-              INDEX(whiteUsername),
-              INDEX(blackUsername),
-              INDEX(gameName),
-              INDEX(game)
+              `game` TEXT DEFAULT NULL,
+              PRIMARY KEY (`gameID`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
@@ -52,11 +48,9 @@ public class MySqlGameDataAccess implements GameDataAccess {
     public GameData createGame(String gameName) throws ServiceException {
         GameData gameData = null;
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("INSERT INTO GameData (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)")) {
-                preparedStatement.setString(1, null);
-                preparedStatement.setString(2, null);
-                preparedStatement.setString(3, gameName);
-                preparedStatement.setString(4, new Gson().toJson(new ChessGame()));
+            try (var preparedStatement = conn.prepareStatement("INSERT INTO GameData (gameName, game) VALUES (?, ?)")) {
+                preparedStatement.setString(1, gameName);
+                preparedStatement.setString(2, new Gson().toJson(new ChessGame()));
                 preparedStatement.executeUpdate();
                 try (var newPreparedStatement = conn.prepareStatement("SELECT gameID FROM GameData WHERE gameName = ?")) {
                     newPreparedStatement.setString(1, gameName);
