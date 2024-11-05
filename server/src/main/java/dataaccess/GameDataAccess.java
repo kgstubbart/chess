@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.ChessGame;
 import model.GameData;
+import service.ServiceException;
 
 import java.util.Collection;
 
@@ -14,5 +15,5 @@ public interface GameDataAccess {
 
     Collection<GameData> listGames();
 
-    void clear();
+    void clear() throws ServiceException;
 }

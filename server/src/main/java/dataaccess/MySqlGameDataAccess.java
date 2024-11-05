@@ -93,7 +93,13 @@ public class MySqlGameDataAccess implements GameDataAccess {
         return List.of();
     }
 
-    public void clear() {
-
+    public void clear() throws ServiceException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("DELETE FROM GameData")) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new ServiceException(String.format("Unable to clear Game Database: %s", e.getMessage()));
+        }
     }
 }
