@@ -5,7 +5,6 @@ import org.mindrot.jbcrypt.BCrypt;
 import service.ServiceException;
 
 import java.sql.*;
-import java.util.UUID;
 
 public class MySqlUserDataAccess implements UserDataAccess {
     public MySqlUserDataAccess() {
@@ -42,7 +41,7 @@ public class MySqlUserDataAccess implements UserDataAccess {
         }
     }
 
-    public String hashUserPassword(String clearTextPassword) {
+    private String hashUserPassword(String clearTextPassword) {
         return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
     }
 
