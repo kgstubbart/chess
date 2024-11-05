@@ -23,8 +23,8 @@ public class MySqlAuthDataAccess implements AuthDataAccess {
               `authToken` varchar(256) NOT NULL,
               `username` varchar(256) NOT NULL,
               PRIMARY KEY (`username`),
-              INDEX(password),
-              INDEX(auth)
+              INDEX(authToken),
+              INDEX(username)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
@@ -107,7 +107,13 @@ public class MySqlAuthDataAccess implements AuthDataAccess {
 
     }
 
-    public void clear() {
-
+    public void clear() throws ServiceException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("DELETE FROM AuthData")) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new ServiceException(String.format("Unable to clear Auth Database: %s", e.getMessage()));
+        }
     }
 }

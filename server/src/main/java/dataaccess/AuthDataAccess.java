@@ -11,5 +11,5 @@ public interface AuthDataAccess {
 
     void deleteAuth(AuthData authData);
 
-    void clear();
+    void clear() throws ServiceException;
 }
