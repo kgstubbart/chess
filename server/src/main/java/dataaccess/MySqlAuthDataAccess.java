@@ -85,8 +85,22 @@ public class MySqlAuthDataAccess implements AuthDataAccess {
         return authToken;
     }
 
-    public AuthData getAuth(String authToken) {
-        return null;
+    public AuthData getAuth(String authToken) throws ServiceException {
+        AuthData authData = null;
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT username FROM AuthData WHERE authToken = ?")) {
+                preparedStatement.setString(1, authToken);
+                try (var rs = preparedStatement.executeQuery()) {
+                    if (rs.next()) {
+                        String username = rs.getString("username");
+                        authData = new AuthData(authToken, username);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException(String.format("Unable to find user: %s", e.getMessage()));
+        }
+        return authData;
     }
 
     public void deleteAuth(AuthData authData) {

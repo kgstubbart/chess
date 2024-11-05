@@ -7,7 +7,7 @@ import service.ServiceException;
 public interface AuthDataAccess {
     String createAuth(UserData userData) throws ServiceException;
 
-    AuthData getAuth(String authToken);
+    AuthData getAuth(String authToken) throws ServiceException;
 
     void deleteAuth(AuthData authData);
 
