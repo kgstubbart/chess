@@ -22,7 +22,7 @@ public class MySqlAuthDataAccess implements AuthDataAccess {
             CREATE TABLE IF NOT EXISTS  AuthData (
               `authToken` varchar(256) NOT NULL,
               `username` varchar(256) NOT NULL,
-              PRIMARY KEY (`username`),
+              PRIMARY KEY (`authToken`),
               INDEX(authToken),
               INDEX(username)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
@@ -103,8 +103,16 @@ public class MySqlAuthDataAccess implements AuthDataAccess {
         return authData;
     }
 
-    public void deleteAuth(AuthData authData) {
-
+    public void deleteAuth(AuthData authData) throws ServiceException {
+        String authToken = authData.authToken();
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("DELETE FROM AuthData WHERE authToken = ?")) {
+                preparedStatement.setString(1, authToken);
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new ServiceException(String.format("Unable to delete Auth: %s", e.getMessage()));
+        }
     }
 
     public void clear() throws ServiceException {

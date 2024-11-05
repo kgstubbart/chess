@@ -9,7 +9,7 @@ public interface AuthDataAccess {
 
     AuthData getAuth(String authToken) throws ServiceException;
 
-    void deleteAuth(AuthData authData);
+    void deleteAuth(AuthData authData) throws ServiceException;
 
     void clear() throws ServiceException;
 }
