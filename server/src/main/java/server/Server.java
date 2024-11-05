@@ -16,7 +16,7 @@ import java.util.Map;
 public class Server {
     private UserDataAccess userDataAccess = new MySqlUserDataAccess();
     private AuthDataAccess authDataAccess = new MySqlAuthDataAccess();
-    private GameDataAccess gameDataAccess = new MemoryGameDataAccess();
+    private GameDataAccess gameDataAccess = new MySqlGameDataAccess();
     private final UserService userService = new UserService(userDataAccess, authDataAccess);
     private final GameService gameService = new GameService(gameDataAccess, authDataAccess);
     private final Gson serializer = new Gson();

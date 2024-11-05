@@ -6,6 +6,7 @@ import model.GameData;
 import service.ServiceException;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class MySqlGameDataAccess implements GameDataAccess {
               `whiteUsername` varchar(256) NOT NULL,
               `blackUsername` varchar(256) NOT NULL,
               `gameName` varchar(256) NOT NULL,
-              `game` TEXT DEFAULT NULL,
+              `game` varchar(256) DEFAULT NULL,
               PRIMARY KEY (`gameID`),
               INDEX(whiteUsername),
               INDEX(blackUsername),
@@ -128,8 +129,25 @@ public class MySqlGameDataAccess implements GameDataAccess {
         return updatedGameData;
     }
 
-    public Collection<GameData> listGames() {
-        return List.of();
+    public Collection<GameData> listGames() throws ServiceException {
+        List<GameData> games = new ArrayList<>();
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName, game FROM GameData")) {
+                try (var rs = preparedStatement.executeQuery()) {
+                    while (rs.next()) {
+                        int gameID = rs.getInt("gameID");
+                        String whiteUsername = rs.getString("whiteUsername");
+                        String blackUsername = rs.getString("blackUsername");
+                        String gameName = rs.getString("gameName");
+                        String game = rs.getString("game");
+                        games.add(new GameData(gameID, whiteUsername, blackUsername, gameName, new Gson().fromJson(game, ChessGame.class)));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException(String.format("Unable to list games: %s", e.getMessage()));
+        }
+        return games;
     }
 
     public void clear() throws ServiceException {

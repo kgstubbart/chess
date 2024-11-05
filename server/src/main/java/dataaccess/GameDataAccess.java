@@ -13,7 +13,7 @@ public interface GameDataAccess {
 
     GameData updateGame(String username, ChessGame.TeamColor playerColor, int gameID, GameData gameData) throws ServiceException;
 
-    Collection<GameData> listGames();
+    Collection<GameData> listGames() throws ServiceException;
 
     void clear() throws ServiceException;
 }
