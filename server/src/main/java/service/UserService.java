@@ -8,8 +8,8 @@ import model.UserData;
 import java.util.Objects;
 
 public class UserService {
-    final UserDataAccess userDataAccess;
-    final AuthDataAccess authDataAccess;
+    public final UserDataAccess userDataAccess;
+    public final AuthDataAccess authDataAccess;
 
     public UserService(UserDataAccess userDataAccess, AuthDataAccess authDataAccess) {
         this.userDataAccess = userDataAccess;
