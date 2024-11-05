@@ -46,12 +46,6 @@ public class MySqlUserDataAccess implements UserDataAccess {
         return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
     }
 
-//    boolean verifyUser(String username, String providedClearTextPassword) throws ServiceException {
-//        // read the previously hashed password from the database
-//        var hashedPassword = readHashedPasswordFromDatabase(username);
-//        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
-//    }
-
     private String readHashedPasswordFromDatabase(String username) throws ServiceException {
         String hashedPassword = null;
         try (var conn = DatabaseManager.getConnection()) {
@@ -69,16 +63,18 @@ public class MySqlUserDataAccess implements UserDataAccess {
         return hashedPassword;
     }
 
-    public UserData getUser(String username) throws ServiceException {
+    public UserData getUser(String username, String password) throws ServiceException {
         UserData userData = null;
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("SELECT password, email FROM UserData WHERE username = ?")) {
                 preparedStatement.setString(1, username);
                 try (var rs = preparedStatement.executeQuery()) {
                     if (rs.next()) {
-                        String password = rs.getString("password");
+                        String hashedPassword = rs.getString("password");
                         String email = rs.getString("email");
-                        userData = new UserData(username, password, email);
+                        if (BCrypt.checkpw(password, hashedPassword)) {
+                            userData = new UserData(username, password, email);
+                        }
                     }
                 }
             }

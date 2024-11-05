@@ -182,7 +182,7 @@ class ServiceUnitTests {
         assertTrue(games.isEmpty());
 
         USER_SERVICE.clearUsers();
-        assertNull(USER_SERVICE.userDataAccess.getUser(userData.username()));
+        assertNull(USER_SERVICE.userDataAccess.getUser(userData.username(), userData.password()));
         assertNull(USER_SERVICE.authDataAccess.getAuth(authToken));
     }
 }

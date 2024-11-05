@@ -22,7 +22,7 @@ public class UserService {
             throw new ServiceException("Error: bad request");
         }
 
-        if (userDataAccess.getUser(newUser.username()) != null) {
+        if (userDataAccess.getUser(newUser.username(), newUser.password()) != null) {
             throw new ServiceException("Error: already taken");
         }
 
@@ -32,8 +32,8 @@ public class UserService {
     }
 
     public AuthData loginUser(UserData user) throws ServiceException {
-        if ((userDataAccess.getUser(user.username()) == null) ||
-                (!Objects.equals(user.password(), userDataAccess.getUser(user.username()).password()))) {
+        if ((userDataAccess.getUser(user.username(), user.password()) == null) ||
+                (!Objects.equals(user.password(), userDataAccess.getUser(user.username(), user.password()).password()))) {
             throw new ServiceException("Error: unauthorized");
         }
 

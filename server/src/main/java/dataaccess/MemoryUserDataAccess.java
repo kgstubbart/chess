@@ -9,7 +9,7 @@ public class MemoryUserDataAccess implements UserDataAccess {
     final private Map<String, UserData> users = new HashMap<>();
 
     @Override
-    public UserData getUser(String username) {
+    public UserData getUser(String username, String password) {
         return users.get(username);
     }
 
