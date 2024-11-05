@@ -7,7 +7,7 @@ import service.ServiceException;
 import java.util.Collection;
 
 public interface GameDataAccess {
-    GameData createGame(String gameName);
+    GameData createGame(String gameName) throws ServiceException;
 
     GameData getGame(int gameID);
 

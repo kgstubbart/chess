@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -10,6 +11,7 @@ import service.ServiceException;
 import java.sql.*;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 public class MySqlGameDataAccess implements GameDataAccess {
     public MySqlGameDataAccess() {
@@ -50,35 +52,29 @@ public class MySqlGameDataAccess implements GameDataAccess {
         }
     }
 
-    public String hashUserPassword(String clearTextPassword) {
-        return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
-    }
-
-    boolean verifyUser(String username, String providedClearTextPassword) throws ServiceException {
-        // read the previously hashed password from the database
-        var hashedPassword = readHashedPasswordFromDatabase(username);
-        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
-    }
-
-    private String readHashedPasswordFromDatabase(String username) throws ServiceException {
-        String hashedPassword = null;
+    public GameData createGame(String gameName) throws ServiceException {
+        GameData gameData = null;
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT password FROM user WHERE username = ?")) {
-                preparedStatement.setString(1, username);
-                try (var rs = preparedStatement.executeQuery()) {
-                    if (rs.next()) {
-                        hashedPassword = rs.getString("password");
+            try (var preparedStatement = conn.prepareStatement("INSERT INTO GameData (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)")) {
+                preparedStatement.setString(1, null);
+                preparedStatement.setString(2, null);
+                preparedStatement.setString(3, gameName);
+                preparedStatement.setString(4, new Gson().toJson(new ChessGame()));
+                preparedStatement.executeUpdate();
+                try (var newPreparedStatement = conn.prepareStatement("SELECT gameID FROM GameData WHERE gameName = ?")) {
+                    newPreparedStatement.setString(1, gameName);
+                    try (var rs = newPreparedStatement.executeQuery()) {
+                        if (rs.next()) {
+                            int gameID = rs.getInt("gameID");
+                            gameData = new GameData(gameID, null, null, gameName, new ChessGame());
+                        }
                     }
                 }
             }
         } catch (Exception e) {
-            throw new ServiceException(String.format("Unable to find password for user: %s", e.getMessage()));
+            throw new ServiceException(String.format("Unable to create game: %s", e.getMessage()));
         }
-        return hashedPassword;
-    }
-
-    public GameData createGame(String gameName) {
-        return null;
+        return gameData;
     }
 
     public GameData getGame(int gameID) {
