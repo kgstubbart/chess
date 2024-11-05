@@ -4,7 +4,7 @@ import model.UserData;
 import service.ServiceException;
 
 public interface UserDataAccess {
-    UserData getUser(String userName);
+    UserData getUser(String userName) throws ServiceException;
 
     void createUser(UserData userData) throws ServiceException;
 

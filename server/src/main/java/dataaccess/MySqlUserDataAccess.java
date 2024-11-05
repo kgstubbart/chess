@@ -72,8 +72,23 @@ public class MySqlUserDataAccess implements UserDataAccess {
         return authToken;
     }
 
-    public UserData getUser(String userName) {
-        return null;
+    public UserData getUser(String username) throws ServiceException {
+        UserData userData = null;
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT password, auth FROM user WHERE username = ?")) {
+                preparedStatement.setString(1, username);
+                try (var rs = preparedStatement.executeQuery()) {
+                    if (rs.next()) {
+                        String password = rs.getString("password");
+                        String auth = rs.getString("auth");
+                        userData = new UserData(username, password, auth);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException(String.format("Unable to find user: %s", e.getMessage()));
+        }
+        return userData;
     }
 
     public void createUser(UserData userData) throws ServiceException {
