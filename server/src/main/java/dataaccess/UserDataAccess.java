@@ -8,5 +8,5 @@ public interface UserDataAccess {
 
     void createUser(UserData userData) throws ServiceException;
 
-    void clear();
+    void clear() throws ServiceException;
 }

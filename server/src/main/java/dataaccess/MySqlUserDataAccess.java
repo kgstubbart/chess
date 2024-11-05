@@ -111,7 +111,13 @@ public class MySqlUserDataAccess implements UserDataAccess {
         }
     }
 
-    public void clear() {
-
+    public void clear() throws ServiceException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("DELETE FROM user")) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new ServiceException(String.format("Unable to clear User Database: %s", e.getMessage()));
+        }
     }
 }
