@@ -2,16 +2,12 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import model.AuthData;
 import model.GameData;
-import model.UserData;
-import org.mindrot.jbcrypt.BCrypt;
 import service.ServiceException;
 
 import java.sql.*;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 public class MySqlGameDataAccess implements GameDataAccess {
     public MySqlGameDataAccess() {
@@ -98,8 +94,38 @@ public class MySqlGameDataAccess implements GameDataAccess {
         return gameData;
     }
 
-    public GameData updateGame(String username, ChessGame.TeamColor playerColor, int gameID, GameData gameData) {
-        return null;
+    public GameData updateGame(String username, ChessGame.TeamColor playerColor, int gameID, GameData gameData) throws ServiceException {
+        GameData updatedGameData = null;
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT whiteUsername, blackUsername, gameName, game FROM GameData WHERE gameID = ?")) {
+                preparedStatement.setInt(1, gameID);
+                try (var rs = preparedStatement.executeQuery()) {
+                    if (rs.next()) {
+                        String whiteUsername = rs.getString("whiteUsername");
+                        String blackUsername = rs.getString("blackUsername");
+                        String gameName = rs.getString("gameName");
+                        if ((playerColor == ChessGame.TeamColor.WHITE) && (whiteUsername == null)) {
+                            updatedGameData = new GameData(gameID, username, blackUsername, gameName, gameData.game());
+                            whiteUsername = username;
+                        }
+                        else if ((playerColor == ChessGame.TeamColor.BLACK) && (blackUsername == null)) {
+                            updatedGameData = new GameData(gameID, whiteUsername, username, gameName, gameData.game());
+                            blackUsername = username;
+                        }
+                        try (var updateStatement = conn.prepareStatement("UPDATE GameData SET whiteUsername = ?, blackUsername = ?, game = ? WHERE gameID = ?")) {
+                            updateStatement.setString(1, whiteUsername);
+                            updateStatement.setString(2, blackUsername);
+                            updateStatement.setString(3, new Gson().toJson(gameData.game()));
+                            updateStatement.setInt(4, gameID);
+                            updateStatement.executeUpdate();
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException(String.format("Unable to update game: %s", e.getMessage()));
+        }
+        return updatedGameData;
     }
 
     public Collection<GameData> listGames() {

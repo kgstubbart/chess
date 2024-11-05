@@ -11,7 +11,7 @@ public interface GameDataAccess {
 
     GameData getGame(int gameID) throws ServiceException;
 
-    GameData updateGame(String username, ChessGame.TeamColor playerColor, int gameID, GameData gameData);
+    GameData updateGame(String username, ChessGame.TeamColor playerColor, int gameID, GameData gameData) throws ServiceException;
 
     Collection<GameData> listGames();
 
