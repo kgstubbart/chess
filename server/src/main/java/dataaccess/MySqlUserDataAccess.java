@@ -1,9 +1,12 @@
 package dataaccess;
 
+import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import service.ServiceException;
 
 import java.sql.*;
+import java.util.UUID;
 
 public class MySqlUserDataAccess implements UserDataAccess {
     public MySqlUserDataAccess() throws DataAccessException {
@@ -16,7 +19,6 @@ public class MySqlUserDataAccess implements UserDataAccess {
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `auth` varchar(256) NOT NULL,
-              `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`username`),
               INDEX(password),
               INDEX(auth)
@@ -37,19 +39,34 @@ public class MySqlUserDataAccess implements UserDataAccess {
         }
     }
 
+    public String hashUserPassword(String clearTextPassword) {
+        return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
+    }
+
+    public String createAuth(UserData userData) {
+        String authToken = UUID.randomUUID().toString();
+        new AuthData(authToken, userData.username());
+        return authToken;
+    }
+
     public UserData getUser(String userName) {
         return null;
     }
 
     public void createUser(UserData userData) throws ServiceException {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT 1+1")) {
-                var rs = preparedStatement.executeQuery();
-                rs.next();
-                System.out.println(rs.getInt(1));
+            String username = userData.username();
+            String password = userData.password();
+            String hashedPassword = hashUserPassword(password);
+            String authToken = createAuth(userData);
+            try (var preparedStatement = conn.prepareStatement("INSERT INTO user (username, password, auth) VALUES (?, ?, ?)")) {
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, hashedPassword);
+                preparedStatement.setString(3, authToken);
+                preparedStatement.executeUpdate();
             }
         } catch (Exception e) {
-            throw new ServiceException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new ServiceException(String.format("Unable to register user: %s", e.getMessage()));
         }
     }
 
