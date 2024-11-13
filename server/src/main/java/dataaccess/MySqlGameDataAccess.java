@@ -33,16 +33,7 @@ public class MySqlGameDataAccess implements GameDataAccess {
     };
 
     private void configureGameDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
+        new ConfigureMySqlDatabase(createStatements);
     }
 
     public GameData createGame(String gameName) throws ServiceException {
