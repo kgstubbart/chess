@@ -48,7 +48,7 @@ class MySqlUnitTests {
 
     @Test
     void positiveRegisterUser() throws ServiceException {
-        UserData userData = new UserData("apple", "banana", "pear@mail");
+        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
         AuthData authData = USER_SERVICE.registerUser(userData);
 
         assertEquals(userData.username(), authData.username());
@@ -57,7 +57,7 @@ class MySqlUnitTests {
 
     @Test
     void negativeRegisterUser() {
-        UserData userData = new UserData("cheese", null, "crackers@mail");
+        UserData userData = new UserData("playstation", null, "xbox@mail");
 
         ServiceException exception = assertThrows(
                 ServiceException.class,
@@ -69,9 +69,9 @@ class MySqlUnitTests {
 
     @Test
     void positiveLoginUser() throws ServiceException {
-        UserData userData = new UserData("apple", "banana", "pear@mail");
+        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
         USER_SERVICE.registerUser(userData);
-        UserData userLoginData = new UserData("apple", "banana", null);
+        UserData userLoginData = new UserData("mistborn", "stormlight", null);
         AuthData authData = USER_SERVICE.loginUser(userLoginData);
 
         assertEquals(userData.username(), authData.username());
@@ -80,9 +80,9 @@ class MySqlUnitTests {
 
     @Test
     void negativeLoginUser() throws ServiceException {
-        UserData userData = new UserData("cheese", "bread", "crackers@mail");
+        UserData userData = new UserData("playstation", "switch", "xbox@mail");
         USER_SERVICE.registerUser(userData);
-        UserData userLoginData = new UserData("cheese", "banana", null);
+        UserData userLoginData = new UserData("playstation", "pc", null);
 
         ServiceException exception = assertThrows(
                 ServiceException.class,
@@ -94,9 +94,9 @@ class MySqlUnitTests {
 
     @Test
     void positiveLogoutUser() throws ServiceException {
-        UserData userData = new UserData("apple", "banana", "pear@mail");
+        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
         USER_SERVICE.registerUser(userData);
-        UserData userLoginData = new UserData("apple", "banana", null);
+        UserData userLoginData = new UserData("mistborn", "stormlight", null);
         AuthData authData = USER_SERVICE.loginUser(userLoginData);
         String authToken = authData.authToken();
         USER_SERVICE.logoutUser(authToken);
@@ -108,7 +108,7 @@ class MySqlUnitTests {
     void negativeLogoutUser() {
         ServiceException exception = assertThrows(
                 ServiceException.class,
-                () -> USER_SERVICE.logoutUser("bad_token"),
+                () -> USER_SERVICE.logoutUser("fake_token"),
                 "Expected ServiceException due to invalid auth token."
         );
         assertEquals("Error: unauthorized", exception.getMessage());
@@ -116,12 +116,12 @@ class MySqlUnitTests {
 
     @Test
     void positiveCreateGame() throws ServiceException {
-        UserData userData = new UserData("apple", "banana", "pear@mail");
+        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
         USER_SERVICE.registerUser(userData);
-        UserData userLoginData = new UserData("apple", "banana", null);
+        UserData userLoginData = new UserData("mistborn", "stormlight", null);
         AuthData authData = USER_SERVICE.loginUser(userLoginData);
         String authToken = authData.authToken();
-        GameData gameName = new GameData(0, null, null, "Best Game Ever", null);
+        GameData gameName = new GameData(0, null, null, "Good Create Game", null);
         GameData game = GAME_SERVICE.createGame(authToken, gameName);
 
         assertTrue(game.gameID() > 0);
@@ -131,7 +131,7 @@ class MySqlUnitTests {
     void negativeCreateGame() {
         ServiceException exception = assertThrows(
                 ServiceException.class,
-                () -> GAME_SERVICE.createGame("bad_token", new GameData(0, null, null, "Best Game Ever", null)),
+                () -> GAME_SERVICE.createGame("fake_token", new GameData(0, null, null, "Bad Create Game", null)),
                 "Expected ServiceException due to invalid auth token."
         );
         assertEquals("Error: unauthorized", exception.getMessage());
@@ -139,23 +139,23 @@ class MySqlUnitTests {
 
     @Test
     void positiveJoinGame() throws ServiceException {
-        UserData userData = new UserData("apple", "banana", "pear@mail");
+        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
         USER_SERVICE.registerUser(userData);
-        UserData userLoginData = new UserData("apple", "banana", null);
+        UserData userLoginData = new UserData("mistborn", "stormlight", null);
         AuthData authData = USER_SERVICE.loginUser(userLoginData);
         String authToken = authData.authToken();
-        GameData gameName = new GameData(0, null, null, "Best Game Ever", null);
+        GameData gameName = new GameData(0, null, null, "Good Join Game", null);
         GameData gameData = GAME_SERVICE.createGame(authToken, gameName);
         GameData joinedGame = GAME_SERVICE.joinGame(authToken, new JoinGameData(ChessGame.TeamColor.BLACK, gameData.gameID()));
 
-        assertEquals(joinedGame.blackUsername(), "apple");
+        assertEquals(joinedGame.blackUsername(), "mistborn");
     }
 
     @Test
     void negativeJoinGame() {
         ServiceException exception = assertThrows(
                 ServiceException.class,
-                () -> GAME_SERVICE.joinGame("bad_token", new JoinGameData(ChessGame.TeamColor.BLACK, 1234)),
+                () -> GAME_SERVICE.joinGame("fake_token", new JoinGameData(ChessGame.TeamColor.WHITE, 9876)),
                 "Expected ServiceException due to invalid auth token."
         );
         assertEquals("Error: bad request", exception.getMessage());
@@ -163,16 +163,16 @@ class MySqlUnitTests {
 
     @Test
     void positiveListGames() throws ServiceException {
-        UserData userData = new UserData("apple", "banana", "pear@mail");
+        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
         USER_SERVICE.registerUser(userData);
-        UserData userLoginData = new UserData("apple", "banana", null);
+        UserData userLoginData = new UserData("mistborn", "stormlight", null);
         AuthData authData = USER_SERVICE.loginUser(userLoginData);
         String authToken = authData.authToken();
 
         Map<String, GameData> expectedGames = new HashMap<>();
-        expectedGames.put("1", GAME_SERVICE.createGame(authToken, new GameData(0, null, null, "Best Game Ever", null)));
-        expectedGames.put("2", GAME_SERVICE.createGame(authToken, new GameData(0, null, null, "Decent Game", null)));
-        expectedGames.put("3", GAME_SERVICE.createGame(authToken, new GameData(0, null, null, "Good Game", null)));
+        expectedGames.put("1", GAME_SERVICE.createGame(authToken, new GameData(0, null, null, "First List Game", null)));
+        expectedGames.put("2", GAME_SERVICE.createGame(authToken, new GameData(0, null, null, "Second List Game", null)));
+        expectedGames.put("3", GAME_SERVICE.createGame(authToken, new GameData(0, null, null, "Third List Game", null)));
 
         var actual = GAME_SERVICE.listGames(authToken);
         assertIterableEquals(expectedGames.values(), actual);
@@ -182,7 +182,7 @@ class MySqlUnitTests {
     void negativeListGames() {
         ServiceException exception = assertThrows(
                 ServiceException.class,
-                () -> GAME_SERVICE.listGames("bad_token"),
+                () -> GAME_SERVICE.listGames("fake_token"),
                 "Expected ServiceException due to invalid auth token."
         );
         assertEquals("Error: unauthorized", exception.getMessage());
@@ -190,9 +190,9 @@ class MySqlUnitTests {
 
     @Test
     void clearUsersGamesAuths() throws ServiceException {
-        UserData userData = new UserData("apple", "banana", "pear@mail");
+        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
         USER_SERVICE.registerUser(userData);
-        UserData userLoginData = new UserData("apple", "banana", null);
+        UserData userLoginData = new UserData("mistborn", "stormlight", null);
         AuthData authData = USER_SERVICE.loginUser(userLoginData);
         String authToken = authData.authToken();
         GAME_SERVICE.clearGames();
