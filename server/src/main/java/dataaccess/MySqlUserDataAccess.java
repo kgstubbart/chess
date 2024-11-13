@@ -53,20 +53,28 @@ public class MySqlUserDataAccess implements UserDataAccess {
         return hashedPassword;
     }
 
+    private UserData getUserUserData(PreparedStatement preparedStatement, String username, String password) {
+        UserData userData = null;
+        try (var rs = preparedStatement.executeQuery()) {
+            if (rs.next()) {
+                String hashedPassword = rs.getString("password");
+                String email = rs.getString("email");
+                if (BCrypt.checkpw(password, hashedPassword)) {
+                    userData = new UserData(username, password, email);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return userData;
+    }
+
     public UserData getUser(String username, String password) throws ServiceException {
         UserData userData = null;
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("SELECT password, email FROM UserData WHERE username = ?")) {
                 preparedStatement.setString(1, username);
-                try (var rs = preparedStatement.executeQuery()) {
-                    if (rs.next()) {
-                        String hashedPassword = rs.getString("password");
-                        String email = rs.getString("email");
-                        if (BCrypt.checkpw(password, hashedPassword)) {
-                            userData = new UserData(username, password, email);
-                        }
-                    }
-                }
+                userData = getUserUserData(preparedStatement, username, password);
             }
         } catch (Exception e) {
             throw new ServiceException(String.format("Unable to find user: %s", e.getMessage()));
