@@ -13,6 +13,24 @@ public class KingDanger {
         this.teamColor = teamColor;
     }
 
+    protected boolean pawnCheck(int tempRow, int tempCol, List<Integer> pawnRowIncs, List<Integer> pawnColIncs) {
+        boolean result = false;
+        for (int i = 0; i <= 1; i++) {
+            int pawnRow = tempRow + pawnRowIncs.get(i);
+            int pawnCol = tempCol + pawnColIncs.get(i);
+            if (pawnRow >= 1 && pawnRow <= 8 && pawnCol >= 1 && pawnCol <= 8) {
+                ChessPiece piece = board.getPiece(new ChessPosition(pawnRow, pawnCol));
+                if (piece != null) {
+                    if (piece.getTeamColor() != teamColor && (piece.getPieceType() == ChessPiece.PieceType.PAWN)) {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     protected boolean baseDanger(ChessBoard board, ChessPosition pos, ChessGame.TeamColor teamColor) {
         int row = pos.getRow();
         int col = pos.getColumn();
@@ -122,33 +140,17 @@ public class KingDanger {
         if (teamColor == ChessGame.TeamColor.WHITE) {
             List<Integer> pawnRowIncs = List.of(1, 1);
             List<Integer> pawnColIncs = List.of(1, -1);
-            for (int i = 0; i <= 1; i++) {
-                int pawnRow = tempRow + pawnRowIncs.get(i);
-                int pawnCol = tempCol + pawnColIncs.get(i);
-                if (pawnRow >= 1 && pawnRow <= 8 && pawnCol >= 1 && pawnCol <= 8) {
-                    ChessPiece piece = board.getPiece(new ChessPosition(pawnRow, pawnCol));
-                    if (piece != null) {
-                        if (piece.getTeamColor() != teamColor && (piece.getPieceType() == ChessPiece.PieceType.PAWN)) {
-                            return true;
-                        }
-                    }
-                }
+            boolean firstPawnResult = pawnCheck(tempRow, tempCol, pawnRowIncs, pawnColIncs);
+            if (firstPawnResult) {
+                return true;
             }
         }
         else {
             List<Integer> pawnRowIncs = List.of(-1, -1);
             List<Integer> pawnColIncs = List.of(1, -1);
-            for (int i = 0; i <= 1; i++) {
-                int pawnRow = tempRow + pawnRowIncs.get(i);
-                int pawnCol = tempCol + pawnColIncs.get(i);
-                if (pawnRow >= 1 && pawnRow <= 8 && pawnCol >= 1 && pawnCol <= 8) {
-                    ChessPiece piece = board.getPiece(new ChessPosition(pawnRow, pawnCol));
-                    if (piece != null) {
-                        if (piece.getTeamColor() != teamColor && (piece.getPieceType() == ChessPiece.PieceType.PAWN)) {
-                            return true;
-                        }
-                    }
-                }
+            boolean secondPawnResult = pawnCheck(tempRow, tempCol, pawnRowIncs, pawnColIncs);
+            if (secondPawnResult) {
+                return true;
             }
         }
         return false;
