@@ -36,6 +36,81 @@ public class MySqlGameDataAccess implements GameDataAccess {
         new ConfigureMySqlDatabase(createStatements);
     }
 
+    private GameData createGameGameData(PreparedStatement newPreparedStatement, String gameName) {
+        GameData gameData = null;
+        try (var rs = newPreparedStatement.executeQuery()) {
+            if (rs.next()) {
+                int gameID = rs.getInt("gameID");
+                gameData = new GameData(gameID, null, null, gameName, new ChessGame());
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return gameData;
+    }
+
+    private GameData getGameGameData(PreparedStatement preparedStatement, int gameID) {
+        GameData gameData = null;
+        try (var rs = preparedStatement.executeQuery()) {
+            if (rs.next()) {
+                String whiteUsername = rs.getString("whiteUsername");
+                String blackUsername = rs.getString("blackUsername");
+                String gameName = rs.getString("gameName");
+                String game = rs.getString("game");
+                gameData = new GameData(gameID, whiteUsername, blackUsername, gameName, new Gson().fromJson(game, ChessGame.class));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return gameData;
+    }
+
+    private GameData updateGameGameData(PreparedStatement preparedStatement, Connection conn,
+                                        String username, ChessGame.TeamColor playerColor, int gameID, GameData gameData) {
+        GameData updatedGameData = null;
+        try (var rs = preparedStatement.executeQuery()) {
+            if (rs.next()) {
+                String whiteUsername = rs.getString("whiteUsername");
+                String blackUsername = rs.getString("blackUsername");
+                String gameName = rs.getString("gameName");
+                if ((playerColor == ChessGame.TeamColor.WHITE) && (whiteUsername == null)) {
+                    updatedGameData = new GameData(gameID, username, blackUsername, gameName, gameData.game());
+                    whiteUsername = username;
+                }
+                else if ((playerColor == ChessGame.TeamColor.BLACK) && (blackUsername == null)) {
+                    updatedGameData = new GameData(gameID, whiteUsername, username, gameName, gameData.game());
+                    blackUsername = username;
+                }
+                try (var updateStatement = conn.prepareStatement
+                        ("UPDATE GameData SET whiteUsername = ?, blackUsername = ?, game = ? WHERE gameID = ?")) {
+                    updateStatement.setString(1, whiteUsername);
+                    updateStatement.setString(2, blackUsername);
+                    updateStatement.setString(3, new Gson().toJson(gameData.game()));
+                    updateStatement.setInt(4, gameID);
+                    updateStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return updatedGameData;
+    }
+
+    private List<GameData> listGamesGameData(PreparedStatement preparedStatement) throws SQLException {
+        List<GameData> games = new ArrayList<>();
+        try (var rs = preparedStatement.executeQuery()) {
+            while (rs.next()) {
+                int gameID = rs.getInt("gameID");
+                String whiteUsername = rs.getString("whiteUsername");
+                String blackUsername = rs.getString("blackUsername");
+                String gameName = rs.getString("gameName");
+                String game = rs.getString("game");
+                games.add(new GameData(gameID, whiteUsername, blackUsername, gameName, new Gson().fromJson(game, ChessGame.class)));
+            }
+        }
+        return games;
+    }
+
     public GameData createGame(String gameName) throws ServiceException {
         GameData gameData = null;
         try (var conn = DatabaseManager.getConnection()) {
@@ -45,12 +120,7 @@ public class MySqlGameDataAccess implements GameDataAccess {
                 preparedStatement.executeUpdate();
                 try (var newPreparedStatement = conn.prepareStatement("SELECT gameID FROM GameData WHERE gameName = ?")) {
                     newPreparedStatement.setString(1, gameName);
-                    try (var rs = newPreparedStatement.executeQuery()) {
-                        if (rs.next()) {
-                            int gameID = rs.getInt("gameID");
-                            gameData = new GameData(gameID, null, null, gameName, new ChessGame());
-                        }
-                    }
+                    gameData = createGameGameData(newPreparedStatement, gameName);
                 }
             }
         } catch (Exception e) {
@@ -62,17 +132,10 @@ public class MySqlGameDataAccess implements GameDataAccess {
     public GameData getGame(int gameID) throws ServiceException {
         GameData gameData = null;
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT whiteUsername, blackUsername, gameName, game FROM GameData WHERE gameID = ?")) {
+            try (var preparedStatement = conn.prepareStatement
+                    ("SELECT whiteUsername, blackUsername, gameName, game FROM GameData WHERE gameID = ?")) {
                 preparedStatement.setInt(1, gameID);
-                try (var rs = preparedStatement.executeQuery()) {
-                    if (rs.next()) {
-                        String whiteUsername = rs.getString("whiteUsername");
-                        String blackUsername = rs.getString("blackUsername");
-                        String gameName = rs.getString("gameName");
-                        String game = rs.getString("game");
-                        gameData = new GameData(gameID, whiteUsername, blackUsername, gameName, new Gson().fromJson(game, ChessGame.class));
-                    }
-                }
+                gameData = getGameGameData(preparedStatement, gameID);
             }
         } catch (Exception e) {
             throw new ServiceException(String.format("Unable to get game: %s", e.getMessage()));
@@ -83,30 +146,10 @@ public class MySqlGameDataAccess implements GameDataAccess {
     public GameData updateGame(String username, ChessGame.TeamColor playerColor, int gameID, GameData gameData) throws ServiceException {
         GameData updatedGameData = null;
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT whiteUsername, blackUsername, gameName, game FROM GameData WHERE gameID = ?")) {
+            try (var preparedStatement = conn.prepareStatement
+                    ("SELECT whiteUsername, blackUsername, gameName, game FROM GameData WHERE gameID = ?")) {
                 preparedStatement.setInt(1, gameID);
-                try (var rs = preparedStatement.executeQuery()) {
-                    if (rs.next()) {
-                        String whiteUsername = rs.getString("whiteUsername");
-                        String blackUsername = rs.getString("blackUsername");
-                        String gameName = rs.getString("gameName");
-                        if ((playerColor == ChessGame.TeamColor.WHITE) && (whiteUsername == null)) {
-                            updatedGameData = new GameData(gameID, username, blackUsername, gameName, gameData.game());
-                            whiteUsername = username;
-                        }
-                        else if ((playerColor == ChessGame.TeamColor.BLACK) && (blackUsername == null)) {
-                            updatedGameData = new GameData(gameID, whiteUsername, username, gameName, gameData.game());
-                            blackUsername = username;
-                        }
-                        try (var updateStatement = conn.prepareStatement("UPDATE GameData SET whiteUsername = ?, blackUsername = ?, game = ? WHERE gameID = ?")) {
-                            updateStatement.setString(1, whiteUsername);
-                            updateStatement.setString(2, blackUsername);
-                            updateStatement.setString(3, new Gson().toJson(gameData.game()));
-                            updateStatement.setInt(4, gameID);
-                            updateStatement.executeUpdate();
-                        }
-                    }
-                }
+                updatedGameData = updateGameGameData(preparedStatement, conn, username, playerColor, gameID, gameData);
             }
         } catch (Exception e) {
             throw new ServiceException(String.format("Unable to update game: %s", e.getMessage()));
@@ -118,16 +161,7 @@ public class MySqlGameDataAccess implements GameDataAccess {
         List<GameData> games = new ArrayList<>();
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName, game FROM GameData")) {
-                try (var rs = preparedStatement.executeQuery()) {
-                    while (rs.next()) {
-                        int gameID = rs.getInt("gameID");
-                        String whiteUsername = rs.getString("whiteUsername");
-                        String blackUsername = rs.getString("blackUsername");
-                        String gameName = rs.getString("gameName");
-                        String game = rs.getString("game");
-                        games.add(new GameData(gameID, whiteUsername, blackUsername, gameName, new Gson().fromJson(game, ChessGame.class)));
-                    }
-                }
+                games = listGamesGameData(preparedStatement);
             }
         } catch (Exception e) {
             throw new ServiceException(String.format("Unable to list games: %s", e.getMessage()));
