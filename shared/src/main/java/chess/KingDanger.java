@@ -13,6 +13,102 @@ public class KingDanger {
         this.teamColor = teamColor;
     }
 
+    protected boolean diagonalCheck(int tempRow, int tempCol, List<Integer> diagonalRowIncs, List<Integer> diagonalColIncs) {
+        boolean result = false;
+        for (int i = 0; i <= 3; i++) {
+            int diagonalRow = tempRow;
+            int diagonalCol = tempCol;
+            while (diagonalRow >= 1 && diagonalRow <= 8 && diagonalCol >= 1 && diagonalCol <= 8) {
+                int rowInc = diagonalRowIncs.get(i);
+                int colInc = diagonalColIncs.get(i);
+                diagonalRow += rowInc;
+                diagonalCol += colInc;
+                if (diagonalRow < 1 || diagonalRow > 8 || diagonalCol < 1 || diagonalCol > 8) {
+                    break;
+                }
+                ChessPiece piece = board.getPiece(new ChessPosition(diagonalRow, diagonalCol));
+                if (piece != null) {
+                    if (piece.getTeamColor() != teamColor
+                            && (piece.getPieceType() == ChessPiece.PieceType.BISHOP ||
+                            piece.getPieceType() == ChessPiece.PieceType.QUEEN)) {
+                        result = true;
+                        break;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    protected boolean straightCheck(int tempRow, int tempCol, List<Integer> straightRowIncs, List<Integer> straightColIncs) {
+        boolean result = false;
+        for (int i = 0; i <= 3; i++) {
+            int straightRow = tempRow;
+            int straightCol = tempCol;
+            while (straightRow >= 1 && straightRow <= 8 && straightCol >= 1 && straightCol <= 8) {
+                int rowInc = straightRowIncs.get(i);
+                int colInc = straightColIncs.get(i);
+                straightRow += rowInc;
+                straightCol += colInc;
+                if (straightRow < 1 || straightRow > 8 || straightCol < 1 || straightCol > 8) {
+                    break;
+                }
+                ChessPiece piece = board.getPiece(new ChessPosition(straightRow, straightCol));
+                if (piece != null) {
+                    if (piece.getTeamColor() != teamColor
+                            && (piece.getPieceType() == ChessPiece.PieceType.ROOK ||
+                            piece.getPieceType() == ChessPiece.PieceType.QUEEN)) {
+                        result = true;
+                        break;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    protected boolean knightCheck(int tempRow, int tempCol, List<Integer> knightRowIncs, List<Integer> knightColIncs) {
+        boolean result = false;
+        for (int i = 0; i <= 7; i++) {
+            int knightRow = tempRow + knightRowIncs.get(i);
+            int knightCol = tempCol + knightColIncs.get(i);
+            if (knightRow >= 1 && knightRow <= 8 && knightCol >= 1 && knightCol <= 8) {
+                ChessPiece piece = board.getPiece(new ChessPosition(knightRow, knightCol));
+                if (piece != null) {
+                    if (piece.getTeamColor() != teamColor
+                            && (piece.getPieceType() == ChessPiece.PieceType.KNIGHT)) {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    protected boolean kingCheck(int tempRow, int tempCol, List<Integer> kingRowIncs, List<Integer> kingColIncs) {
+        boolean result = false;
+        for (int i = 0; i <= 7; i++) {
+            int kingRow = tempRow + kingRowIncs.get(i);
+            int kingCol = tempCol + kingColIncs.get(i);
+            if (kingRow >= 1 && kingRow <= 8 && kingCol >= 1 && kingCol <= 8) {
+                ChessPiece piece = board.getPiece(new ChessPosition(kingRow, kingCol));
+                if (piece != null) {
+                    if (piece.getTeamColor() != teamColor
+                            && (piece.getPieceType() == ChessPiece.PieceType.KING)) {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     protected boolean pawnCheck(int tempRow, int tempCol, List<Integer> pawnRowIncs, List<Integer> pawnColIncs) {
         boolean result = false;
         for (int i = 0; i <= 1; i++) {
@@ -51,89 +147,33 @@ public class KingDanger {
         // check diagonal
         List<Integer> diagonalRowIncs = List.of(1, 1, -1, -1);
         List<Integer> diagonalColIncs = List.of(1, -1, 1, -1);
-        for (int i = 0; i <= 3; i++) {
-            int diagonalRow = tempRow;
-            int diagonalCol = tempCol;
-            while (diagonalRow >= 1 && diagonalRow <= 8 && diagonalCol >= 1 && diagonalCol <= 8) {
-                int rowInc = diagonalRowIncs.get(i);
-                int colInc = diagonalColIncs.get(i);
-                diagonalRow += rowInc;
-                diagonalCol += colInc;
-                if (diagonalRow < 1 || diagonalRow > 8 || diagonalCol < 1 || diagonalCol > 8) {
-                    break;
-                }
-                ChessPiece piece = board.getPiece(new ChessPosition(diagonalRow, diagonalCol));
-                if (piece != null) {
-                    if (piece.getTeamColor() != teamColor
-                            && (piece.getPieceType() == ChessPiece.PieceType.BISHOP ||
-                            piece.getPieceType() == ChessPiece.PieceType.QUEEN)) {
-                        return true;
-                    } else {
-                        break;
-                    }
-                }
-            }
+        boolean diagonalResult = diagonalCheck(tempRow, tempCol, diagonalRowIncs, diagonalColIncs);
+        if (diagonalResult) {
+            return true;
         }
 
         // check straight
         List<Integer> straightRowIncs = List.of(1, -1, 0, 0);
         List<Integer> straightColIncs = List.of(0, 0, 1, -1);
-        for (int i = 0; i <= 3; i++) {
-            int straightRow = tempRow;
-            int straightCol = tempCol;
-            while (straightRow >= 1 && straightRow <= 8 && straightCol >= 1 && straightCol <= 8) {
-                int rowInc = straightRowIncs.get(i);
-                int colInc = straightColIncs.get(i);
-                straightRow += rowInc;
-                straightCol += colInc;
-                if (straightRow < 1 || straightRow > 8 || straightCol < 1 || straightCol > 8) {
-                    break;
-                }
-                ChessPiece piece = board.getPiece(new ChessPosition(straightRow, straightCol));
-                if (piece != null) {
-                    if (piece.getTeamColor() != teamColor
-                            && (piece.getPieceType() == ChessPiece.PieceType.ROOK ||
-                            piece.getPieceType() == ChessPiece.PieceType.QUEEN)) {
-                        return true;
-                    } else {
-                        break;
-                    }
-                }
-            }
+        boolean straightResult = straightCheck(tempRow, tempCol, straightRowIncs, straightColIncs);
+        if (straightResult) {
+            return true;
         }
 
         // check knight
         List<Integer> knightRowIncs = List.of(2, 1, -2, 1, 2, -1, -2, -1);
         List<Integer> knightColIncs = List.of(1, 2, 1, -2, -1, 2, -1, -2);
-        for (int i = 0; i <= 7; i++) {
-            int knightRow = tempRow + knightRowIncs.get(i);
-            int knightCol = tempCol + knightColIncs.get(i);
-            if (knightRow >= 1 && knightRow <= 8 && knightCol >= 1 && knightCol <= 8) {
-                ChessPiece piece = board.getPiece(new ChessPosition(knightRow, knightCol));
-                if (piece != null) {
-                    if (piece.getTeamColor() != teamColor
-                            && (piece.getPieceType() == ChessPiece.PieceType.KNIGHT)) {
-                        return true;
-                    }
-                }
-            }
+        boolean knightResult = knightCheck(tempRow, tempCol, knightRowIncs, knightColIncs);
+        if (knightResult) {
+            return true;
         }
 
         // check for king
         List<Integer> kingRowIncs = List.of(1, 1, -1, -1, 1, 0, -1, 0);
         List<Integer> kingColIncs = List.of(1, -1, 1, -1, 0, 1, 0, -1);
-        for (int i = 0; i <= 7; i++) {
-            int kingRow = tempRow + kingRowIncs.get(i);
-            int kingCol = tempCol + kingColIncs.get(i);
-            if (kingRow >= 1 && kingRow <= 8 && kingCol >= 1 && kingCol <= 8) {
-                ChessPiece piece = board.getPiece(new ChessPosition(kingRow, kingCol));
-                if (piece != null) {
-                    if (piece.getTeamColor() != teamColor
-                            && (piece.getPieceType() == ChessPiece.PieceType.KING)) {
-                        return true;
-                    }
-                }
-            }
+        boolean kingResult = kingCheck(tempRow, tempCol, kingRowIncs, kingColIncs);
+        if (kingResult) {
+            return true;
         }
 
         // check for pawn
