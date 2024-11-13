@@ -9,7 +9,7 @@ import java.sql.*;
 public class MySqlUserDataAccess implements UserDataAccess {
     public MySqlUserDataAccess() {
         try {
-            configureDatabase();
+            configureUserDatabase();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
@@ -28,7 +28,7 @@ public class MySqlUserDataAccess implements UserDataAccess {
             """
     };
 
-    private void configureDatabase() throws DataAccessException {
+    private void configureUserDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {

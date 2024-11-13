@@ -13,7 +13,7 @@ import java.util.List;
 public class MySqlGameDataAccess implements GameDataAccess {
     public MySqlGameDataAccess() {
         try {
-            configureDatabase();
+            configureGameDatabase();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
@@ -32,7 +32,7 @@ public class MySqlGameDataAccess implements GameDataAccess {
             """
     };
 
-    private void configureDatabase() throws DataAccessException {
+    private void configureGameDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {

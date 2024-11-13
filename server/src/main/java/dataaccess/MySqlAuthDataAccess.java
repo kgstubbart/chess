@@ -10,7 +10,7 @@ import java.util.UUID;
 public class MySqlAuthDataAccess implements AuthDataAccess {
     public MySqlAuthDataAccess() {
         try {
-            configureDatabase();
+            configureAuthDatabase();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
@@ -28,7 +28,7 @@ public class MySqlAuthDataAccess implements AuthDataAccess {
             """
     };
 
-    private void configureDatabase() throws DataAccessException {
+    private void configureAuthDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
