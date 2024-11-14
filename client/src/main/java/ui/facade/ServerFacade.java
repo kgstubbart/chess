@@ -13,15 +13,43 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-//    public Pet addPet(Pet pet) throws FacadeException {
-//        var path = "/pet";
-//        return this.makeRequest("POST", path, pet, Pet.class);
-//    }
-//
-//    public void deletePet(int id) throws FacadeException {
-//        var path = String.format("/pet/%s", id);
-//        this.makeRequest("DELETE", path, null, null);
-//    }
+    public UserData registerUser(UserData userData) throws FacadeException {
+        var path = "/user";
+        return this.makeRequest("POST", path, userData, UserData.class);
+    }
+
+    public UserData loginUser(UserData userData) throws FacadeException {
+        var path = "/session";
+        return this.makeRequest("POST", path, userData, UserData.class);
+    }
+
+    public void logoutUser(AuthData authData) throws FacadeException {
+        var path = "/session";
+        this.makeRequest("DELETE", path, authData, AuthData.class);
+    }
+
+    public GameData[] listGames() throws FacadeException {
+        var path = "/game";
+        record listGameResponse(GameData[] gameData) {
+        }
+        var response = this.makeRequest("GET", path, null, listGameResponse.class);
+        return response.gameData();
+    }
+
+    public GameData createGame(AuthData authData) throws FacadeException {
+        var path = "/game";
+        return this.makeRequest("POST", path, authData, GameData.class);
+    }
+
+    public GameData joinGame(JoinGameData joinGameData) throws FacadeException {
+        var path = "/game";
+        return this.makeRequest("PUT", path, joinGameData, GameData.class);
+    }
+
+    private void clearApplication() throws FacadeException {
+        var path = "/db";
+        this.makeRequest("DELETE", path, null, null);
+    }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws FacadeException {
         try {
