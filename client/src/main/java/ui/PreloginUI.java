@@ -60,8 +60,8 @@ public class PreloginUI {
     public String help() {
         return """
                     register <USERNAME> <PASSWORD> <EMAIL> - create an account
-                    login <USERNAME> <PASSWORD> - load previously created account
-                    help - receive available commands
+                    login <USERNAME> <PASSWORD> - load a previously created account
+                    help - see all available commands
                     quit - shutdown the program
                 """;
     }
