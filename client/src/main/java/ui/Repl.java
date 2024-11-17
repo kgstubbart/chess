@@ -10,7 +10,7 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("\uD83D\uDC36 Welcome to Chess! Login to start.");
+        System.out.println("Welcome to Chess! Login to start.");
         System.out.print(preloginUI.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -29,7 +29,6 @@ public class Repl {
         }
         System.out.println();
     }
-
 
     private void printPrompt() {
         System.out.print("\n" + EscapeSequences.RESET_TEXT_COLOR + ">>> " + EscapeSequences.SET_TEXT_COLOR_GREEN);

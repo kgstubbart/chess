@@ -13,9 +13,9 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public UserData registerUser(UserData userData) throws FacadeException {
+    public AuthData registerUser(UserData userData) throws FacadeException {
         var path = "/user";
-        return this.makeRequest("POST", path, userData, UserData.class);
+        return this.makeRequest("POST", path, userData, AuthData.class);
     }
 
     public UserData loginUser(UserData userData) throws FacadeException {
@@ -97,7 +97,6 @@ public class ServerFacade {
         }
         return response;
     }
-
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
