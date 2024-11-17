@@ -8,6 +8,6 @@ public class Main {
             serverUrl = args[0];
         }
 
-        new Repl(serverUrl).preloginRun();
+        new Repl(serverUrl).preloginRun(serverUrl);
     }
 }

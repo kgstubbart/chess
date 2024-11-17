@@ -4,13 +4,15 @@ import java.util.Scanner;
 
 public class Repl {
     private final PreloginUI preloginUI;
+    private PostloginUI postloginUI;
     private State state = State.LOGGEDOUT;
+    private String authToken = null;
 
     public Repl(String serverUrl) {
         preloginUI = new PreloginUI(serverUrl);
     }
 
-    public void preloginRun() {
+    public void preloginRun(String serverUrl) {
         System.out.println("Welcome to Chess! Read the following information to get started:");
         System.out.print(preloginUI.help());
 
@@ -33,16 +35,17 @@ public class Repl {
             }
         }
         if (state == State.LOGGEDIN) {
-            postloginRun();
+            authToken = preloginUI.getAuthToken();
+            postloginRun(serverUrl);
         }
         else {
             System.out.println();
         }
     }
 
-    public void postloginRun() {
-        System.out.println("\n" + "WOULD NOW BE IN POST");
-        System.out.print(preloginUI.help());
+    public void postloginRun(String serverUrl) {
+        postloginUI = new PostloginUI(serverUrl, authToken);
+        System.out.print("\n" + postloginUI.help());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -51,7 +54,7 @@ public class Repl {
             String line = scanner.nextLine();
 
             try {
-                result = preloginUI.eval(line);
+                result = postloginUI.eval(line);
                 System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result);
 
                 if (line.startsWith("logout")) {
@@ -63,7 +66,8 @@ public class Repl {
             }
         }
         if (state == State.LOGGEDOUT) {
-            preloginRun();
+            authToken = null;
+            preloginRun(serverUrl);
         }
         else {
             System.out.println();

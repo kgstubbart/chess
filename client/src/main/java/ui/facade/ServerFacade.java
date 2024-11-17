@@ -18,14 +18,14 @@ public class ServerFacade {
         return this.makeRequest("POST", path, userData, AuthData.class);
     }
 
-    public UserData loginUser(UserData userData) throws FacadeException {
+    public AuthData loginUser(UserData userData) throws FacadeException {
         var path = "/session";
-        return this.makeRequest("POST", path, userData, UserData.class);
+        return this.makeRequest("POST", path, userData, AuthData.class);
     }
 
-    public void logoutUser(AuthData authData) throws FacadeException {
+    public void logoutUser(String authData) throws FacadeException {
         var path = "/session";
-        this.makeRequest("DELETE", path, authData, AuthData.class);
+        this.makeRequest("DELETE", path, authData, null);
     }
 
     public GameData[] listGames() throws FacadeException {

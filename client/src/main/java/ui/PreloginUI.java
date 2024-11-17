@@ -7,6 +7,7 @@ import ui.facade.*;
 
 public class PreloginUI {
     private final ServerFacade server;
+    private String authToken = null;
 
     public PreloginUI(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -33,7 +34,9 @@ public class PreloginUI {
             var password = params[1];
             var email = params[2];
             UserData newUser = new UserData(username, password, email);
-            server.registerUser(newUser);
+            AuthData authData = server.registerUser(newUser);
+            authToken = authData.authToken();
+            System.out.println(authToken);
             String visitorName = String.join("-", username);
             return String.format("Successfully registered as %s.", visitorName);
         } catch (FacadeException e) {
@@ -49,7 +52,8 @@ public class PreloginUI {
             var username = params[0];
             var password = params[1];
             UserData userData = new UserData(username, password, null);
-            server.registerUser(userData);
+            AuthData authData = server.loginUser(userData);
+            authToken = authData.authToken();
             String visitorName = String.join("-", username);
             return String.format("Successfully logged in as %s.", visitorName);
         } catch (FacadeException e) {
@@ -64,5 +68,9 @@ public class PreloginUI {
                     help - see all available commands
                     quit - shutdown the program
                 """;
+    }
+
+    public String getAuthToken() {
+        return authToken;
     }
 }

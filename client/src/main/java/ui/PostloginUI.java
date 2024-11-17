@@ -7,9 +7,11 @@ import ui.facade.*;
 
 public class PostloginUI {
     private final ServerFacade server;
+    private final String authToken;
 
-    public PostloginUI(String serverUrl) {
+    public PostloginUI(String serverUrl, String authToken) {
         server = new ServerFacade(serverUrl);
+        this.authToken = authToken;
     }
 
     public String eval(String input) throws FacadeException {
@@ -17,27 +19,24 @@ public class PostloginUI {
         var cmd = (tokens.length > 0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch (cmd) {
+            case "logout" -> logout(params);
             case "quit" -> "quit";
             default -> help();
         };
     }
 
-//    public String register(String... params) throws FacadeException {
-//        if (params.length != 3) {
-//            throw new FacadeException(400, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
-//        }
-//        try {
-//            var username = params[0];
-//            var password = params[1];
-//            var email = params[2];
-//            UserData newUser = new UserData(username, password, email);
-//            server.registerUser(newUser);
-//            String visitorName = String.join("-", username);
-//            return String.format("Successfully registered as %s.", visitorName);
-//        } catch (FacadeException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    public String logout(String... params) throws FacadeException {
+        if (params.length != 0) {
+            throw new FacadeException(400, "Logout needs no additional information.");
+        }
+        try {
+            System.out.println(authToken);
+            server.logoutUser(authToken);
+            return "Successfully logged out.";
+        } catch (FacadeException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public String help() {
         return """
