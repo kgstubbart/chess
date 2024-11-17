@@ -54,8 +54,8 @@ public class Repl {
                 result = preloginUI.eval(line);
                 System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result);
 
-                if (line.startsWith("register") || line.startsWith("login")) {
-                    state = State.LOGGEDIN;
+                if (line.startsWith("logout")) {
+                    state = State.LOGGEDOUT;
                 }
             } catch (Throwable e) {
                 var msg = e.toString();
@@ -63,7 +63,7 @@ public class Repl {
             }
         }
         if (state == State.LOGGEDOUT) {
-            //
+            preloginRun();
         }
         else {
             System.out.println();
