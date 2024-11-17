@@ -115,8 +115,10 @@ public class PreloginUI {
     public String help() {
         if (state == State.LOGGEDOUT) {
             return """
-                    - register <USERNAME> <PASSWORD> <EMAIL>
-                    - quit
+                        register <USERNAME> <PASSWORD> <EMAIL> - create an account
+                        login <USERNAME> <PASSWORD> - load previously created account
+                        help - receive available commands
+                        quit - shutdown the program
                     """;
         }
         return """

@@ -10,7 +10,7 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("Welcome to Chess! Login to start.");
+        System.out.println("Welcome to Chess! Read the following information to get started:");
         System.out.print(preloginUI.help());
 
         Scanner scanner = new Scanner(System.in);
