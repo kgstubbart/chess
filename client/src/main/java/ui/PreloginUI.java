@@ -2,18 +2,14 @@ package ui;
 
 import java.util.Arrays;
 
-import com.google.gson.Gson;
 import model.*;
 import ui.facade.*;
 
 public class PreloginUI {
     private final ServerFacade server;
-    private final String serverUrl;
-    private State state = State.LOGGEDOUT;
 
     public PreloginUI(String serverUrl) {
         server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
     }
 
     public String eval(String input) throws FacadeException {
@@ -22,6 +18,7 @@ public class PreloginUI {
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch (cmd) {
             case "register" -> register(params);
+            case "login" -> login(params);
             case "quit" -> "quit";
             default -> help();
         };
@@ -37,7 +34,6 @@ public class PreloginUI {
             var email = params[2];
             UserData newUser = new UserData(username, password, email);
             server.registerUser(newUser);
-            state = State.LOGGEDIN;
             String visitorName = String.join("-", username);
             return String.format("Successfully registered as %s.", visitorName);
         } catch (FacadeException e) {
@@ -45,95 +41,28 @@ public class PreloginUI {
         }
     }
 
-//    public String rescuePet(String... params) throws ResponseException {
-//        assertSignedIn();
-//        if (params.length >= 2) {
-//            var name = params[0];
-//            var type = PetType.valueOf(params[1].toUpperCase());
-//            var pet = new Pet(0, name, type);
-//            pet = server.addPet(pet);
-//            return String.format("You rescued %s. Assigned ID: %d", pet.name(), pet.id());
-//        }
-//        throw new ResponseException(400, "Expected: <name> <CAT|DOG|FROG>");
-//    }
-//
-//    public String listPets() throws ResponseException {
-//        assertSignedIn();
-//        var pets = server.listPets();
-//        var result = new StringBuilder();
-//        var gson = new Gson();
-//        for (var pet : pets) {
-//            result.append(gson.toJson(pet)).append('\n');
-//        }
-//        return result.toString();
-//    }
-//
-//    public String adoptPet(String... params) throws ResponseException {
-//        assertSignedIn();
-//        if (params.length == 1) {
-//            try {
-//                var id = Integer.parseInt(params[0]);
-//                var pet = getPet(id);
-//                if (pet != null) {
-//                    server.deletePet(id);
-//                    return String.format("%s says %s", pet.name(), pet.sound());
-//                }
-//            } catch (NumberFormatException ignored) {
-//            }
-//        }
-//        throw new ResponseException(400, "Expected: <pet id>");
-//    }
-//
-//    public String adoptAllPets() throws ResponseException {
-//        assertSignedIn();
-//        var buffer = new StringBuilder();
-//        for (var pet : server.listPets()) {
-//            buffer.append(String.format("%s says %s%n", pet.name(), pet.sound()));
-//        }
-//
-//        server.deleteAllPets();
-//        return buffer.toString();
-//    }
-//
-//    public String signOut() throws ResponseException {
-//        assertSignedIn();
-//        ws.leavePetShop(visitorName);
-//        ws = null;
-//        state = State.SIGNEDOUT;
-//        return String.format("%s left the shop", visitorName);
-//    }
-//
-//    private Pet getPet(int id) throws ResponseException {
-//        for (var pet : server.listPets()) {
-//            if (pet.id() == id) {
-//                return pet;
-//            }
-//        }
-//        return null;
-//    }
-
-    public String help() {
-        if (state == State.LOGGEDOUT) {
-            return """
-                        register <USERNAME> <PASSWORD> <EMAIL> - create an account
-                        login <USERNAME> <PASSWORD> - load previously created account
-                        help - receive available commands
-                        quit - shutdown the program
-                    """;
+    public String login(String... params) throws FacadeException {
+        if (params.length != 2) {
+            throw new FacadeException(400, "Expected: <USERNAME> <PASSWORD>");
         }
-        return """
-                - list
-                - adopt <pet id>
-                - rescue <name> <CAT|DOG|FROG|FISH>
-                - adoptAll
-                - signOut
-                - quit
-                """;
+        try {
+            var username = params[0];
+            var password = params[1];
+            UserData userData = new UserData(username, password, null);
+            server.registerUser(userData);
+            String visitorName = String.join("-", username);
+            return String.format("Successfully logged in as %s.", visitorName);
+        } catch (FacadeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-//    private void assertSignedIn() throws ResponseException {
-//        if (state == State.SIGNEDOUT) {
-//            throw new ResponseException(400, "You must sign in");
-//        }
-//    }
+    public String help() {
+        return """
+                    register <USERNAME> <PASSWORD> <EMAIL> - create an account
+                    login <USERNAME> <PASSWORD> - load previously created account
+                    help - receive available commands
+                    quit - shutdown the program
+                """;
+    }
 }
