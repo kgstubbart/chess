@@ -4,10 +4,10 @@ import ui.EscapeSequences;
 import java.util.Scanner;
 
 public class Repl {
-    private final PetClient client;
+    private final PreloginUI preloginUI;
 
     public Repl(String serverUrl) {
-        client = new PetClient(serverUrl, this);
+        preloginUI = new PreloginUI(serverUrl);
     }
 
     public void run() {
@@ -21,7 +21,7 @@ public class Repl {
             String line = scanner.nextLine();
 
             try {
-                result = client.eval(line);
+                result = preloginUI.eval(line);
                 System.out.print(BLUE + result);
             } catch (Throwable e) {
                 var msg = e.toString();
