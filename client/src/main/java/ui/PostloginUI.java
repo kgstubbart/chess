@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import chess.ChessGame;
 import model.*;
 import ui.facade.*;
 
@@ -22,6 +23,7 @@ public class PostloginUI {
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch (cmd) {
             case "create" -> create(params);
+            case "join" -> join(params);
             case "list" -> list(params);
             case "logout" -> logout(params);
             case "quit" -> "quit";
@@ -43,6 +45,38 @@ public class PostloginUI {
         }
     }
 
+    public String join(String... params) throws FacadeException {
+        if (params.length != 2) {
+            throw new FacadeException(400, "Create needs a game number and player color.");
+        }
+        try {
+            var gameNumber = params[0];
+            var stringPlayerColor = params[1].toLowerCase();
+            ChessGame.TeamColor playerColor;
+            if (stringPlayerColor.equals("white")) {
+                playerColor = ChessGame.TeamColor.WHITE;
+            }
+            else if (stringPlayerColor.equals("black")) {
+                playerColor = ChessGame.TeamColor.BLACK;
+            }
+            else {
+                throw new FacadeException(400, "Chose either white or black");
+            }
+
+            GameData[] allGames = server.listGames(authToken);
+            if (allGames.length == 0) {
+                return "No games currently available.";
+            }
+            GameData game = allGames[Integer.parseInt(gameNumber) - 1];
+
+            JoinGameData joinGameData = new JoinGameData(playerColor, game.gameID());
+            server.joinGame(joinGameData, authToken);
+            return "Joined game number: " + gameNumber;
+        } catch (FacadeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String list(String... params) throws FacadeException {
         if (params.length != 0) {
             throw new FacadeException(400, "List needs no additional information.");
@@ -58,28 +92,6 @@ public class PostloginUI {
         } catch (FacadeException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private List<String> getGameStrings(GameData[] allGames) {
-        List<String> gameList = new ArrayList<>();
-        for (int i = 0; i < allGames.length; i++) {
-            GameData gameData = allGames[i];
-            String whiteUsername = gameData.whiteUsername();
-            whiteUsername = formatNullUsername(whiteUsername);
-            String blackUsername = gameData.blackUsername();
-            blackUsername = formatNullUsername(blackUsername);
-
-            gameList.add(String.format("%d | Game: %s | White Player: %s | Black Player: %s",
-                    i+1, gameData.gameName(), whiteUsername, blackUsername));
-        }
-        return gameList;
-    }
-
-    private String formatNullUsername(String username) {
-        if (username == null) {
-            return "None";
-        }
-        return username;
     }
 
     public String logout(String... params) throws FacadeException {
@@ -104,5 +116,27 @@ public class PostloginUI {
                     help - see all available commands
                     quit - shutdown the program
                 """;
+    }
+
+    private List<String> getGameStrings(GameData[] allGames) {
+        List<String> gameList = new ArrayList<>();
+        for (int i = 0; i < allGames.length; i++) {
+            GameData gameData = allGames[i];
+            String whiteUsername = gameData.whiteUsername();
+            whiteUsername = formatNullUsername(whiteUsername);
+            String blackUsername = gameData.blackUsername();
+            blackUsername = formatNullUsername(blackUsername);
+
+            gameList.add(String.format("%d | Game: %s | White Player: %s | Black Player: %s",
+                    i+1, gameData.gameName(), whiteUsername, blackUsername));
+        }
+        return gameList;
+    }
+
+    private String formatNullUsername(String username) {
+        if (username == null) {
+            return "None";
+        }
+        return username;
     }
 }
