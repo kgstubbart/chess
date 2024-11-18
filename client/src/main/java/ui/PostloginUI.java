@@ -19,10 +19,25 @@ public class PostloginUI {
         var cmd = (tokens.length > 0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch (cmd) {
+            case "create" -> create(params);
             case "logout" -> logout(params);
             case "quit" -> "quit";
             default -> help();
         };
+    }
+
+    public String create(String... params) throws FacadeException {
+        if (params.length != 1) {
+            throw new FacadeException(400, "Create needs a game name.");
+        }
+        try {
+            var gameName = params[0];
+            GameData gameData = new GameData(0, null, null, gameName, null);
+            server.createGame(gameData, authToken);
+            return "Created game: " + gameName;
+        } catch (FacadeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String logout(String... params) throws FacadeException {
