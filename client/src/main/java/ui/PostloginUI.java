@@ -24,6 +24,7 @@ public class PostloginUI {
         return switch (cmd) {
             case "create" -> create(params);
             case "join" -> join(params);
+            case "observe" -> observe(params);
             case "list" -> list(params);
             case "logout" -> logout(params);
             case "quit" -> "quit";
@@ -72,6 +73,27 @@ public class PostloginUI {
             JoinGameData joinGameData = new JoinGameData(playerColor, game.gameID());
             server.joinGame(joinGameData, authToken);
             return "Joined game number: " + gameNumber;
+        } catch (FacadeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String observe(String... params) throws FacadeException {
+        if (params.length != 1) {
+            throw new FacadeException(400, "Create needs a game number.");
+        }
+        try {
+            var gameNumber = params[0];
+
+            GameData[] allGames = server.listGames(authToken);
+            if (allGames.length == 0) {
+                return "No games currently available.";
+            }
+            GameData game = allGames[Integer.parseInt(gameNumber) - 1];
+
+            JoinGameData joinGameData = new JoinGameData(null, game.gameID());
+            server.joinGame(joinGameData, authToken);
+            return "Observing game number: " + gameNumber;
         } catch (FacadeException e) {
             throw new RuntimeException(e);
         }

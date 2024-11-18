@@ -36,14 +36,14 @@ public class ServerFacade {
         return response.games();
     }
 
-    public GameData createGame(GameData gameData, String authToken) throws FacadeException {
+    public void createGame(GameData gameData, String authToken) throws FacadeException {
         var path = "/game";
-        return this.makeRequest("POST", path, gameData, GameData.class, authToken);
+        this.makeRequest("POST", path, gameData, GameData.class, authToken);
     }
 
-    public GameData joinGame(JoinGameData joinGameData, String authToken) throws FacadeException {
+    public void joinGame(JoinGameData joinGameData, String authToken) throws FacadeException {
         var path = "/game";
-        return this.makeRequest("PUT", path, joinGameData, GameData.class, authToken);
+        this.makeRequest("PUT", path, joinGameData, GameData.class, authToken);
     }
 
     private void clearApplication() throws FacadeException {
