@@ -23,17 +23,17 @@ public class ServerFacade {
         return this.makeRequest("POST", path, userData, AuthData.class, null);
     }
 
-    public void logoutUser(String authData) throws FacadeException {
+    public void logoutUser(String authToken) throws FacadeException {
         var path = "/session";
-        this.makeRequest("DELETE", path, null, null, authData);
+        this.makeRequest("DELETE", path, null, null, authToken);
     }
 
-    public GameData[] listGames() throws FacadeException {
+    public GameData[] listGames(String authToken) throws FacadeException {
         var path = "/game";
-        record listGameResponse(GameData[] gameData) {
+        record listGameResponse(GameData[] games) {
         }
-        var response = this.makeRequest("GET", path, null, listGameResponse.class, null);
-        return response.gameData();
+        var response = this.makeRequest("GET", path, null, listGameResponse.class, authToken);
+        return response.games();
     }
 
     public GameData createGame(GameData gameData, String authData) throws FacadeException {

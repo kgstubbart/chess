@@ -1,6 +1,8 @@
 package ui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import model.*;
 import ui.facade.*;
@@ -20,6 +22,7 @@ public class PostloginUI {
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch (cmd) {
             case "create" -> create(params);
+            case "list" -> list(params);
             case "logout" -> logout(params);
             case "quit" -> "quit";
             default -> help();
@@ -38,6 +41,45 @@ public class PostloginUI {
         } catch (FacadeException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String list(String... params) throws FacadeException {
+        if (params.length != 0) {
+            throw new FacadeException(400, "List needs no additional information.");
+        }
+        try {
+            GameData[] allGames = server.listGames(authToken);
+            if (allGames.length == 0) {
+                return "No games currently available.";
+            }
+
+            List<String> gameList = getGameStrings(allGames);
+            return String.join("\n" ,gameList);
+        } catch (FacadeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private List<String> getGameStrings(GameData[] allGames) {
+        List<String> gameList = new ArrayList<>();
+        for (int i = 0; i < allGames.length; i++) {
+            GameData gameData = allGames[i];
+            String whiteUsername = gameData.whiteUsername();
+            whiteUsername = formatNullUsername(whiteUsername);
+            String blackUsername = gameData.blackUsername();
+            blackUsername = formatNullUsername(blackUsername);
+
+            gameList.add(String.format("%d | Game: %s | White Player: %s | Black Player: %s",
+                    i+1, gameData.gameName(), whiteUsername, blackUsername));
+        }
+        return gameList;
+    }
+
+    private String formatNullUsername(String username) {
+        if (username == null) {
+            return "None";
+        }
+        return username;
     }
 
     public String logout(String... params) throws FacadeException {
