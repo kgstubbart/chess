@@ -36,7 +36,6 @@ public class PreloginUI {
             UserData newUser = new UserData(username, password, email);
             AuthData authData = server.registerUser(newUser);
             authToken = authData.authToken();
-            System.out.println(authToken);
             String visitorName = String.join("-", username);
             return String.format("Successfully registered as %s.", visitorName);
         } catch (FacadeException e) {

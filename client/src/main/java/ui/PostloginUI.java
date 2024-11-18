@@ -30,7 +30,6 @@ public class PostloginUI {
             throw new FacadeException(400, "Logout needs no additional information.");
         }
         try {
-            System.out.println(authToken);
             server.logoutUser(authToken);
             return "Successfully logged out.";
         } catch (FacadeException e) {
