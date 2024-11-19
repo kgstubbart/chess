@@ -11,6 +11,7 @@ import service.ServiceException;
 import ui.facade.FacadeException;
 import ui.facade.ServerFacade;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -154,39 +155,39 @@ public class ServerFacadeTests {
     void negativeJoinGame() {
         FacadeException exception = assertThrows(
                 FacadeException.class,
-                () -> facade.joinGame(new JoinGameData(ChessGame.TeamColor.WHITE, 9876), "fake_token"),
+                () -> facade.joinGame(new JoinGameData(ChessGame.TeamColor.WHITE, 9876), "not_real_token"),
                 "Expected FacadeException due to invalid auth token."
         );
         assertEquals("400: Error: bad request", exception.getMessage());
     }
 
-//    @Test
-//    void positiveListGames() throws FacadeException {
-//        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
-//        USER_SERVICE.registerUser(userData);
-//        UserData userLoginData = new UserData("mistborn", "stormlight", null);
-//        AuthData authData = USER_SERVICE.loginUser(userLoginData);
-//        String authToken = authData.authToken();
-//
-//        Map<String, GameData> expectedGames = new HashMap<>();
-//        expectedGames.put("1", GAME_SERVICE.createGame(authToken, new GameData(0, null, null, "First List Game", null)));
-//        expectedGames.put("2", GAME_SERVICE.createGame(authToken, new GameData(0, null, null, "Second List Game", null)));
-//        expectedGames.put("3", GAME_SERVICE.createGame(authToken, new GameData(0, null, null, "Third List Game", null)));
-//
-//        var actual = GAME_SERVICE.listGames(authToken);
-//        assertIterableEquals(expectedGames.values(), actual);
-//    }
-//
-//    @Test
-//    void negativeListGames() {
-//        ServiceException exception = assertThrows(
-//                ServiceException.class,
-//                () -> GAME_SERVICE.listGames("fake_token"),
-//                "Expected ServiceException due to invalid auth token."
-//        );
-//        assertEquals("Error: unauthorized", exception.getMessage());
-//    }
-//
+    @Test
+    void positiveListGames() throws FacadeException {
+        UserData userData = new UserData("captain", "america", "shield@mail");
+        facade.registerUser(userData);
+        UserData userLoginData = new UserData("captain", "america", null);
+        AuthData authData = facade.loginUser(userLoginData);
+        String authToken = authData.authToken();
+
+        Map<String, GameData> expectedGames = new HashMap<>();
+        expectedGames.put("1", facade.createGame(new GameData(0, null, null, "First List Game", null), authToken));
+        expectedGames.put("2", facade.createGame(new GameData(0, null, null, "Second List Game", null), authToken));
+        expectedGames.put("3", facade.createGame(new GameData(0, null, null, "Third List Game", null), authToken));
+
+        var actual = facade.listGames(authToken);
+        assertIterableEquals(expectedGames.values(), Arrays.asList(actual));
+    }
+
+    @Test
+    void negativeListGames() {
+        FacadeException exception = assertThrows(
+                FacadeException.class,
+                () -> facade.listGames("not_real_token"),
+                "Expected ServiceException due to invalid auth token."
+        );
+        assertEquals("400: Error: bad request", exception.getMessage());
+    }
+
 //    @Test
 //    void clearUsersGamesAuths() throws FacadeException {
 //        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
