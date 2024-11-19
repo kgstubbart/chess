@@ -49,7 +49,7 @@ public class Repl {
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while ((!result.equals("quit")) && (state != State.LOGGEDOUT)) {
+        while ((state != State.LOGGEDOUT)) {
             printPrompt();
             String line = scanner.nextLine();
 
@@ -65,14 +65,9 @@ public class Repl {
                 System.out.print(msg);
             }
         }
-        if (state == State.LOGGEDOUT) {
-            authToken = null;
-            preloginUI = new PreloginUI(serverUrl);
-            preloginRun(serverUrl);
-        }
-        else {
-            System.out.println();
-        }
+        authToken=null;
+        preloginUI = new PreloginUI(serverUrl);
+        preloginRun(serverUrl);
     }
 
     private void printPrompt() {

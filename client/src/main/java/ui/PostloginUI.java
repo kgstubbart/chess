@@ -27,7 +27,6 @@ public class PostloginUI {
             case "observe" -> observe(params);
             case "list" -> list(params);
             case "logout" -> logout(params);
-            case "quit" -> "quit";
             default -> help();
         };
     }
@@ -154,9 +153,7 @@ public class PostloginUI {
                 EscapeSequences.SET_TEXT_COLOR_BLUE + "    logout" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY +
                 " - log out of current account" + EscapeSequences.RESET_TEXT_COLOR + "\n" +
                 EscapeSequences.SET_TEXT_COLOR_BLUE + "    help" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY +
-                " - see all available commands" + EscapeSequences.RESET_TEXT_COLOR + "\n" +
-                EscapeSequences.SET_TEXT_COLOR_BLUE + "    quit" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY +
-                " - shutdown the program" + EscapeSequences.RESET_TEXT_COLOR + "\n";
+                " - see all available commands" + EscapeSequences.RESET_TEXT_COLOR + "\n";
     }
 
     private List<String> getGameStrings(GameData[] allGames) {
