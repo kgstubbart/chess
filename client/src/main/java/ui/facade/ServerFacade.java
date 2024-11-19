@@ -16,68 +16,67 @@ public class ServerFacade {
 
     public AuthData registerUser(UserData userData) throws FacadeException {
         try {
-            var path="/user";
+            var path = "/user";
             return this.makeRequest("POST", path, userData, AuthData.class, null);
         } catch (FacadeException e) {
-            throw new FacadeException(400, "Error: bad request");
+            throw new FacadeException(400, "Error: bad register request");
         }
     }
 
     public AuthData loginUser(UserData userData) throws FacadeException {
         try {
-            var path="/session";
+            var path = "/session";
             return this.makeRequest("POST", path, userData, AuthData.class, null);
         } catch (FacadeException e) {
-            throw new FacadeException(400, "Error: bad request");
+            throw new FacadeException(400, "Error: bad login request");
         }
     }
 
     public void logoutUser(String authToken) throws FacadeException {
         try {
-            var path="/session";
+            var path = "/session";
             this.makeRequest("DELETE", path, null, null, authToken);
         } catch (FacadeException e) {
-            throw new FacadeException(400, "Error: bad request");
+            throw new FacadeException(400, "Error: bad logout request");
         }
     }
 
     public GameData[] listGames(String authToken) throws FacadeException {
         try {
-            var path="/game";
+            var path = "/game";
             record listGameResponse(GameData[] games) {
             }
-            var response=this.makeRequest("GET", path, null, listGameResponse.class, authToken);
+            var response = this.makeRequest("GET", path, null, listGameResponse.class, authToken);
             return response.games();
         } catch (FacadeException e) {
-            throw new FacadeException(400, "Error: bad request");
+            throw new FacadeException(400, "Error: bad list request");
         }
     }
 
     public GameData createGame(GameData gameData, String authToken) throws FacadeException {
         try {
-            var path="/game";
+            var path = "/game";
             return this.makeRequest("POST", path, gameData, GameData.class, authToken);
         } catch (FacadeException e) {
-            throw new FacadeException(400, "Error: bad request");
+            throw new FacadeException(400, "Error: bad create request");
         }
     }
 
     public GameData joinGame(JoinGameData joinGameData, String authToken) throws FacadeException {
         try {
-            var path="/game";
+            var path = "/game";
             return this.makeRequest("PUT", path, joinGameData, GameData.class, authToken);
         } catch (FacadeException e) {
-            throw new FacadeException(400, "Error: bad request");
+            throw new FacadeException(400, "Error: bad join request");
         }
     }
 
     public void clearApplication(String clearPassword) throws FacadeException {
         if (Objects.equals(clearPassword, "mandostormsslug")) {
-            var path="/db";
+            var path = "/db";
             this.makeRequest("DELETE", path, null, null, null);
-        }
-        else {
-            throw new FacadeException(400, "Error: bad request");
+        } else {
+            throw new FacadeException(400, "Error: bad clear request");
         }
     }
 

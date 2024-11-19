@@ -11,10 +11,7 @@ import service.ServiceException;
 import ui.facade.FacadeException;
 import ui.facade.ServerFacade;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -62,7 +59,7 @@ public class ServerFacadeTests {
                 () -> facade.registerUser(userData),
                 "Expected FacadeException due to invalid user data."
         );
-        assertEquals("400: Error: bad request", exception.getMessage());
+        assertEquals("400: Error: bad register request", exception.getMessage());
     }
 
     @Test
@@ -87,7 +84,7 @@ public class ServerFacadeTests {
                 () -> facade.loginUser(userLoginData),
                 "Expected FacadeException due to invalid user data."
         );
-        assertEquals("400: Error: bad request", exception.getMessage());
+        assertEquals("400: Error: bad login request", exception.getMessage());
     }
 
     @Test
@@ -110,7 +107,7 @@ public class ServerFacadeTests {
                 () -> facade.logoutUser("not_real_token"),
                 "Expected FacadeException due to invalid auth token."
         );
-        assertEquals("400: Error: bad request", exception.getMessage());
+        assertEquals("400: Error: bad logout request", exception.getMessage());
     }
 
     @Test
@@ -134,7 +131,7 @@ public class ServerFacadeTests {
                         "Invalid Create Game", null), "not_real_token"),
                 "Expected FacadeException due to invalid auth token."
         );
-        assertEquals("400: Error: bad request", exception.getMessage());
+        assertEquals("400: Error: bad create request", exception.getMessage());
     }
 
     @Test
@@ -158,7 +155,7 @@ public class ServerFacadeTests {
                 () -> facade.joinGame(new JoinGameData(ChessGame.TeamColor.WHITE, 9876), "not_real_token"),
                 "Expected FacadeException due to invalid auth token."
         );
-        assertEquals("400: Error: bad request", exception.getMessage());
+        assertEquals("400: Error: bad join request", exception.getMessage());
     }
 
     @Test
@@ -183,24 +180,40 @@ public class ServerFacadeTests {
         FacadeException exception = assertThrows(
                 FacadeException.class,
                 () -> facade.listGames("not_real_token"),
-                "Expected ServiceException due to invalid auth token."
+                "Expected FacadeException due to invalid auth token."
         );
-        assertEquals("400: Error: bad request", exception.getMessage());
+        assertEquals("400: Error: bad list request", exception.getMessage());
     }
 
-//    @Test
-//    void clearUsersGamesAuths() throws FacadeException {
-//        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
-//        USER_SERVICE.registerUser(userData);
-//        UserData userLoginData = new UserData("mistborn", "stormlight", null);
-//        AuthData authData = USER_SERVICE.loginUser(userLoginData);
-//        String authToken = authData.authToken();
-//        GAME_SERVICE.clearGames();
-//        Collection<GameData> games = GAME_SERVICE.listGames(authToken);
-//        assertTrue(games.isEmpty());
-//
-//        USER_SERVICE.clearUsers();
-//        assertNull(USER_SERVICE.userDataAccess.getUser(userData.username(), userData.password()));
-//        assertNull(USER_SERVICE.authDataAccess.getAuth(authToken));
-//    }
+    @Test
+    void positiveClearApplication() throws FacadeException {
+        UserData userData = new UserData("captain", "america", "shield@mail");
+        facade.registerUser(userData);
+        UserData userLoginData = new UserData("captain", "america", null);
+        AuthData authData = facade.loginUser(userLoginData);
+        String authToken = authData.authToken();
+        facade.createGame(new GameData(0, null, null, "Positive Clear Game", null), authToken);
+        facade.clearApplication("mandostormsslug");
+        facade.registerUser(userData);
+        authData = facade.loginUser(userLoginData);
+        authToken = authData.authToken();
+        Collection<GameData> games = List.of(facade.listGames(authToken));
+        assertTrue(games.isEmpty());
+    }
+
+    @Test
+    void negativeClearApplication() throws FacadeException {
+        UserData userData = new UserData("captain", "america", "shield@mail");
+        facade.registerUser(userData);
+        UserData userLoginData = new UserData("captain", "america", null);
+        AuthData authData = facade.loginUser(userLoginData);
+        String authToken = authData.authToken();
+        facade.createGame(new GameData(0, null, null, "Positive Clear Game", null), authToken);
+        FacadeException exception = assertThrows(
+                FacadeException.class,
+                () -> facade.clearApplication("wrong_admin_password"),
+                "Expected FacadeException due to invalid auth token."
+        );
+        assertEquals("400: Error: bad clear request", exception.getMessage());
+    }
 }
