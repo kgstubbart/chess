@@ -59,7 +59,7 @@ public class ServerFacadeTests {
                 () -> facade.registerUser(userData),
                 "Expected FacadeException due to invalid user data."
         );
-        assertEquals("400: Error: bad register request", exception.getMessage());
+        assertEquals("\u001B[38;5;160mError: bad register request\u001B[39m", exception.getMessage());
     }
 
     @Test
@@ -84,7 +84,7 @@ public class ServerFacadeTests {
                 () -> facade.loginUser(userLoginData),
                 "Expected FacadeException due to invalid user data."
         );
-        assertEquals("400: Error: bad login request", exception.getMessage());
+        assertEquals("\u001B[38;5;160mError: bad login request\u001B[39m", exception.getMessage());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class ServerFacadeTests {
                 () -> facade.logoutUser("not_real_token"),
                 "Expected FacadeException due to invalid auth token."
         );
-        assertEquals("400: Error: bad logout request", exception.getMessage());
+        assertEquals("\u001B[38;5;160mError: bad logout request\u001B[39m", exception.getMessage());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class ServerFacadeTests {
                         "Invalid Create Game", null), "not_real_token"),
                 "Expected FacadeException due to invalid auth token."
         );
-        assertEquals("400: Error: bad create request", exception.getMessage());
+        assertEquals("\u001B[38;5;160mError: bad create request\u001B[39m", exception.getMessage());
     }
 
     @Test
@@ -155,7 +155,7 @@ public class ServerFacadeTests {
                 () -> facade.joinGame(new JoinGameData(ChessGame.TeamColor.WHITE, 9876), "not_real_token"),
                 "Expected FacadeException due to invalid auth token."
         );
-        assertEquals("400: Error: bad join request", exception.getMessage());
+        assertEquals("\u001B[38;5;160mError: bad join request\u001B[39m", exception.getMessage());
     }
 
     @Test
@@ -182,7 +182,7 @@ public class ServerFacadeTests {
                 () -> facade.listGames("not_real_token"),
                 "Expected FacadeException due to invalid auth token."
         );
-        assertEquals("400: Error: bad list request", exception.getMessage());
+        assertEquals("\u001B[38;5;160mError: bad list request\u001B[39m", exception.getMessage());
     }
 
     @Test
@@ -214,6 +214,6 @@ public class ServerFacadeTests {
                 () -> facade.clearApplication("wrong_admin_password"),
                 "Expected FacadeException due to invalid auth token."
         );
-        assertEquals("400: Error: bad clear request", exception.getMessage());
+        assertEquals("\u001B[38;5;160mError: bad clear request\u001B[39m", exception.getMessage());
     }
 }
