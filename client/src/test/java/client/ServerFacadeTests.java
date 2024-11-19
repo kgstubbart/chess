@@ -34,7 +34,7 @@ public class ServerFacadeTests {
 
     @BeforeEach
     void clear() throws FacadeException {
-        facade.clearApplication();
+        facade.clearApplication("mandostormsslug");
     }
 
     @AfterAll
@@ -64,31 +64,31 @@ public class ServerFacadeTests {
         assertEquals("400: Error: bad request", exception.getMessage());
     }
 
-//    @Test
-//    void positiveLoginUser() throws FacadeException {
-//        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
-//        USER_SERVICE.registerUser(userData);
-//        UserData userLoginData = new UserData("mistborn", "stormlight", null);
-//        AuthData authData = USER_SERVICE.loginUser(userLoginData);
-//
-//        assertEquals(userData.username(), authData.username());
-//        assertNotNull(authData.authToken());
-//    }
-//
-//    @Test
-//    void negativeLoginUser() throws FacadeException {
-//        UserData userData = new UserData("playstation", "switch", "xbox@mail");
-//        USER_SERVICE.registerUser(userData);
-//        UserData userLoginData = new UserData("playstation", "pc", null);
-//
-//        ServiceException exception = assertThrows(
-//                ServiceException.class,
-//                () -> USER_SERVICE.loginUser(userLoginData),
-//                "Expected ServiceException due to invalid user data."
-//        );
-//        assertEquals("Error: unauthorized", exception.getMessage());
-//    }
-//
+    @Test
+    void positiveLoginUser() throws FacadeException {
+        UserData userData = new UserData("captain", "america", "shield@mail");
+        facade.registerUser(userData);
+        UserData userLoginData = new UserData("captain", "america", null);
+        AuthData authData = facade.loginUser(userLoginData);
+
+        assertEquals(userData.username(), authData.username());
+        assertNotNull(authData.authToken());
+    }
+
+    @Test
+    void negativeLoginUser() throws FacadeException {
+        UserData userData = new UserData("iron", "man", "suit@mail");
+        facade.registerUser(userData);
+        UserData userLoginData = new UserData("iron", "patriot", null);
+
+        FacadeException exception = assertThrows(
+                FacadeException.class,
+                () -> facade.loginUser(userLoginData),
+                "Expected FacadeException due to invalid user data."
+        );
+        assertEquals("400: Error: bad request", exception.getMessage());
+    }
+
 //    @Test
 //    void positiveLogoutUser() throws FacadeException {
 //        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
