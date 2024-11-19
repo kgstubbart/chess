@@ -89,75 +89,77 @@ public class ServerFacadeTests {
         assertEquals("400: Error: bad request", exception.getMessage());
     }
 
-//    @Test
-//    void positiveLogoutUser() throws FacadeException {
-//        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
-//        USER_SERVICE.registerUser(userData);
-//        UserData userLoginData = new UserData("mistborn", "stormlight", null);
-//        AuthData authData = USER_SERVICE.loginUser(userLoginData);
-//        String authToken = authData.authToken();
-//        USER_SERVICE.logoutUser(authToken);
-//
-//        assertNull(USER_SERVICE.authDataAccess.getAuth(authToken));
-//    }
-//
-//    @Test
-//    void negativeLogoutUser() {
-//        ServiceException exception = assertThrows(
-//                ServiceException.class,
-//                () -> USER_SERVICE.logoutUser("fake_token"),
-//                "Expected ServiceException due to invalid auth token."
-//        );
-//        assertEquals("Error: unauthorized", exception.getMessage());
-//    }
-//
-//    @Test
-//    void positiveCreateGame() throws FacadeException {
-//        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
-//        USER_SERVICE.registerUser(userData);
-//        UserData userLoginData = new UserData("mistborn", "stormlight", null);
-//        AuthData authData = USER_SERVICE.loginUser(userLoginData);
-//        String authToken = authData.authToken();
-//        GameData gameName = new GameData(0, null, null, "Good Create Game", null);
-//        GameData game = GAME_SERVICE.createGame(authToken, gameName);
-//
-//        assertTrue(game.gameID() > 0);
-//    }
-//
-//    @Test
-//    void negativeCreateGame() {
-//        ServiceException exception = assertThrows(
-//                ServiceException.class,
-//                () -> GAME_SERVICE.createGame("fake_token", new GameData(0, null, null, "Bad Create Game", null)),
-//                "Expected ServiceException due to invalid auth token."
-//        );
-//        assertEquals("Error: unauthorized", exception.getMessage());
-//    }
-//
-//    @Test
-//    void positiveJoinGame() throws FacadeException {
-//        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");
-//        USER_SERVICE.registerUser(userData);
-//        UserData userLoginData = new UserData("mistborn", "stormlight", null);
-//        AuthData authData = USER_SERVICE.loginUser(userLoginData);
-//        String authToken = authData.authToken();
-//        GameData gameName = new GameData(0, null, null, "Good Join Game", null);
-//        GameData gameData = GAME_SERVICE.createGame(authToken, gameName);
-//        GameData joinedGame = GAME_SERVICE.joinGame(authToken, new JoinGameData(ChessGame.TeamColor.BLACK, gameData.gameID()));
-//
-//        assertEquals(joinedGame.blackUsername(), "mistborn");
-//    }
-//
-//    @Test
-//    void negativeJoinGame() {
-//        ServiceException exception = assertThrows(
-//                ServiceException.class,
-//                () -> GAME_SERVICE.joinGame("fake_token", new JoinGameData(ChessGame.TeamColor.WHITE, 9876)),
-//                "Expected ServiceException due to invalid auth token."
-//        );
-//        assertEquals("Error: bad request", exception.getMessage());
-//    }
-//
+    @Test
+    void positiveLogoutUser() throws FacadeException {
+        UserData userData = new UserData("captain", "america", "shield@mail");
+        facade.registerUser(userData);
+        UserData userLoginData = new UserData("captain", "america", null);
+        AuthData authData = facade.loginUser(userLoginData);
+        String authToken = authData.authToken();
+        facade.logoutUser(authToken);
+        AuthData newAuthData = facade.loginUser(userLoginData);
+
+        assertNotEquals(authToken, newAuthData.authToken());
+    }
+
+    @Test
+    void negativeLogoutUser() {
+        FacadeException exception = assertThrows(
+                FacadeException.class,
+                () -> facade.logoutUser("not_real_token"),
+                "Expected FacadeException due to invalid auth token."
+        );
+        assertEquals("400: Error: bad request", exception.getMessage());
+    }
+
+    @Test
+    void positiveCreateGame() throws FacadeException {
+        UserData userData = new UserData("captain", "america", "shield@mail");
+        facade.registerUser(userData);
+        UserData userLoginData = new UserData("captain", "america", null);
+        AuthData authData = facade.loginUser(userLoginData);
+        String authToken = authData.authToken();
+        GameData gameName = new GameData(0, null, null, "Valid Create Game", null);
+        GameData game = facade.createGame(gameName, authToken);
+
+        assertTrue(game.gameID() > 0);
+    }
+
+    @Test
+    void negativeCreateGame() {
+        FacadeException exception = assertThrows(
+                FacadeException.class,
+                () -> facade.createGame(new GameData(0, null, null,
+                        "Invalid Create Game", null), "not_real_token"),
+                "Expected FacadeException due to invalid auth token."
+        );
+        assertEquals("400: Error: bad request", exception.getMessage());
+    }
+
+    @Test
+    void positiveJoinGame() throws FacadeException {
+        UserData userData = new UserData("captain", "america", "shield@mail");
+        facade.registerUser(userData);
+        UserData userLoginData = new UserData("captain", "america", null);
+        AuthData authData = facade.loginUser(userLoginData);
+        String authToken = authData.authToken();
+        GameData gameName = new GameData(0, null, null, "Valid Join Game", null);
+        GameData gameData = facade.createGame(gameName, authToken);
+        GameData joinedGame = facade.joinGame(new JoinGameData(ChessGame.TeamColor.BLACK, gameData.gameID()), authToken);
+
+        assertEquals(joinedGame.blackUsername(), "captain");
+    }
+
+    @Test
+    void negativeJoinGame() {
+        FacadeException exception = assertThrows(
+                FacadeException.class,
+                () -> facade.joinGame(new JoinGameData(ChessGame.TeamColor.WHITE, 9876), "fake_token"),
+                "Expected FacadeException due to invalid auth token."
+        );
+        assertEquals("400: Error: bad request", exception.getMessage());
+    }
+
 //    @Test
 //    void positiveListGames() throws FacadeException {
 //        UserData userData = new UserData("mistborn", "stormlight", "sunlight@mail");

@@ -53,19 +53,19 @@ public class ServerFacade {
         }
     }
 
-    public void createGame(GameData gameData, String authToken) throws FacadeException {
+    public GameData createGame(GameData gameData, String authToken) throws FacadeException {
         try {
             var path="/game";
-            this.makeRequest("POST", path, gameData, GameData.class, authToken);
+            return this.makeRequest("POST", path, gameData, GameData.class, authToken);
         } catch (FacadeException e) {
             throw new FacadeException(400, "Error: bad request");
         }
     }
 
-    public void joinGame(JoinGameData joinGameData, String authToken) throws FacadeException {
+    public GameData joinGame(JoinGameData joinGameData, String authToken) throws FacadeException {
         try {
             var path="/game";
-            this.makeRequest("PUT", path, joinGameData, GameData.class, authToken);
+            return this.makeRequest("PUT", path, joinGameData, GameData.class, authToken);
         } catch (FacadeException e) {
             throw new FacadeException(400, "Error: bad request");
         }
