@@ -10,7 +10,7 @@ import ui.facade.*;
 
 public class PostloginUI {
     private final ServerFacade server;
-    private final String authToken;
+    private String authToken;
 
     public PostloginUI(String serverUrl, String authToken) {
         server = new ServerFacade(serverUrl);
@@ -34,7 +34,7 @@ public class PostloginUI {
 
     public String create(String... params) throws FacadeException {
         if (params.length != 1) {
-            return EscapeSequences.SET_TEXT_COLOR_RED + "Create needs a game name." + EscapeSequences.RESET_TEXT_COLOR + "\n";
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Expected: <NAME>" + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
         try {
             var gameName = params[0];
@@ -48,7 +48,7 @@ public class PostloginUI {
 
     public String join(String... params) throws FacadeException {
         if (params.length != 2) {
-            return EscapeSequences.SET_TEXT_COLOR_RED + "Create needs a game number and player color." + EscapeSequences.RESET_TEXT_COLOR + "\n";
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Expected: <ID> <WHITE/BLACK>" + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
         try {
             var gameNumber = params[0];
@@ -61,12 +61,15 @@ public class PostloginUI {
                 playerColor = ChessGame.TeamColor.BLACK;
             }
             else {
-                return EscapeSequences.SET_TEXT_COLOR_RED + "Chose either white or black" + EscapeSequences.RESET_TEXT_COLOR + "\n";
+                return EscapeSequences.SET_TEXT_COLOR_RED + "Chose either white or black." + EscapeSequences.RESET_TEXT_COLOR + "\n";
             }
 
             GameData[] allGames = server.listGames(authToken);
             if (allGames.length == 0) {
-                return "No games currently available.";
+                return EscapeSequences.SET_TEXT_COLOR_RED + "No games currently available." + EscapeSequences.RESET_TEXT_COLOR + "\n";
+            }
+            if ((Integer.parseInt(gameNumber) <= 0) || (Integer.parseInt(gameNumber) > allGames.length)) {
+                return EscapeSequences.SET_TEXT_COLOR_RED + "Game ID does not exist." + EscapeSequences.RESET_TEXT_COLOR + "\n";
             }
             GameData game = allGames[Integer.parseInt(gameNumber) - 1];
 
@@ -82,7 +85,7 @@ public class PostloginUI {
 
     public String observe(String... params) throws FacadeException {
         if (params.length != 1) {
-            return EscapeSequences.SET_TEXT_COLOR_RED + "Create needs a game number." + EscapeSequences.RESET_TEXT_COLOR + "\n";
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Expected: <ID>" + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
         try {
             var gameNumber = params[0];
@@ -91,7 +94,11 @@ public class PostloginUI {
             if (allGames.length == 0) {
                 return EscapeSequences.SET_TEXT_COLOR_RED + "No games currently available." + EscapeSequences.RESET_TEXT_COLOR + "\n";
             }
+            if ((Integer.parseInt(gameNumber) <= 0) || (Integer.parseInt(gameNumber) > allGames.length)) {
+                return EscapeSequences.SET_TEXT_COLOR_RED + "Game number does not exist." + EscapeSequences.RESET_TEXT_COLOR + "\n";
+            }
             GameData game = allGames[Integer.parseInt(gameNumber) - 1];
+
             JoinGameData joinGameData = new JoinGameData(ChessGame.TeamColor.OBSERVER, game.gameID());
             server.joinGame(joinGameData, authToken);
             ChessBoard.printWhitePovBoard();
@@ -113,7 +120,7 @@ public class PostloginUI {
             }
 
             List<String> gameList = getGameStrings(allGames);
-            return String.join("\n" ,gameList);
+            return String.join("\n" ,gameList) + "\n";
         } catch (FacadeException e) {
             return e.getMessage() + "\n";
         }
@@ -125,7 +132,11 @@ public class PostloginUI {
         }
         try {
             server.logoutUser(authToken);
-            return "Successfully logged out." + "\n";
+            authToken = null;
+            return """
+                    Successfully logged out.
+                    
+                    """;
         } catch (FacadeException e) {
             return e.getMessage() + "\n";
         }
@@ -168,5 +179,9 @@ public class PostloginUI {
             return "None";
         }
         return username;
+    }
+
+    public String getAuthToken() {
+        return authToken;
     }
 }

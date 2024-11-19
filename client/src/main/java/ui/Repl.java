@@ -3,7 +3,7 @@ package ui;
 import java.util.Scanner;
 
 public class Repl {
-    private final PreloginUI preloginUI;
+    private PreloginUI preloginUI;
     private PostloginUI postloginUI;
     private State state = State.LOGGEDOUT;
     private String authToken = null;
@@ -26,7 +26,7 @@ public class Repl {
                 result = preloginUI.eval(line);
                 System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result);
 
-                if (line.startsWith("register") || line.startsWith("login")) {
+                if ((line.startsWith("register") || line.startsWith("login")) && (preloginUI.getAuthToken() != null)) {
                     state = State.LOGGEDIN;
                 }
             } catch (Throwable e) {
@@ -57,7 +57,7 @@ public class Repl {
                 result = postloginUI.eval(line);
                 System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result);
 
-                if (line.startsWith("logout")) {
+                if ((line.startsWith("logout")) && (postloginUI.getAuthToken() == null)) {
                     state = State.LOGGEDOUT;
                 }
             } catch (Throwable e) {
@@ -67,6 +67,7 @@ public class Repl {
         }
         if (state == State.LOGGEDOUT) {
             authToken = null;
+            preloginUI = new PreloginUI(serverUrl);
             preloginRun(serverUrl);
         }
         else {
