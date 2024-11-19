@@ -34,7 +34,7 @@ public class PostloginUI {
 
     public String create(String... params) throws FacadeException {
         if (params.length != 1) {
-            throw new FacadeException(400, "Create needs a game name.");
+            throw new FacadeException("Create needs a game name.");
         }
         try {
             var gameName = params[0];
@@ -48,7 +48,7 @@ public class PostloginUI {
 
     public String join(String... params) throws FacadeException {
         if (params.length != 2) {
-            throw new FacadeException(400, "Create needs a game number and player color.");
+            throw new FacadeException("Create needs a game number and player color.");
         }
         try {
             var gameNumber = params[0];
@@ -61,7 +61,7 @@ public class PostloginUI {
                 playerColor = ChessGame.TeamColor.BLACK;
             }
             else {
-                throw new FacadeException(400, "Chose either white or black");
+                throw new FacadeException("Chose either white or black");
             }
 
             GameData[] allGames = server.listGames(authToken);
@@ -82,7 +82,7 @@ public class PostloginUI {
 
     public String observe(String... params) throws FacadeException {
         if (params.length != 1) {
-            throw new FacadeException(400, "Create needs a game number.");
+            throw new FacadeException("Create needs a game number.");
         }
         try {
             var gameNumber = params[0];
@@ -92,20 +92,19 @@ public class PostloginUI {
                 return "No games currently available.";
             }
             GameData game = allGames[Integer.parseInt(gameNumber) - 1];
-
-            JoinGameData joinGameData = new JoinGameData(null, game.gameID());
+            JoinGameData joinGameData = new JoinGameData(ChessGame.TeamColor.OBSERVER, game.gameID());
             server.joinGame(joinGameData, authToken);
             ChessBoard.printWhitePovBoard();
             ChessBoard.printBlackPovBoard();
             return "Observing game number: " + gameNumber;
         } catch (FacadeException e) {
-            throw new RuntimeException(e);
+            return String.valueOf(e.getMessage());
         }
     }
 
     public String list(String... params) throws FacadeException {
         if (params.length != 0) {
-            throw new FacadeException(400, "List needs no additional information.");
+            throw new FacadeException("List needs no additional information.");
         }
         try {
             GameData[] allGames = server.listGames(authToken);
@@ -122,7 +121,7 @@ public class PostloginUI {
 
     public String logout(String... params) throws FacadeException {
         if (params.length != 0) {
-            throw new FacadeException(400, "Logout needs no additional information.");
+            throw new FacadeException("Logout needs no additional information.");
         }
         try {
             server.logoutUser(authToken);

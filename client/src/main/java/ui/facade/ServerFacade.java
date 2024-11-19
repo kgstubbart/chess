@@ -19,7 +19,7 @@ public class ServerFacade {
             var path = "/user";
             return this.makeRequest("POST", path, userData, AuthData.class, null);
         } catch (FacadeException e) {
-            throw new FacadeException(400, "Error: bad register request");
+            throw new FacadeException("Error: bad register request");
         }
     }
 
@@ -28,7 +28,7 @@ public class ServerFacade {
             var path = "/session";
             return this.makeRequest("POST", path, userData, AuthData.class, null);
         } catch (FacadeException e) {
-            throw new FacadeException(400, "Error: bad login request");
+            throw new FacadeException("Error: bad login request");
         }
     }
 
@@ -37,7 +37,7 @@ public class ServerFacade {
             var path = "/session";
             this.makeRequest("DELETE", path, null, null, authToken);
         } catch (FacadeException e) {
-            throw new FacadeException(400, "Error: bad logout request");
+            throw new FacadeException("Error: bad logout request");
         }
     }
 
@@ -49,7 +49,7 @@ public class ServerFacade {
             var response = this.makeRequest("GET", path, null, listGameResponse.class, authToken);
             return response.games();
         } catch (FacadeException e) {
-            throw new FacadeException(400, "Error: bad list request");
+            throw new FacadeException("Error: bad list request");
         }
     }
 
@@ -58,7 +58,7 @@ public class ServerFacade {
             var path = "/game";
             return this.makeRequest("POST", path, gameData, GameData.class, authToken);
         } catch (FacadeException e) {
-            throw new FacadeException(400, "Error: bad create request");
+            throw new FacadeException("Error: bad create request");
         }
     }
 
@@ -67,7 +67,7 @@ public class ServerFacade {
             var path = "/game";
             return this.makeRequest("PUT", path, joinGameData, GameData.class, authToken);
         } catch (FacadeException e) {
-            throw new FacadeException(400, "Error: bad join request");
+            throw new FacadeException("Error: bad join request");
         }
     }
 
@@ -76,7 +76,7 @@ public class ServerFacade {
             var path = "/db";
             this.makeRequest("DELETE", path, null, null, null);
         } else {
-            throw new FacadeException(400, "Error: bad clear request");
+            throw new FacadeException("Error: bad clear request");
         }
     }
 
@@ -93,7 +93,7 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
-            throw new FacadeException(500, ex.getMessage());
+            throw new FacadeException(ex.getMessage());
         }
     }
 
@@ -111,7 +111,7 @@ public class ServerFacade {
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, FacadeException {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
-            throw new FacadeException(status, "failure: " + status);
+            throw new FacadeException("failure: " + status);
         }
     }
 

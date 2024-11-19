@@ -27,7 +27,7 @@ public class PreloginUI {
 
     public String register(String... params) throws FacadeException {
         if (params.length != 3) {
-            throw new FacadeException(400, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
+            throw new FacadeException("Expected: <USERNAME> <PASSWORD> <EMAIL>");
         }
         try {
             var username = params[0];
@@ -45,7 +45,7 @@ public class PreloginUI {
 
     public String login(String... params) throws FacadeException {
         if (params.length != 2) {
-            throw new FacadeException(400, "Expected: <USERNAME> <PASSWORD>");
+            throw new FacadeException("Expected: <USERNAME> <PASSWORD>");
         }
         try {
             var username = params[0];

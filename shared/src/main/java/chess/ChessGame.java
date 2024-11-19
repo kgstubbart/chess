@@ -79,11 +79,12 @@ public class ChessGame {
     }
 
     /**
-     * Enum identifying the 2 possible teams in a chess game
+     * Enum identifying the 2 possible teams in a chess game, plus an observer
      */
     public enum TeamColor {
         WHITE,
-        BLACK
+        BLACK,
+        OBSERVER
     }
 
     /**

@@ -81,6 +81,9 @@ public class MySqlGameDataAccess implements GameDataAccess {
                     updatedGameData = new GameData(gameID, whiteUsername, username, gameName, gameData.game());
                     blackUsername = username;
                 }
+                else if (playerColor == ChessGame.TeamColor.OBSERVER) {
+                    updatedGameData = new GameData(gameID, whiteUsername, blackUsername, gameName, gameData.game());
+                }
                 try (var updateStatement = conn.prepareStatement
                         ("UPDATE GameData SET whiteUsername = ?, blackUsername = ?, game = ? WHERE gameID = ?")) {
                     updateStatement.setString(1, whiteUsername);
