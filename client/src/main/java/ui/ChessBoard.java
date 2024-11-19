@@ -38,14 +38,7 @@ public class ChessBoard {
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
                     EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
             for (int j = 0; j < 8; j++) {
-                String squareColor;
-                if ((i + j) % 2 == 0) {
-                    squareColor = LIGHT_SQUARE;
-                }
-                else {
-                    squareColor = DARK_SQUARE;
-                }
-                System.out.print(squareColor + BOARD[i][j] + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
+                printBoard(i, j);
             }
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
                     EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
@@ -73,14 +66,7 @@ public class ChessBoard {
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
                     EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
             for (int j = 7; j >= 0; j--) {
-                String squareColor;
-                if ((i + j) % 2 == 0) {
-                    squareColor = LIGHT_SQUARE;
-                }
-                else {
-                    squareColor = DARK_SQUARE;
-                }
-                System.out.print(squareColor + BOARD[i][j] + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
+                printBoard(i, j);
             }
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
                     EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
@@ -93,5 +79,16 @@ public class ChessBoard {
         }
         System.out.print(BOARD_SURROUND + "    " + EscapeSequences.RESET_BG_COLOR);
         System.out.println();
+    }
+
+    private static void printBoard(int i, int j) {
+        String squareColor;
+        if ((i + j) % 2 == 0) {
+            squareColor = LIGHT_SQUARE;
+        }
+        else {
+            squareColor = DARK_SQUARE;
+        }
+        System.out.print(squareColor + BOARD[i][j] + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
     }
 }

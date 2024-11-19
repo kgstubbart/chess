@@ -44,9 +44,9 @@ public class ServerFacade {
     public GameData[] listGames(String authToken) throws FacadeException {
         try {
             var path = "/game";
-            record listGameResponse(GameData[] games) {
+            record ListGameResponse(GameData[] games) {
             }
-            var response = this.makeRequest("GET", path, null, listGameResponse.class, authToken);
+            var response = this.makeRequest("GET", path, null, ListGameResponse.class, authToken);
             return response.games();
         } catch (FacadeException e) {
             throw new FacadeException("Error: bad list request");
