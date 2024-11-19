@@ -73,6 +73,7 @@ public class PostloginUI {
             JoinGameData joinGameData = new JoinGameData(playerColor, game.gameID());
             server.joinGame(joinGameData, authToken);
             ChessBoard.printWhitePovBoard();
+            ChessBoard.printBlackPovBoard();
             return "Joined game number: " + gameNumber;
         } catch (FacadeException e) {
             throw new RuntimeException(e);
@@ -94,6 +95,8 @@ public class PostloginUI {
 
             JoinGameData joinGameData = new JoinGameData(null, game.gameID());
             server.joinGame(joinGameData, authToken);
+            ChessBoard.printWhitePovBoard();
+            ChessBoard.printBlackPovBoard();
             return "Observing game number: " + gameNumber;
         } catch (FacadeException e) {
             throw new RuntimeException(e);
