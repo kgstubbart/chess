@@ -14,8 +14,12 @@ public class ServerFacade {
     }
 
     public AuthData registerUser(UserData userData) throws FacadeException {
-        var path = "/user";
-        return this.makeRequest("POST", path, userData, AuthData.class, null);
+        try {
+            var path="/user";
+            return this.makeRequest("POST", path, userData, AuthData.class, null);
+        } catch (FacadeException e) {
+            throw new FacadeException(400, "Error: bad request");
+        }
     }
 
     public AuthData loginUser(UserData userData) throws FacadeException {
@@ -46,7 +50,7 @@ public class ServerFacade {
         this.makeRequest("PUT", path, joinGameData, GameData.class, authToken);
     }
 
-    private void clearApplication() throws FacadeException {
+    public void clearApplication() throws FacadeException {
         var path = "/db";
         this.makeRequest("DELETE", path, null, null, null);
     }
