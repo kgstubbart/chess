@@ -72,6 +72,7 @@ public class PostloginUI {
 
             JoinGameData joinGameData = new JoinGameData(playerColor, game.gameID());
             server.joinGame(joinGameData, authToken);
+            ChessBoard.printWhitePovBoard();
             return "Joined game number: " + gameNumber;
         } catch (FacadeException e) {
             throw new RuntimeException(e);

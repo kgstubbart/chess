@@ -1,4 +1,3 @@
-import chess.*;
 import server.*;
 
 public class Main {

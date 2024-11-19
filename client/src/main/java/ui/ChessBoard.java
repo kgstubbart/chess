@@ -6,7 +6,7 @@ public class ChessBoard {
     private static final String BOARD_SURROUND = EscapeSequences.SET_BG_COLOR_DARK_GREY;
     private static final String EMPTY = EscapeSequences.EMPTY;
 
-    private static final String[] COL_LETTERS = {"a", "b", "c", "d", "e", "f", "g", "h"};
+    private static final String[] COL_LETTERS = {" a  ", " b  ", " c ", " d  ", " e ", " f  ", " g  ", " h "};
     private static final String[] ROW_NUMBERS = {"8", "7", "6", "5", "4", "3", "2", "1"};
 
     private static final String[][] BOARD = {
@@ -23,4 +23,39 @@ public class ChessBoard {
             {EscapeSequences.WHITE_ROOK, EscapeSequences.WHITE_KNIGHT, EscapeSequences.WHITE_BISHOP, EscapeSequences.WHITE_QUEEN,
                     EscapeSequences.WHITE_KING, EscapeSequences.WHITE_BISHOP, EscapeSequences.WHITE_KNIGHT, EscapeSequences.WHITE_ROOK}
     };
+
+    public static void printWhitePovBoard() {
+        System.out.println();
+        System.out.print(BOARD_SURROUND + "    " + EscapeSequences.RESET_BG_COLOR);
+        for (String letter : COL_LETTERS) {
+            System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + letter +
+                    EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
+        }
+        System.out.print(BOARD_SURROUND + "    " + EscapeSequences.RESET_BG_COLOR);
+        System.out.println();
+        for (int i = 0; i < 8; i++) {
+            System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
+                    EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
+            for (int j = 0; j < 8; j++) {
+                String squareColor;
+                if ((i + j) % 2 == 0) {
+                    squareColor = LIGHT_SQUARE;
+                }
+                else {
+                    squareColor = DARK_SQUARE;
+                }
+                System.out.print(squareColor + BOARD[i][j] + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
+            }
+            System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
+                    EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
+            System.out.println();
+        }
+        System.out.print(BOARD_SURROUND + "    " + EscapeSequences.RESET_BG_COLOR);
+        for (String letter : COL_LETTERS) {
+            System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + letter +
+                    EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
+        }
+        System.out.print(BOARD_SURROUND + "    " + EscapeSequences.RESET_BG_COLOR);
+        System.out.println();
+    }
 }
