@@ -27,7 +27,7 @@ public class PreloginUI {
 
     public String register(String... params) throws FacadeException {
         if (params.length != 3) {
-            throw new FacadeException("Expected: <USERNAME> <PASSWORD> <EMAIL>");
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Expected: <USERNAME> <PASSWORD> <EMAIL>" + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
         try {
             var username = params[0];
@@ -37,15 +37,15 @@ public class PreloginUI {
             AuthData authData = server.registerUser(newUser);
             authToken = authData.authToken();
             String visitorName = String.join("-", username);
-            return String.format("Successfully registered as %s.", visitorName);
+            return String.format("Successfully registered as %s." + "\n", visitorName);
         } catch (FacadeException e) {
-            throw new RuntimeException(e);
+            return e.getMessage() + "\n";
         }
     }
 
     public String login(String... params) throws FacadeException {
         if (params.length != 2) {
-            throw new FacadeException("Expected: <USERNAME> <PASSWORD>");
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Expected: <USERNAME> <PASSWORD>" + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
         try {
             var username = params[0];
@@ -54,19 +54,21 @@ public class PreloginUI {
             AuthData authData = server.loginUser(userData);
             authToken = authData.authToken();
             String visitorName = String.join("-", username);
-            return String.format("Successfully logged in as %s.", visitorName);
+            return String.format("Successfully logged in as %s." + "\n", visitorName);
         } catch (FacadeException e) {
-            throw new RuntimeException(e);
+            return e.getMessage() + "\n";
         }
     }
 
     public String help() {
-        return """
-                    register <USERNAME> <PASSWORD> <EMAIL> - create an account
-                    login <USERNAME> <PASSWORD> - load a previously created account
-                    help - see all available commands
-                    quit - shutdown the program
-                """;
+        return EscapeSequences.SET_TEXT_COLOR_BLUE + "    register <USERNAME> <PASSWORD> <EMAIL>" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY +
+                " - create an account" + EscapeSequences.RESET_TEXT_COLOR + "\n" +
+                EscapeSequences.SET_TEXT_COLOR_BLUE + "    login <USERNAME> <PASSWORD>" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY +
+                " - load a previously created account" + EscapeSequences.RESET_TEXT_COLOR + "\n" +
+                EscapeSequences.SET_TEXT_COLOR_BLUE + "    help" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY +
+                " - see all available commands" + EscapeSequences.RESET_TEXT_COLOR + "\n" +
+                EscapeSequences.SET_TEXT_COLOR_BLUE + "    quit" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY +
+                " - shutdown the program" + EscapeSequences.RESET_TEXT_COLOR + "\n";
     }
 
     public String getAuthToken() {

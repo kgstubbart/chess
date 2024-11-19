@@ -34,21 +34,21 @@ public class PostloginUI {
 
     public String create(String... params) throws FacadeException {
         if (params.length != 1) {
-            throw new FacadeException("Create needs a game name.");
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Create needs a game name." + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
         try {
             var gameName = params[0];
             GameData gameData = new GameData(0, null, null, gameName, null);
             server.createGame(gameData, authToken);
-            return "Created game: " + gameName;
+            return "Created game: " + gameName + "\n";
         } catch (FacadeException e) {
-            throw new RuntimeException(e);
+            return e.getMessage() + "\n";
         }
     }
 
     public String join(String... params) throws FacadeException {
         if (params.length != 2) {
-            throw new FacadeException("Create needs a game number and player color.");
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Create needs a game number and player color." + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
         try {
             var gameNumber = params[0];
@@ -61,7 +61,7 @@ public class PostloginUI {
                 playerColor = ChessGame.TeamColor.BLACK;
             }
             else {
-                throw new FacadeException("Chose either white or black");
+                return EscapeSequences.SET_TEXT_COLOR_RED + "Chose either white or black" + EscapeSequences.RESET_TEXT_COLOR + "\n";
             }
 
             GameData[] allGames = server.listGames(authToken);
@@ -74,73 +74,78 @@ public class PostloginUI {
             server.joinGame(joinGameData, authToken);
             ChessBoard.printWhitePovBoard();
             ChessBoard.printBlackPovBoard();
-            return "Joined game number: " + gameNumber;
+            return "Joined game number: " + gameNumber + "\n";
         } catch (FacadeException e) {
-            throw new RuntimeException(e);
+            return e.getMessage() + "\n";
         }
     }
 
     public String observe(String... params) throws FacadeException {
         if (params.length != 1) {
-            throw new FacadeException("Create needs a game number.");
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Create needs a game number." + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
         try {
             var gameNumber = params[0];
 
             GameData[] allGames = server.listGames(authToken);
             if (allGames.length == 0) {
-                return "No games currently available.";
+                return EscapeSequences.SET_TEXT_COLOR_RED + "No games currently available." + EscapeSequences.RESET_TEXT_COLOR + "\n";
             }
             GameData game = allGames[Integer.parseInt(gameNumber) - 1];
             JoinGameData joinGameData = new JoinGameData(ChessGame.TeamColor.OBSERVER, game.gameID());
             server.joinGame(joinGameData, authToken);
             ChessBoard.printWhitePovBoard();
             ChessBoard.printBlackPovBoard();
-            return "Observing game number: " + gameNumber;
+            return "Observing game number: " + gameNumber + "\n";
         } catch (FacadeException e) {
-            return String.valueOf(e.getMessage());
+            return e.getMessage() + "\n";
         }
     }
 
     public String list(String... params) throws FacadeException {
         if (params.length != 0) {
-            throw new FacadeException("List needs no additional information.");
+            return EscapeSequences.SET_TEXT_COLOR_RED + "List needs no additional information." + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
         try {
             GameData[] allGames = server.listGames(authToken);
             if (allGames.length == 0) {
-                return "No games currently available.";
+                return EscapeSequences.SET_TEXT_COLOR_RED + "No games currently available." + EscapeSequences.RESET_TEXT_COLOR + "\n";
             }
 
             List<String> gameList = getGameStrings(allGames);
             return String.join("\n" ,gameList);
         } catch (FacadeException e) {
-            throw new RuntimeException(e);
+            return e.getMessage() + "\n";
         }
     }
 
     public String logout(String... params) throws FacadeException {
         if (params.length != 0) {
-            throw new FacadeException("Logout needs no additional information.");
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Logout needs no additional information." + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
         try {
             server.logoutUser(authToken);
-            return "Successfully logged out.";
+            return "Successfully logged out." + "\n";
         } catch (FacadeException e) {
-            throw new RuntimeException(e);
+            return e.getMessage() + "\n";
         }
     }
 
     public String help() {
-        return """
-                    create <NAME> - create a new game
-                    join <ID> <WHITE/BLACK> - join a game
-                    observe <ID> - watch a game
-                    list - see a list of all games
-                    logout - log out of current account
-                    help - see all available commands
-                    quit - shutdown the program
-                """;
+        return EscapeSequences.SET_TEXT_COLOR_BLUE + "    create <NAME>" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY +
+                " - create a new game" + EscapeSequences.RESET_TEXT_COLOR + "\n" +
+                EscapeSequences.SET_TEXT_COLOR_BLUE + "    join <ID> <WHITE/BLACK>" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY +
+                " - join a game" + EscapeSequences.RESET_TEXT_COLOR + "\n" +
+                EscapeSequences.SET_TEXT_COLOR_BLUE + "    observe <ID>" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY +
+                " - watch a game" + EscapeSequences.RESET_TEXT_COLOR + "\n" +
+                EscapeSequences.SET_TEXT_COLOR_BLUE + "    list" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY +
+                " - see a list of all games" + EscapeSequences.RESET_TEXT_COLOR + "\n" +
+                EscapeSequences.SET_TEXT_COLOR_BLUE + "    logout" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY +
+                " - log out of current account" + EscapeSequences.RESET_TEXT_COLOR + "\n" +
+                EscapeSequences.SET_TEXT_COLOR_BLUE + "    help" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY +
+                " - see all available commands" + EscapeSequences.RESET_TEXT_COLOR + "\n" +
+                EscapeSequences.SET_TEXT_COLOR_BLUE + "    quit" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY +
+                " - shutdown the program" + EscapeSequences.RESET_TEXT_COLOR + "\n";
     }
 
     private List<String> getGameStrings(GameData[] allGames) {
