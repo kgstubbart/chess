@@ -7,11 +7,15 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.*;
 import websocket.messages.ErrorMessage;
+import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
+
+import java.io.IOException;
 
 
 @WebSocket
 public class WebSocketHandler {
-     // private final ConnectionManager connections = new ConnectionManager();
+      private final ConnectionManager connections = new ConnectionManager();
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) {
@@ -45,7 +49,11 @@ public class WebSocketHandler {
     private void makeMove(Session session, String username, MakeMoveCommand command) {
     }
 
-    private void connect(Session session, String username, ConnectCommand command) {
+    private void connect(Session session, String username, ConnectCommand command) throws IOException {
+        connections.add(username, session);
+        var message = String.format("%s is in the game.", username);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(username, notification);
     }
 
     private void saveSession(Integer gameID, Session session) {
