@@ -7,6 +7,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.*;
 import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
@@ -56,8 +57,10 @@ public class WebSocketHandler {
     private void connect(Session session, String username, ConnectCommand command) throws IOException {
         connections.add(username, session);
         var message = String.format("%s is in the game.", username);
-        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcast(username, notification);
+        var broadcastNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        var userLoadGame = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, message);
+        connections.userBroadcast(username, userLoadGame);
+        connections.broadcast(username, broadcastNotification);
     }
 
     private void saveSession(Integer gameID, Session session) {
