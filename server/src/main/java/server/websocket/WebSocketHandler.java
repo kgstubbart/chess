@@ -43,7 +43,11 @@ public class WebSocketHandler {
     private void resign(Session session, String username, ResignCommand command) {
     }
 
-    private void leave(Session session, String username, LeaveCommand command) {
+    private void leave(Session session, String username, LeaveCommand command) throws IOException {
+        connections.remove(username);
+        var message = String.format("%s has left the game.", username);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(username, notification);
     }
 
     private void makeMove(Session session, String username, MakeMoveCommand command) {
