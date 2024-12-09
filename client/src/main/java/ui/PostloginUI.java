@@ -11,6 +11,7 @@ import ui.facade.*;
 public class PostloginUI {
     private final ServerFacade server;
     private String authToken;
+    private boolean inGame = false;
 
     public PostloginUI(String serverUrl, String authToken) {
         server = new ServerFacade(serverUrl);
@@ -74,6 +75,7 @@ public class PostloginUI {
 
             JoinGameData joinGameData = new JoinGameData(playerColor, game.gameID());
             server.joinGame(joinGameData, authToken);
+            inGame = true;
             ChessBoard.printWhitePovBoard();
             ChessBoard.printBlackPovBoard();
             return "Joined game number: " + gameNumber + "\n";
@@ -180,5 +182,9 @@ public class PostloginUI {
 
     public String getAuthToken() {
         return authToken;
+    }
+
+    public boolean getInGame() {
+        return inGame;
     }
 }

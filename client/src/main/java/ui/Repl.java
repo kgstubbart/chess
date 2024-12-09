@@ -67,7 +67,7 @@ public class Repl implements NotificationHandler {
                 if ((line.startsWith("logout")) && (postloginUI.getAuthToken() == null)) {
                     state = State.LOGGEDOUT;
                 }
-                if ((line.startsWith("join") || line.startsWith("observe"))) {
+                if ((line.startsWith("join") || line.startsWith("observe")) && (postloginUI.getInGame())) {
                     state = State.INGAME;
                 }
             } catch (Throwable e) {
