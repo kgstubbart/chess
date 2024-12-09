@@ -15,7 +15,7 @@ public class WebSocketFacade extends Endpoint {
     NotificationHandler notificationHandler;
 
 
-    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws FacadeException {
+    public WebSocketFacade(String url, NotificationHandler notificationHandler) {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
@@ -33,7 +33,11 @@ public class WebSocketFacade extends Endpoint {
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
+          try {
             throw new FacadeException(ex.getMessage());
+          } catch (FacadeException e) {
+            throw new RuntimeException(e);
+          }
         }
     }
 
@@ -51,14 +55,14 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-//    public void leavePetShop(String visitorName) throws FacadeException {
-//        try {
-//            var action = new Action(Action.Type.EXIT, visitorName);
-//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//            this.session.close();
-//        } catch (IOException ex) {
-//            throw new FacadeException(ex.getMessage());
-//        }
-//    }
+    public void leaveGameplay(String authToken, Integer gameID) throws FacadeException {
+        try {
+            var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+            this.session.close();
+        } catch (IOException ex) {
+            throw new FacadeException(ex.getMessage());
+        }
+    }
 
 }

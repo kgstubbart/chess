@@ -10,11 +10,13 @@ import ui.facade.*;
 
 public class PostloginUI {
     private final ServerFacade server;
+    private final WebSocketFacade webSocket;
     private String authToken;
     private boolean inGame = false;
 
-    public PostloginUI(String serverUrl, String authToken) {
+    public PostloginUI(String serverUrl, String authToken, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
+        webSocket = new WebSocketFacade(serverUrl, notificationHandler);
         this.authToken = authToken;
     }
 
@@ -75,6 +77,7 @@ public class PostloginUI {
 
             JoinGameData joinGameData = new JoinGameData(playerColor, game.gameID());
             server.joinGame(joinGameData, authToken);
+            webSocket.enterGameplay(authToken, game.gameID());
             inGame = true;
             ChessBoard.printWhitePovBoard();
             ChessBoard.printBlackPovBoard();
@@ -102,6 +105,8 @@ public class PostloginUI {
 
             JoinGameData joinGameData = new JoinGameData(ChessGame.TeamColor.OBSERVER, game.gameID());
             server.joinGame(joinGameData, authToken);
+            webSocket.enterGameplay(authToken, game.gameID());
+            inGame = true;
             ChessBoard.printWhitePovBoard();
             ChessBoard.printBlackPovBoard();
             return "Observing game number: " + gameNumber + "\n";

@@ -51,7 +51,7 @@ public class Repl implements NotificationHandler {
     }
 
     public void postloginRun(String serverUrl) {
-        postloginUI = new PostloginUI(serverUrl, authToken);
+        postloginUI = new PostloginUI(serverUrl, authToken, this);
         System.out.print("\n" + postloginUI.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -86,7 +86,7 @@ public class Repl implements NotificationHandler {
     }
 
     public void gameplayRun(String serverUrl) {
-        gameplayUI = new GameplayUI(serverUrl, authToken);
+        gameplayUI = new GameplayUI(serverUrl, authToken, this);
         System.out.print("\n" + gameplayUI.help());
 
         Scanner scanner = new Scanner(System.in);

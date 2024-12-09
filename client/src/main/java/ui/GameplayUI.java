@@ -1,16 +1,18 @@
 package ui;
 
 import ui.facade.FacadeException;
+import ui.facade.NotificationHandler;
 import ui.facade.ServerFacade;
+import ui.facade.WebSocketFacade;
 
 import java.util.Arrays;
 
 public class GameplayUI {
-    private final ServerFacade server;
+    private final WebSocketFacade webSocket;
     private String authToken;
 
-    public GameplayUI(String serverUrl, String authToken) {
-        server = new ServerFacade(serverUrl);
+    public GameplayUI(String serverUrl, String authToken, NotificationHandler notificationHandler) {
+        webSocket = new WebSocketFacade(serverUrl, notificationHandler);
         this.authToken = authToken;
     }
 
