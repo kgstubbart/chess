@@ -1,13 +1,13 @@
 package websocket.messages;
 
 public class LoadGameMessage extends ServerMessage {
-    private final String message;
-    public LoadGameMessage(ServerMessageType type, String message) {
+    private final String game;
+    public LoadGameMessage(ServerMessageType type, String game) {
         super(type);
-        this.message = message;
+        this.game = game;
     }
 
-    private String getMessage() {
-        return message;
+    public String getGame() {
+        return game;
     }
 }
