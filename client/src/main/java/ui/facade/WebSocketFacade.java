@@ -1,6 +1,7 @@
 package ui.facade;
 
 import com.google.gson.Gson;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
@@ -41,15 +42,15 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-//    public void enterPetShop(String visitorName) throws FacadeException {
-//        try {
-//            var action = new Action(Action.Type.ENTER, visitorName);
-//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//        } catch (IOException ex) {
-//            throw new FacadeException(ex.getMessage());
-//        }
-//    }
-//
+    public void enterGameplay(String authToken, Integer gameID) throws FacadeException {
+        try {
+            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException ex) {
+            throw new FacadeException(ex.getMessage());
+        }
+    }
+
 //    public void leavePetShop(String visitorName) throws FacadeException {
 //        try {
 //            var action = new Action(Action.Type.EXIT, visitorName);
