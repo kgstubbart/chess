@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.MySqlAuthDataAccess;
 import dataaccess.MySqlGameDataAccess;
+import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
@@ -28,7 +29,11 @@ public class WebSocketHandler {
         try {
             UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
             String username = getUsername(command.getAuthToken());
+            if (username == null) {
+                connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Bad user authorization."));
+            }
 
+            connections.add(username, session);
             saveSession(command.getGameID(), session);
 
             switch (command.getCommandType()) {
@@ -74,20 +79,20 @@ public class WebSocketHandler {
     private void connect(Session session, String username, ConnectCommand command) throws IOException, ServiceException {
         connections.add(username, session);
         var message = String.format("%s is in the game.", username);
-        var gameMessage = getGameData(username, command.getGameID());
+        var gameMessage = getGameData(session, command.getGameID());
         if (gameMessage != null) {
             var broadcastNotification=new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var userLoadGame=new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, gameMessage);
-            connections.userBroadcast(username, userLoadGame);
+            connections.userBroadcast(session, userLoadGame);
             connections.broadcast(username, broadcastNotification);
         }
     }
 
-    private ChessGame getGameData(String username, Integer gameID) throws ServiceException, IOException {
+    private ChessGame getGameData(Session session, Integer gameID) throws ServiceException, IOException {
         GameData gameData = new MySqlGameDataAccess().getGame(gameID);
         if (gameData == null) {
             var userError = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "This game does not exist.");
-            connections.userBroadcast(username, userError);
+            connections.userBroadcast(session, userError);
             return null;
         }
         else {
@@ -100,7 +105,13 @@ public class WebSocketHandler {
     }
 
     private String getUsername(String authToken) throws ServiceException {
-        return new MySqlAuthDataAccess().getAuth(authToken).username();
+        AuthData authData = new MySqlAuthDataAccess().getAuth(authToken);
+        if (authData == null) {
+            return null;
+        }
+        else {
+            return authData.username();
+        }
     }
 
 }
