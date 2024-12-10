@@ -10,10 +10,14 @@ import java.util.Arrays;
 public class GameplayUI {
     private final WebSocketFacade webSocket;
     private String authToken;
+    private String username;
+    private Integer gameID;
 
-    public GameplayUI(String serverUrl, String authToken, NotificationHandler notificationHandler) {
+    public GameplayUI(String serverUrl, String authToken, String username, NotificationHandler notificationHandler, Integer gameID) {
         webSocket = new WebSocketFacade(serverUrl, notificationHandler);
         this.authToken = authToken;
+        this.username = username;
+        this.gameID = gameID;
     }
 
     public String eval(String input) throws FacadeException {
@@ -47,7 +51,18 @@ public class GameplayUI {
     }
 
     public String leave(String... params) throws FacadeException {
-        return "";
+        if (params.length != 0) {
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Leave needs no additional information." + EscapeSequences.RESET_TEXT_COLOR + "\n";
+        }
+        try {
+            webSocket.leaveGameplay(authToken, username, gameID);
+            return """
+                    Successfully left game.
+                    
+                    """;
+        } catch (FacadeException e) {
+            return e.getMessage() + "\n";
+        }
     }
 
     public String help() {

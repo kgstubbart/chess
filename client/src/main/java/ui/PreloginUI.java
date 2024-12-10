@@ -8,6 +8,7 @@ import ui.facade.*;
 public class PreloginUI {
     private final ServerFacade server;
     private String authToken = null;
+    private String userName = null;
 
     public PreloginUI(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -36,6 +37,7 @@ public class PreloginUI {
             UserData newUser = new UserData(username, password, email);
             AuthData authData = server.registerUser(newUser);
             authToken = authData.authToken();
+            userName = username;
             String visitorName = String.join("-", username);
             return String.format("Successfully registered as %s." + "\n", visitorName);
         } catch (FacadeException e) {
@@ -53,6 +55,7 @@ public class PreloginUI {
             UserData userData = new UserData(username, password, null);
             AuthData authData = server.loginUser(userData);
             authToken = authData.authToken();
+            userName = username;
             String visitorName = String.join("-", username);
             return String.format("Successfully logged in as %s." + "\n", visitorName);
         } catch (FacadeException e) {
@@ -73,5 +76,9 @@ public class PreloginUI {
 
     public String getAuthToken() {
         return authToken;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 }

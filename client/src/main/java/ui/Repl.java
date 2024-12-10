@@ -14,6 +14,8 @@ public class Repl implements NotificationHandler {
     private GameplayUI gameplayUI;
     private State state = State.LOGGEDOUT;
     private String authToken = null;
+    private String username = null;
+    private Integer gameID;
 
     public Repl (String serverUrl) {
         preloginUI = new PreloginUI(serverUrl);
@@ -43,6 +45,7 @@ public class Repl implements NotificationHandler {
         }
         if (state == State.LOGGEDIN) {
             authToken = preloginUI.getAuthToken();
+            username = preloginUI.getUserName();
             postloginRun(serverUrl);
         }
         else {
@@ -51,7 +54,7 @@ public class Repl implements NotificationHandler {
     }
 
     public void postloginRun(String serverUrl) {
-        postloginUI = new PostloginUI(serverUrl, authToken, this);
+        postloginUI = new PostloginUI(serverUrl, authToken, username, this);
         System.out.print("\n" + postloginUI.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -81,12 +84,13 @@ public class Repl implements NotificationHandler {
             preloginRun(serverUrl);
         }
         if (state == State.INGAME) {
+            gameID = postloginUI.getGameID();
             gameplayRun(serverUrl);
         }
     }
 
     public void gameplayRun(String serverUrl) {
-        gameplayUI = new GameplayUI(serverUrl, authToken, this);
+        gameplayUI = new GameplayUI(serverUrl, authToken, username, this, gameID);
         System.out.print("\n" + gameplayUI.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -121,11 +125,11 @@ public class Repl implements NotificationHandler {
         switch (message.getServerMessageType()) {
             case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
             case ERROR -> displayError(((ErrorMessage) message).getErrorMessage());
-            case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
+            case LOAD_GAME -> loadGame(((LoadGameMessage<?>) message).getGame());
         }
     }
 
-    private void loadGame(String game) {
+    private void loadGame(Object game) {
         System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_GREEN + game + EscapeSequences.RESET_TEXT_COLOR);
     }
 

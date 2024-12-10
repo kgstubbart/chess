@@ -13,11 +13,14 @@ public class PostloginUI {
     private final WebSocketFacade webSocket;
     private String authToken;
     private boolean inGame = false;
+    private Integer gameID;
+    private String username;
 
-    public PostloginUI(String serverUrl, String authToken, NotificationHandler notificationHandler) {
+    public PostloginUI(String serverUrl, String authToken, String username, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
         webSocket = new WebSocketFacade(serverUrl, notificationHandler);
         this.authToken = authToken;
+        this.username = username;
     }
 
     public String eval(String input) throws FacadeException {
@@ -74,10 +77,11 @@ public class PostloginUI {
                 return EscapeSequences.SET_TEXT_COLOR_RED + "Game ID does not exist." + EscapeSequences.RESET_TEXT_COLOR + "\n";
             }
             GameData game = allGames[Integer.parseInt(gameNumber) - 1];
+            gameID = game.gameID();
 
-            JoinGameData joinGameData = new JoinGameData(playerColor, game.gameID());
+            JoinGameData joinGameData = new JoinGameData(playerColor, gameID);
             server.joinGame(joinGameData, authToken);
-            webSocket.enterGameplay(authToken, game.gameID());
+            webSocket.enterGameplay(authToken, username, game.gameID());
             inGame = true;
             ChessBoard.printWhitePovBoard();
             ChessBoard.printBlackPovBoard();
@@ -105,7 +109,7 @@ public class PostloginUI {
 
             JoinGameData joinGameData = new JoinGameData(ChessGame.TeamColor.OBSERVER, game.gameID());
             server.joinGame(joinGameData, authToken);
-            webSocket.enterGameplay(authToken, game.gameID());
+            webSocket.enterGameplay(authToken, username, game.gameID());
             inGame = true;
             ChessBoard.printWhitePovBoard();
             ChessBoard.printBlackPovBoard();
@@ -191,5 +195,9 @@ public class PostloginUI {
 
     public boolean getInGame() {
         return inGame;
+    }
+
+    public Integer getGameID() {
+        return gameID;
     }
 }

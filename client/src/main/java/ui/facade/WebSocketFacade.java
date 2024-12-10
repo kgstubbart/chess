@@ -1,6 +1,8 @@
 package ui.facade;
 
 import com.google.gson.Gson;
+import websocket.commands.ConnectCommand;
+import websocket.commands.LeaveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -46,18 +48,19 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void enterGameplay(String authToken, Integer gameID) throws FacadeException {
+    public void enterGameplay(String authToken, String username, Integer gameID) throws FacadeException {
         try {
-            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+            var command = new ConnectCommand(UserGameCommand.CommandType.CONNECT, authToken, username, gameID);
+            System.out.println("Command: " + command);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new FacadeException(ex.getMessage());
         }
     }
 
-    public void leaveGameplay(String authToken, Integer gameID) throws FacadeException {
+    public void leaveGameplay(String authToken, String username, Integer gameID) throws FacadeException {
         try {
-            var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+            var command = new LeaveCommand(UserGameCommand.CommandType.LEAVE, authToken, username, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
             this.session.close();
         } catch (IOException ex) {
