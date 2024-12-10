@@ -74,15 +74,25 @@ public class WebSocketHandler {
     private void connect(Session session, String username, ConnectCommand command) throws IOException, ServiceException {
         connections.add(username, session);
         var message = String.format("%s is in the game.", username);
-        var gameMessage = getGameData(command.getGameID());
-        var broadcastNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        var userLoadGame = new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, gameMessage);
-        connections.userBroadcast(username, userLoadGame);
-        connections.broadcast(username, broadcastNotification);
+        var gameMessage = getGameData(username, command.getGameID());
+        if (gameMessage != null) {
+            var broadcastNotification=new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            var userLoadGame=new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, gameMessage);
+            connections.userBroadcast(username, userLoadGame);
+            connections.broadcast(username, broadcastNotification);
+        }
     }
 
-    private ChessGame getGameData(Integer gameID) throws ServiceException {
-        return new MySqlGameDataAccess().getGame(gameID).game();
+    private ChessGame getGameData(String username, Integer gameID) throws ServiceException, IOException {
+        GameData gameData = new MySqlGameDataAccess().getGame(gameID);
+        if (gameData == null) {
+            var userError = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "This game does not exist.");
+            connections.userBroadcast(username, userError);
+            return null;
+        }
+        else {
+            return gameData.game();
+        }
     }
 
     private void saveSession(Integer gameID, Session session) {
