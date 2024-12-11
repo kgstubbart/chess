@@ -143,8 +143,8 @@ public class WebSocketHandler {
         game.makeMove(move);
         GameData gameData = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
         new MySqlGameDataAccess().updateGame(username, userColor, gameID, gameData);
-        var userLoadGame = new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, game);
-        var broadcastLoadGame = new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, game);
+        var userLoadGame = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
+        var broadcastLoadGame = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
         var message = String.format("Opponent moved to %s.", move);
         var broadcastNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.userBroadcast(session, userLoadGame);
@@ -165,7 +165,7 @@ public class WebSocketHandler {
         var gameMessage = getGameData(session, command.getGameID());
         if (gameMessage != null) {
             var broadcastNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-            var userLoadGame = new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, gameMessage);
+            var userLoadGame = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameMessage);
             connections.userBroadcast(session, userLoadGame);
             connections.broadcast(username, command.getGameID(), broadcastNotification);
         }

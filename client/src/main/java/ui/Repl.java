@@ -1,11 +1,14 @@
 package ui;
 
+import chess.ChessGame;
+import ui.facade.FacadeException;
 import ui.facade.NotificationHandler;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Repl implements NotificationHandler {
@@ -100,8 +103,18 @@ public class Repl implements NotificationHandler {
             String line = scanner.nextLine();
 
             try {
-                result = gameplayUI.eval(line);
-                System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result);
+                if ((line.startsWith("resign"))) {
+                    if (!line.equals("resign")) {
+                        System.out.print(EscapeSequences.SET_TEXT_COLOR_RED + "Resign needs no additional information."
+                                + EscapeSequences.RESET_TEXT_COLOR + "\n");
+                    }
+                    gameplayResignRun(serverUrl);
+                    return;
+                }
+                else {
+                    result = gameplayUI.eval(line);
+                    System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result);
+                }
 
             } catch (Throwable e) {
                 var msg = e.toString();
@@ -116,8 +129,33 @@ public class Repl implements NotificationHandler {
         }
     }
 
+    private void gameplayResignRun(String serverUrl) {
+        try (Scanner scanner = new Scanner(System.in)) {
+            while (true) {
+                printConfirmationPrompt();
+                String line = scanner.nextLine().toLowerCase();
+
+                if (line.equals("yes")) {
+                    gameplayUI.resign("yes");
+                    gameplayRun(serverUrl);
+                } else if (line.equals("no")) {
+                    gameplayRun(serverUrl);
+                } else {
+                    System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid resignation confirmation. Type <yes> or <no>"
+                            + EscapeSequences.RESET_TEXT_COLOR);
+                }
+            }
+        } catch (FacadeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void printPrompt() {
         System.out.print("\n" + EscapeSequences.RESET_TEXT_COLOR + "[" + state + "] " + ">>> " + EscapeSequences.SET_TEXT_COLOR_GREEN);
+    }
+
+    private void printConfirmationPrompt() {
+        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_MAGENTA + "    <Confirm: yes/no> " + ">>> " + EscapeSequences.SET_TEXT_COLOR_GREEN);
     }
 
     @Override
@@ -125,12 +163,12 @@ public class Repl implements NotificationHandler {
         switch (message.getServerMessageType()) {
             case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
             case ERROR -> displayError(((ErrorMessage) message).getErrorMessage());
-            case LOAD_GAME -> loadGame(((LoadGameMessage<?>) message).getGame());
+            case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
         }
     }
 
-    private void loadGame(Object game) {
-        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_GREEN + game + EscapeSequences.RESET_TEXT_COLOR);
+    private void loadGame(ChessGame game) {
+        ChessBoard.createBoard(game.getBoard(), ChessGame.TeamColor.WHITE);
     }
 
     private void displayError(String errorMessage) {

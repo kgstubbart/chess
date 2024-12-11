@@ -40,7 +40,6 @@ public class ConnectionManager {
     }
 
     public void broadcast(String excludeUsername, int gameID, ServerMessage message) throws IOException {
-        // add check on if same gameID
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {

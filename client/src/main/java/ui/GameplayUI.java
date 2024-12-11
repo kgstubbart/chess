@@ -7,6 +7,7 @@ import ui.facade.NotificationHandler;
 import ui.facade.WebSocketFacade;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class GameplayUI {
@@ -49,7 +50,7 @@ public class GameplayUI {
 
             webSocket.makeMove(authToken, username, gameID, move);
             return """
-                    Successfully left game.
+                    Successfully moved.
                     
                     """;
         } catch (FacadeException e) {
@@ -66,25 +67,16 @@ public class GameplayUI {
     }
 
     public String resign(String... params) throws FacadeException {
-        if (params.length != 0) {
+        if (!Objects.equals(params[0], "yes")) {
             return EscapeSequences.SET_TEXT_COLOR_RED + "Resign needs no additional information." + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
-        try (Scanner scanner = new Scanner(System.in)) {
-            while (true) {
-                printConfirmationPrompt();
-                String line = scanner.nextLine().toLowerCase();
-
-                if (line.equals("yes")) {
-                    webSocket.resignGame(authToken, username, gameID);
-                    return "";
-                } else if (line.equals("no")) {
-                    return "";
-                } else {
-                    System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid resignation confirmation. Type <yes> or <no>"
-                            + EscapeSequences.RESET_TEXT_COLOR);
-                }
-            }
-        } catch(FacadeException e) {
+        try {
+            webSocket.resignGame(authToken, username, gameID);
+            return """
+                    Successfully resigned game.
+                    
+                    """;
+        } catch (FacadeException e) {
             return e.getMessage() + "\n";
         }
     }
@@ -131,9 +123,5 @@ public class GameplayUI {
         int row = Character.getNumericValue(rowStr);
 
         return new ChessPosition(col, row);
-    }
-
-    private void printConfirmationPrompt() {
-        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_MAGENTA + "    <Confirm: yes/no> " + ">>> " + EscapeSequences.SET_TEXT_COLOR_GREEN);
     }
 }
