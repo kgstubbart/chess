@@ -16,9 +16,9 @@ public class ChessBoard {
 
     public static void createBoard(chess.ChessBoard gameBoard, ChessGame.TeamColor color) {
         String[][] board = new String[8][8];
-        for (int row = 0; row <= 7; row++) {
-            for (int col = 0; col <= 7; col++) {
-                ChessPiece piece = gameBoard.getPiece(new ChessPosition(row, col));
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                ChessPiece piece = gameBoard.getPiece(new ChessPosition(row + 1, col + 1));
                 if (piece == null) {
                     board[row][col] = EMPTY;
                     continue;
@@ -86,10 +86,10 @@ public class ChessBoard {
         }
         System.out.print(BOARD_SURROUND + "    " + EscapeSequences.RESET_BG_COLOR);
         System.out.println();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 7; i >= 0; i--) {
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
                     EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
-            for (int j = 0; j < 8; j++) {
+            for (int j = 7; j >= 0; j--) {
                 printSpot(board, i, j);
             }
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
@@ -114,10 +114,10 @@ public class ChessBoard {
         }
         System.out.print(BOARD_SURROUND + "    " + EscapeSequences.RESET_BG_COLOR);
         System.out.println();
-        for (int i = 7; i >= 0; i--) {
+        for (int i = 0; i < 8; i++) {
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
                     EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
-            for (int j = 7; j >= 0; j--) {
+            for (int j = 0; j < 8; j++) {
                 printSpot(board, i, j);
             }
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
