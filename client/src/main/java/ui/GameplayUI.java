@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import ui.facade.FacadeException;
@@ -15,12 +16,17 @@ public class GameplayUI {
     private String authToken;
     private String username;
     private Integer gameID;
+    private ChessGame game;
+    private ChessGame.TeamColor color;
 
-    public GameplayUI(String serverUrl, String authToken, String username, NotificationHandler notificationHandler, Integer gameID) {
+    public GameplayUI(String serverUrl, String authToken, String username, NotificationHandler notificationHandler,
+                      Integer gameID, ChessGame game, ChessGame.TeamColor color) {
         webSocket = new WebSocketFacade(serverUrl, notificationHandler);
         this.authToken = authToken;
         this.username = username;
         this.gameID = gameID;
+        this.game = game;
+        this.color = color;
     }
 
     public String eval(String input) throws FacadeException {
@@ -58,8 +64,12 @@ public class GameplayUI {
         }
     }
 
-    public String redraw(String... params) throws FacadeException {
-        return "";
+    public String redraw(String... params) {
+        if (params.length != 0) {
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Redraw needs no additional information." + EscapeSequences.RESET_TEXT_COLOR + "\n";
+        }
+        ChessBoard.createBoard(game.getBoard(), color);
+        return "\n";
     }
 
     public String highlight(String... params) throws FacadeException {

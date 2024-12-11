@@ -8,7 +8,6 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
-import java.util.Objects;
 import java.util.Scanner;
 
 public class Repl implements NotificationHandler {
@@ -19,6 +18,8 @@ public class Repl implements NotificationHandler {
     private String authToken = null;
     private String username = null;
     private Integer gameID;
+    private ChessGame game;
+    private ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
 
     public Repl (String serverUrl) {
         preloginUI = new PreloginUI(serverUrl);
@@ -75,6 +76,9 @@ public class Repl implements NotificationHandler {
                 }
                 if ((line.startsWith("join") || line.startsWith("observe")) && (postloginUI.getInGame())) {
                     state = State.INGAME;
+                    if (line.endsWith("black")) {
+                        this.color = ChessGame.TeamColor.BLACK;
+                    }
                 }
             } catch (Throwable e) {
                 var msg = e.toString();
@@ -93,7 +97,7 @@ public class Repl implements NotificationHandler {
     }
 
     public void gameplayRun(String serverUrl) {
-        gameplayUI = new GameplayUI(serverUrl, authToken, username, this, gameID);
+        gameplayUI = new GameplayUI(serverUrl, authToken, username, this, gameID, game, color);
         System.out.print("\n" + gameplayUI.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -101,7 +105,7 @@ public class Repl implements NotificationHandler {
         while ((state == State.INGAME)) {
             printPrompt();
             String line = scanner.nextLine();
-
+            gameplayUI = new GameplayUI(serverUrl, authToken, username, this, gameID, game, color);
             try {
                 if ((line.startsWith("resign"))) {
                     if (!line.equals("resign")) {
@@ -168,7 +172,8 @@ public class Repl implements NotificationHandler {
     }
 
     private void loadGame(ChessGame game) {
-        ChessBoard.createBoard(game.getBoard(), ChessGame.TeamColor.WHITE);
+        this.game = game;
+        ChessBoard.createBoard(game.getBoard(), color);
     }
 
     private void displayError(String errorMessage) {

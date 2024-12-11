@@ -145,7 +145,7 @@ public class WebSocketHandler {
         new MySqlGameDataAccess().updateGame(username, userColor, gameID, gameData);
         var userLoadGame = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
         var broadcastLoadGame = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
-        var message = String.format("Opponent moved to %s.", move);
+        var message = String.format("Opponent moved to %s.", move.getEndPosition());
         var broadcastNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.userBroadcast(session, userLoadGame);
         connections.broadcast(username, gameID, broadcastLoadGame);
