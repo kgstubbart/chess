@@ -66,7 +66,13 @@ public class WebSocketHandler {
     private void sendMessage(RemoteEndpoint remote, ErrorMessage errorMessage) {
     }
 
-    private void resign(Session session, String username, ResignCommand command) throws IOException {
+    private void resign(Session session, String username, ResignCommand command) throws IOException, ServiceException {
+        Integer gameID = command.getGameID();
+        GameData gameData = new MySqlGameDataAccess().getGame(gameID);
+        if ((!Objects.equals(username, gameData.whiteUsername())) && (!Objects.equals(username, gameData.blackUsername()))) {
+            connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Not playing game."));
+            return;
+        }
         var message = String.format("%s has resigned the game.", username);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(username, notification);
