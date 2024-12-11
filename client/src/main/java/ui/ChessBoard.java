@@ -11,7 +11,7 @@ public class ChessBoard {
     private static final String EMPTY = EscapeSequences.EMPTY;
 
     private static final String[] WHITE_COL_LETTERS = {" a  ", " b  ", " c ", " d  ", " e ", " f  ", " g  ", " h "};
-    private static final String[] ROW_NUMBERS = {"8", "7", "6", "5", "4", "3", "2", "1"};
+    private static final String[] ROW_NUMBERS = {"1", "2", "3", "4", "5", "6", "7", "8"};
     private static final String[] BLACK_COL_LETTERS = {" h  ", " g  ", " f ", " e  ", " d ", " c  ", " b  ", " a "};
 
     public static void createBoard(chess.ChessBoard gameBoard, ChessGame.TeamColor color) {
