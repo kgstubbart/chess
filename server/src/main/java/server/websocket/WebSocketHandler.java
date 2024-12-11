@@ -113,9 +113,8 @@ public class WebSocketHandler {
         Integer gameID = command.getGameID();
         ChessGame game = getGameData(session, gameID);
         assert game != null;
-        if (game.isInCheckmate(ChessGame.TeamColor.WHITE) || game.isInCheckmate(ChessGame.TeamColor.BLACK) ||
-                game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)) {
-            connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Game is over."));
+        if (connections.finishGames.containsKey(gameID)) {
+            connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Game already finished."));
             return;
         }
         String whiteUsername = new MySqlGameDataAccess().getGame(gameID).whiteUsername();
