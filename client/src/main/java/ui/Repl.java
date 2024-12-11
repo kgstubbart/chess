@@ -174,13 +174,16 @@ public class Repl implements NotificationHandler {
     private void loadGame(ChessGame game) {
         this.game = game;
         ChessBoard.createBoard(game.getBoard(), color, null);
+        printPrompt();
     }
 
     private void displayError(String errorMessage) {
         System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_RED + "Error: " + errorMessage + EscapeSequences.RESET_TEXT_COLOR + "\n");
+        printPrompt();
     }
 
     private void displayNotification(String message) {
         System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_YELLOW + "Notification: " + message + EscapeSequences.RESET_TEXT_COLOR + "\n");
+        printPrompt();
     }
 }
