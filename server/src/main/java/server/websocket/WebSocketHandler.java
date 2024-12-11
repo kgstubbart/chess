@@ -10,6 +10,7 @@ import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import service.GameService;
 import service.ServiceException;
 import websocket.commands.*;
 import websocket.messages.ErrorMessage;
@@ -81,11 +82,12 @@ public class WebSocketHandler {
         assert game != null;
         if (game.isInCheckmate(ChessGame.TeamColor.WHITE) || game.isInCheckmate(ChessGame.TeamColor.BLACK) ||
                 game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)) {
-            connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.LOAD_GAME, "Game is over."));
+            connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Game is over."));
             return;
         }
         String whiteUsername = new MySqlGameDataAccess().getGame(gameID).whiteUsername();
         String blackUsername = new MySqlGameDataAccess().getGame(gameID).blackUsername();
+        String gameName = new MySqlGameDataAccess().getGame(gameID).gameName();
         ChessGame.TeamColor userColor = null;
         if (Objects.equals(whiteUsername, username)) {
             userColor = ChessGame.TeamColor.WHITE;
@@ -114,6 +116,8 @@ public class WebSocketHandler {
             return;
         }
         game.makeMove(move);
+        GameData gameData = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
+        new MySqlGameDataAccess().updateGame(username, userColor, gameID, gameData);
         var userLoadGame = new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, game);
         var broadcastLoadGame = new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, game);
         var message = String.format("Opponent moved to %s.", move);
@@ -121,6 +125,12 @@ public class WebSocketHandler {
         connections.userBroadcast(session, userLoadGame);
         connections.broadcast(username, broadcastLoadGame);
         connections.broadcast(username, broadcastNotification);
+        if (game.isInCheckmate(ChessGame.TeamColor.WHITE) || game.isInCheckmate(ChessGame.TeamColor.BLACK) ||
+                game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)) {
+            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is over."));
+            connections.broadcast(username, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is over."));
+            return;
+        }
     }
 
     private void connect(Session session, String username, ConnectCommand command) throws IOException, ServiceException {
