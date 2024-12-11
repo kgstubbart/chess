@@ -18,6 +18,7 @@ import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Objects;
 
 
@@ -78,6 +79,11 @@ public class WebSocketHandler {
         Integer gameID = command.getGameID();
         ChessGame game = getGameData(session, gameID);
         assert game != null;
+        if (game.isInCheckmate(ChessGame.TeamColor.WHITE) || game.isInCheckmate(ChessGame.TeamColor.BLACK) ||
+                game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)) {
+            connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.LOAD_GAME, "Game is over."));
+            return;
+        }
         String whiteUsername = new MySqlGameDataAccess().getGame(gameID).whiteUsername();
         String blackUsername = new MySqlGameDataAccess().getGame(gameID).blackUsername();
         ChessGame.TeamColor userColor = null;
@@ -94,6 +100,19 @@ public class WebSocketHandler {
             return;
         }
         ChessMove move = command.getMove();
+        ChessPosition startPos = move.getStartPosition();
+        Collection<ChessMove> validMoves = game.validMoves(startPos);
+        boolean valid = false;
+        for (ChessMove m : validMoves) {
+            if (m.equals(move)) {
+                valid = true;
+                break;
+            }
+        }
+        if (!valid) {
+            connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Invalid move."));
+            return;
+        }
         game.makeMove(move);
         var userLoadGame = new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, game);
         var broadcastLoadGame = new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, game);
@@ -139,5 +158,4 @@ public class WebSocketHandler {
             return authData.username();
         }
     }
-
 }
