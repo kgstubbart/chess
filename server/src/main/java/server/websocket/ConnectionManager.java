@@ -11,12 +11,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
     public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Session, String> sessions = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<Session, String> sessions = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<Integer, String> finishGames = new ConcurrentHashMap<>();
 
     public void add(String username, Session session) {
         var connection = new Connection(username, session);
         connections.put(username, connection);
         sessions.put(session, username);
+    }
+
+    public void finish(Integer gameID, String username) {
+        finishGames.put(gameID, username);
+    }
+
+    public ConcurrentHashMap<Integer, String> getFinishGames() {
+        return finishGames;
     }
 
     public void remove(String username) {

@@ -21,6 +21,7 @@ import websocket.messages.ServerMessage;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @WebSocket
@@ -73,11 +74,16 @@ public class WebSocketHandler {
             connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Not playing game."));
             return;
         }
+        if (connections.finishGames.containsKey(gameID)) {
+            connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Game already finished."));
+            return;
+        }
         var message = String.format("%s has resigned the game.", username);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(username, notification);
         connections.userBroadcast(session, notification);
         connections.remove(session);
+        connections.finish(gameID, username);
     }
 
     private void leave(Session session, String username, LeaveCommand command) throws IOException, ServiceException {
