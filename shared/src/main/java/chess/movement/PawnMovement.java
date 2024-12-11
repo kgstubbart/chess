@@ -49,7 +49,7 @@ public class PawnMovement extends BaseMovement {
                         moves.add(new ChessMove(position, new ChessPosition(tempRow + 1, tempCol + 1), ChessPiece.PieceType.ROOK));
                         moves.add(new ChessMove(position, new ChessPosition(tempRow + 1, tempCol + 1), ChessPiece.PieceType.KNIGHT));
                     } else {
-                        baseCalc(board, position, -1, -1, moves, false);
+                        baseCalc(board, position, -1, 1, moves, false);
                     }
                 }
             }
@@ -61,7 +61,7 @@ public class PawnMovement extends BaseMovement {
                         moves.add(new ChessMove(position, new ChessPosition(tempRow + 1, tempCol - 1), ChessPiece.PieceType.ROOK));
                         moves.add(new ChessMove(position, new ChessPosition(tempRow + 1, tempCol - 1), ChessPiece.PieceType.KNIGHT));
                     } else {
-                        baseCalc(board, position, -1, 1, moves, false);
+                        baseCalc(board, position, -1, -1, moves, false);
                     }
                 }
             }
