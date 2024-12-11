@@ -42,8 +42,8 @@ public class GameplayUI {
             return EscapeSequences.SET_TEXT_COLOR_RED + "Move needs two chess positions." + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
         try {
-            String startPosStr= params[0];
-            String endPosStr= params[1];
+            String startPosStr = params[0];
+            String endPosStr = params[1];
             ChessPosition startPos = convertPosition(startPosStr);
             ChessPosition endPos = convertPosition(endPosStr);
             ChessMove move = new ChessMove(startPos, endPos, null); // need to change from null
@@ -122,6 +122,6 @@ public class GameplayUI {
         int col = colStr - 'a' + 1;
         int row = Character.getNumericValue(rowStr);
 
-        return new ChessPosition(col, row);
+        return new ChessPosition(row, col);
     }
 }

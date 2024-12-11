@@ -89,7 +89,7 @@ public class ChessBoard {
         for (int i = 7; i >= 0; i--) {
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
                     EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
-            for (int j = 7; j >= 0; j--) {
+            for (int j = 0; j < 8; j++) {
                 printSpot(board, i, j);
             }
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
@@ -117,7 +117,7 @@ public class ChessBoard {
         for (int i = 0; i < 8; i++) {
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
                     EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
-            for (int j = 0; j < 8; j++) {
+            for (int j = 7; j >= 0; j--) {
                 printSpot(board, i, j);
             }
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
@@ -135,7 +135,7 @@ public class ChessBoard {
 
     private static void printSpot(String[][] board, int i, int j) {
         String squareColor;
-        if ((i + j) % 2 == 0) {
+        if ((i + j) % 2 == 1) {
             squareColor = LIGHT_SQUARE;
         } else {
             squareColor = DARK_SQUARE;
