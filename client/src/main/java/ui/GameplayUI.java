@@ -1,16 +1,12 @@
 package ui;
 
-import chess.ChessBoard;
 import chess.ChessMove;
 import chess.ChessPosition;
-import model.GameData;
 import ui.facade.FacadeException;
 import ui.facade.NotificationHandler;
 import ui.facade.WebSocketFacade;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 public class GameplayUI {
@@ -128,11 +124,11 @@ public class GameplayUI {
     }
 
     public ChessPosition convertPosition(String position) {
-        char col_str = position.charAt(0);
-        char row_str = position.charAt(1);
+        char colStr= position.charAt(0);
+        char rowStr = position.charAt(1);
 
-        int col = col_str - 'a' + 1;
-        int row = Character.getNumericValue(row_str);
+        int col = colStr - 'a' + 1;
+        int row = Character.getNumericValue(rowStr);
 
         return new ChessPosition(col, row);
     }
