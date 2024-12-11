@@ -1,11 +1,14 @@
 package ui;
 
+import chess.ChessMove;
+import chess.ChessPosition;
 import ui.facade.FacadeException;
 import ui.facade.NotificationHandler;
-import ui.facade.ServerFacade;
 import ui.facade.WebSocketFacade;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class GameplayUI {
     private final WebSocketFacade webSocket;
@@ -35,7 +38,24 @@ public class GameplayUI {
     }
 
     public String move(String... params) throws FacadeException {
-        return "";
+        if (params.length != 2) {
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Move needs two chess positions." + EscapeSequences.RESET_TEXT_COLOR + "\n";
+        }
+        try {
+            String startPosStr= params[0];
+            String endPosStr= params[1];
+            ChessPosition startPos = convertPosition(startPosStr);
+            ChessPosition endPos = convertPosition(endPosStr);
+            ChessMove move = new ChessMove(startPos, endPos, null); // need to change from null
+
+            webSocket.makeMove(authToken, username, gameID, move);
+            return """
+                    Successfully left game.
+                    
+                    """;
+        } catch (FacadeException e) {
+            return e.getMessage() + "\n";
+        }
     }
 
     public String redraw(String... params) throws FacadeException {
@@ -82,5 +102,15 @@ public class GameplayUI {
 
     public String getAuthToken() {
         return authToken;
+    }
+
+    public ChessPosition convertPosition(String position) {
+        char col_str = position.charAt(0);
+        char row_str = position.charAt(1);
+
+        int col = col_str - 'a' + 1;
+        int row = Character.getNumericValue(row_str);
+
+        return new ChessPosition(col, row);
     }
 }

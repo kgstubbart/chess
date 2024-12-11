@@ -22,6 +22,7 @@ public class ConnectionManager {
     public void remove(String username) {
         var connection = connections.remove(username);
         sessions.remove(connection.session);
+
     }
 
     public void remove(Session session) {

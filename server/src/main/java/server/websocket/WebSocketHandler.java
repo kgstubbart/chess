@@ -1,6 +1,6 @@
 package server.websocket;
 
-import chess.ChessGame;
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.MySqlAuthDataAccess;
 import dataaccess.MySqlGameDataAccess;
@@ -22,7 +22,7 @@ import java.io.IOException;
 
 @WebSocket
 public class WebSocketHandler {
-      private final ConnectionManager connections = new ConnectionManager();
+    private final ConnectionManager connections = new ConnectionManager();
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) {
@@ -43,7 +43,7 @@ public class WebSocketHandler {
                 }
                 case MAKE_MOVE -> {
                     MakeMoveCommand makeMoveCommand = new Gson().fromJson(message, MakeMoveCommand.class);
-                    makeMove(session, makeMoveCommand);
+                    makeMove(session, username, makeMoveCommand);
                 }
                 case LEAVE -> {
                     LeaveCommand leaveCommand = new Gson().fromJson(message, LeaveCommand.class);
@@ -73,7 +73,19 @@ public class WebSocketHandler {
         connections.broadcast(username, notification);
     }
 
-    private void makeMove(Session session, MakeMoveCommand command) {
+    private void makeMove(Session session, String username, MakeMoveCommand command) throws ServiceException, IOException, InvalidMoveException {
+        Integer gameID = command.getGameID();
+        ChessGame game = getGameData(session, gameID);
+        ChessMove move = command.getMove();
+        assert game != null;
+        game.makeMove(move);
+        var userLoadGame = new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, game);
+        var broadcastLoadGame = new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, game);
+        var message = String.format("Opponent moved to %s.", move);
+        var broadcastNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.userBroadcast(session, userLoadGame);
+        connections.broadcast(username, broadcastLoadGame);
+        connections.broadcast(username, broadcastNotification);
     }
 
     private void connect(Session session, String username, ConnectCommand command) throws IOException, ServiceException {
@@ -81,8 +93,8 @@ public class WebSocketHandler {
         var message = String.format("%s is in the game.", username);
         var gameMessage = getGameData(session, command.getGameID());
         if (gameMessage != null) {
-            var broadcastNotification=new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-            var userLoadGame=new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, gameMessage);
+            var broadcastNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            var userLoadGame = new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, gameMessage);
             connections.userBroadcast(session, userLoadGame);
             connections.broadcast(username, broadcastNotification);
         }
@@ -94,8 +106,7 @@ public class WebSocketHandler {
             var userError = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "This game does not exist.");
             connections.userBroadcast(session, userError);
             return null;
-        }
-        else {
+        } else {
             return gameData.game();
         }
     }
@@ -108,8 +119,7 @@ public class WebSocketHandler {
         AuthData authData = new MySqlAuthDataAccess().getAuth(authToken);
         if (authData == null) {
             return null;
-        }
-        else {
+        } else {
             return authData.username();
         }
     }
