@@ -54,7 +54,7 @@ public class WebSocketHandler {
                 }
                 case RESIGN -> {
                     ResignCommand resignCommand = new Gson().fromJson(message, ResignCommand.class);
-                    resign(session, resignCommand);
+                    resign(session, username, resignCommand);
                 }
             }
         } catch (Exception ex) {
@@ -66,10 +66,31 @@ public class WebSocketHandler {
     private void sendMessage(RemoteEndpoint remote, ErrorMessage errorMessage) {
     }
 
-    private void resign(Session session, ResignCommand command) {
+    private void resign(Session session, String username, ResignCommand command) throws IOException {
+        var message = String.format("%s has resigned the game.", username);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(username, notification);
+        connections.userBroadcast(session, notification);
+        connections.remove(session);
     }
 
-    private void leave(Session session, String username, LeaveCommand command) throws IOException {
+    private void leave(Session session, String username, LeaveCommand command) throws IOException, ServiceException {
+//        Integer gameID = command.getGameID();
+//        GameData gameData = new MySqlGameDataAccess().getGame(gameID);
+//        String whiteUsername = gameData.whiteUsername();
+//        String blackUsername = gameData.blackUsername();
+//        String gameName = gameData.gameName();
+//        ChessGame game = gameData.game();
+//        if (Objects.equals(whiteUsername, username)) {
+//            gameData = new GameData(gameID, null, blackUsername, gameName, game);
+//            new MySqlGameDataAccess().updateGame(null, ChessGame.TeamColor.WHITE, gameID, gameData);
+//        } else if (Objects.equals(blackUsername, username)) {
+//            gameData = new GameData(gameID, whiteUsername, null, gameName, game);
+//            new MySqlGameDataAccess().updateGame(null, ChessGame.TeamColor.BLACK, gameID, gameData);
+//        } else {
+//            connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "User not in game."));
+//            return;
+//        }
         connections.remove(username);
         var message = String.format("%s has left the game.", username);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);

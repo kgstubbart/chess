@@ -3,10 +3,7 @@ package ui.facade;
 import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
-import websocket.commands.ConnectCommand;
-import websocket.commands.LeaveCommand;
-import websocket.commands.MakeMoveCommand;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
@@ -66,6 +63,15 @@ public class WebSocketFacade extends Endpoint {
             var command = new LeaveCommand(UserGameCommand.CommandType.LEAVE, authToken, username, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
             this.session.close();
+        } catch (IOException ex) {
+            throw new FacadeException(ex.getMessage());
+        }
+    }
+
+    public void resignGame(String authToken, String username, Integer gameID) throws FacadeException {
+        try {
+            var command = new ResignCommand(UserGameCommand.CommandType.RESIGN, authToken, username, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new FacadeException(ex.getMessage());
         }
