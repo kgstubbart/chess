@@ -73,11 +73,11 @@ public class MySqlGameDataAccess implements GameDataAccess {
                 String whiteUsername = rs.getString("whiteUsername");
                 String blackUsername = rs.getString("blackUsername");
                 String gameName = rs.getString("gameName");
-                if ((playerColor == ChessGame.TeamColor.WHITE) && (whiteUsername == null)) {
+                if ((playerColor == ChessGame.TeamColor.WHITE) && ((whiteUsername == null) || (username == null))) {
                     updatedGameData = new GameData(gameID, username, blackUsername, gameName, gameData.game());
                     whiteUsername = username;
                 }
-                else if ((playerColor == ChessGame.TeamColor.BLACK) && (blackUsername == null)) {
+                else if ((playerColor == ChessGame.TeamColor.BLACK) && ((blackUsername == null) || (username == null))) {
                     updatedGameData = new GameData(gameID, whiteUsername, username, gameName, gameData.game());
                     blackUsername = username;
                 }

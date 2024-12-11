@@ -38,7 +38,6 @@ public class WebSocketHandler {
             }
 
             connections.add(username, session);
-            saveSession(command.getGameID(), session);
 
             switch (command.getCommandType()) {
                 case CONNECT -> {
@@ -60,11 +59,7 @@ public class WebSocketHandler {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            sendMessage(session.getRemote(), new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: " + ex.getMessage()));
         }
-    }
-
-    private void sendMessage(RemoteEndpoint remote, ErrorMessage errorMessage) {
     }
 
     private void resign(Session session, String username, ResignCommand command) throws IOException, ServiceException {
@@ -87,22 +82,20 @@ public class WebSocketHandler {
     }
 
     private void leave(Session session, String username, LeaveCommand command) throws IOException, ServiceException {
-//        Integer gameID = command.getGameID();
-//        GameData gameData = new MySqlGameDataAccess().getGame(gameID);
-//        String whiteUsername = gameData.whiteUsername();
-//        String blackUsername = gameData.blackUsername();
-//        String gameName = gameData.gameName();
-//        ChessGame game = gameData.game();
-//        if (Objects.equals(whiteUsername, username)) {
-//            gameData = new GameData(gameID, null, blackUsername, gameName, game);
-//            new MySqlGameDataAccess().updateGame(null, ChessGame.TeamColor.WHITE, gameID, gameData);
-//        } else if (Objects.equals(blackUsername, username)) {
-//            gameData = new GameData(gameID, whiteUsername, null, gameName, game);
-//            new MySqlGameDataAccess().updateGame(null, ChessGame.TeamColor.BLACK, gameID, gameData);
-//        } else {
-//            connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "User not in game."));
-//            return;
-//        }
+        Integer gameID = command.getGameID();
+        GameData gameData = new MySqlGameDataAccess().getGame(gameID);
+        String whiteUsername = gameData.whiteUsername();
+        String blackUsername = gameData.blackUsername();
+        String gameName = gameData.gameName();
+        ChessGame game = gameData.game();
+        if (Objects.equals(whiteUsername, username)) {
+            gameData = new GameData(gameID, null, blackUsername, gameName, game);
+            new MySqlGameDataAccess().updateGame(null, ChessGame.TeamColor.WHITE, gameID, gameData);
+        }
+        if (Objects.equals(blackUsername, username)) {
+            gameData = new GameData(gameID, whiteUsername, null, gameName, game);
+            new MySqlGameDataAccess().updateGame(null, ChessGame.TeamColor.BLACK, gameID, gameData);
+        }
         connections.remove(username);
         var message = String.format("%s has left the game.", username);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
@@ -186,10 +179,6 @@ public class WebSocketHandler {
         } else {
             return gameData.game();
         }
-    }
-
-    private void saveSession(Integer gameID, Session session) {
-
     }
 
     private String getUsername(String authToken) throws ServiceException {
