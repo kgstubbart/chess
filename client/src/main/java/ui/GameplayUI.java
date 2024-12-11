@@ -1,7 +1,9 @@
 package ui;
 
+import chess.ChessBoard;
 import chess.ChessMove;
 import chess.ChessPosition;
+import model.GameData;
 import ui.facade.FacadeException;
 import ui.facade.NotificationHandler;
 import ui.facade.WebSocketFacade;
@@ -9,6 +11,7 @@ import ui.facade.WebSocketFacade;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 public class GameplayUI {
     private final WebSocketFacade webSocket;
@@ -67,7 +70,27 @@ public class GameplayUI {
     }
 
     public String resign(String... params) throws FacadeException {
-        return "";
+        if (params.length != 0) {
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Resign needs no additional information." + EscapeSequences.RESET_TEXT_COLOR + "\n";
+        }
+        try (Scanner scanner = new Scanner(System.in)) {
+            while (true) {
+                printConfirmationPrompt();
+                String line = scanner.nextLine().toLowerCase();
+
+                if (line.equals("yes")) {
+                    webSocket.resignGame(authToken, username, gameID);
+                    return "";
+                } else if (line.equals("no")) {
+                    return "";
+                } else {
+                    System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid resignation confirmation. Type <yes> or <no>"
+                            + EscapeSequences.RESET_TEXT_COLOR);
+                }
+            }
+        } catch(FacadeException e) {
+            return e.getMessage() + "\n";
+        }
     }
 
     public String leave(String... params) throws FacadeException {
@@ -112,5 +135,9 @@ public class GameplayUI {
         int row = Character.getNumericValue(row_str);
 
         return new ChessPosition(col, row);
+    }
+
+    private void printConfirmationPrompt() {
+        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_MAGENTA + "    <Confirm: yes/no> " + ">>> " + EscapeSequences.SET_TEXT_COLOR_GREEN);
     }
 }

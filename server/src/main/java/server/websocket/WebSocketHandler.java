@@ -37,7 +37,7 @@ public class WebSocketHandler {
                 connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Bad user authorization."));
             }
 
-            connections.add(username, session);
+            connections.add(username, command.getGameID(), session);
 
             switch (command.getCommandType()) {
                 case CONNECT -> {
@@ -75,7 +75,7 @@ public class WebSocketHandler {
         }
         var message = String.format("%s has resigned the game.", username);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcast(username, notification);
+        connections.broadcast(username, gameID, notification);
         connections.userBroadcast(session, notification);
         connections.remove(session);
         connections.finish(gameID, username);
@@ -99,7 +99,7 @@ public class WebSocketHandler {
         connections.remove(username);
         var message = String.format("%s has left the game.", username);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcast(username, notification);
+        connections.broadcast(username, gameID, notification);
     }
 
     private void makeMove(Session session, String username, MakeMoveCommand command) throws ServiceException, IOException, InvalidMoveException {
@@ -148,25 +148,26 @@ public class WebSocketHandler {
         var message = String.format("Opponent moved to %s.", move);
         var broadcastNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.userBroadcast(session, userLoadGame);
-        connections.broadcast(username, broadcastLoadGame);
-        connections.broadcast(username, broadcastNotification);
+        connections.broadcast(username, gameID, broadcastLoadGame);
+        connections.broadcast(username, gameID, broadcastNotification);
         if (game.isInCheckmate(ChessGame.TeamColor.WHITE) || game.isInCheckmate(ChessGame.TeamColor.BLACK) ||
                 game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)) {
             connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is over."));
-            connections.broadcast(username, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is over."));
+            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is over."));
+            connections.finish(gameID, username);
             return;
         }
     }
 
     private void connect(Session session, String username, ConnectCommand command) throws IOException, ServiceException {
-        connections.add(username, session);
+        connections.add(username, command.getGameID(), session);
         var message = String.format("%s is in the game.", username);
         var gameMessage = getGameData(session, command.getGameID());
         if (gameMessage != null) {
             var broadcastNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var userLoadGame = new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, gameMessage);
             connections.userBroadcast(session, userLoadGame);
-            connections.broadcast(username, broadcastNotification);
+            connections.broadcast(username, command.getGameID(), broadcastNotification);
         }
     }
 

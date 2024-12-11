@@ -14,8 +14,8 @@ public class ConnectionManager {
     public final ConcurrentHashMap<Session, String> sessions = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<Integer, String> finishGames = new ConcurrentHashMap<>();
 
-    public void add(String username, Session session) {
-        var connection = new Connection(username, session);
+    public void add(String username, Integer gameID, Session session) {
+        var connection = new Connection(username, gameID, session);
         connections.put(username, connection);
         sessions.put(session, username);
     }
@@ -39,11 +39,12 @@ public class ConnectionManager {
         connections.remove(username);
     }
 
-    public void broadcast(String excludeUsername, ServerMessage message) throws IOException {
+    public void broadcast(String excludeUsername, int gameID, ServerMessage message) throws IOException {
+        // add check on if same gameID
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
-                if (!c.username.equals(excludeUsername)) {
+                if (!c.username.equals(excludeUsername) && (gameID == c.gameID)) {
                     c.send(new Gson().toJson(message));
                 }
             } else {
