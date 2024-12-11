@@ -18,6 +18,7 @@ import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 
 @WebSocket
@@ -76,8 +77,23 @@ public class WebSocketHandler {
     private void makeMove(Session session, String username, MakeMoveCommand command) throws ServiceException, IOException, InvalidMoveException {
         Integer gameID = command.getGameID();
         ChessGame game = getGameData(session, gameID);
-        ChessMove move = command.getMove();
         assert game != null;
+        String whiteUsername = new MySqlGameDataAccess().getGame(gameID).whiteUsername();
+        String blackUsername = new MySqlGameDataAccess().getGame(gameID).blackUsername();
+        ChessGame.TeamColor userColor = null;
+        if (Objects.equals(whiteUsername, username)) {
+            userColor = ChessGame.TeamColor.WHITE;
+        } else if (Objects.equals(blackUsername, username)) {
+            userColor = ChessGame.TeamColor.BLACK;
+        } else {
+            connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "User not in game."));
+            return;
+        }
+        if (game.getTeamTurn() != userColor) {
+            connections.userBroadcast(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Not your turn."));
+            return;
+        }
+        ChessMove move = command.getMove();
         game.makeMove(move);
         var userLoadGame = new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, game);
         var broadcastLoadGame = new LoadGameMessage<>(ServerMessage.ServerMessageType.LOAD_GAME, game);
