@@ -83,7 +83,6 @@ public class PostloginUI {
             server.joinGame(joinGameData, authToken);
             webSocket.enterGameplay(authToken, username, game.gameID());
             inGame = true;
-            // print board
             return "Joined game number: " + gameNumber + "\n";
         } catch (FacadeException e) {
             return e.getMessage() + "\n";
@@ -110,7 +109,6 @@ public class PostloginUI {
             server.joinGame(joinGameData, authToken);
             webSocket.enterGameplay(authToken, username, game.gameID());
             inGame = true;
-            // print board
             return "Observing game number: " + gameNumber + "\n";
         } catch (FacadeException e) {
             return e.getMessage() + "\n";

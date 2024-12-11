@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import ui.facade.FacadeException;
 import ui.facade.NotificationHandler;
@@ -18,15 +19,17 @@ public class GameplayUI {
     private Integer gameID;
     private ChessGame game;
     private ChessGame.TeamColor color;
+    private Scanner scanner;
 
     public GameplayUI(String serverUrl, String authToken, String username, NotificationHandler notificationHandler,
-                      Integer gameID, ChessGame game, ChessGame.TeamColor color) {
+                      Integer gameID, ChessGame game, ChessGame.TeamColor color, Scanner scanner) {
         webSocket = new WebSocketFacade(serverUrl, notificationHandler);
         this.authToken = authToken;
         this.username = username;
         this.gameID = gameID;
         this.game = game;
         this.color = color;
+        this.scanner = scanner;
     }
 
     public String eval(String input) throws FacadeException {
@@ -51,8 +54,15 @@ public class GameplayUI {
             String startPosStr = params[0];
             String endPosStr = params[1];
             ChessPosition startPos = convertPosition(startPosStr);
+            ChessPiece piece = game.getBoard().getPiece(startPos);
+            ChessPiece.PieceType promotionPiece = null;
             ChessPosition endPos = convertPosition(endPosStr);
-            ChessMove move = new ChessMove(startPos, endPos, null); // need to change from null
+            if ((piece.getPieceType() == ChessPiece.PieceType.PAWN) && (((endPos.getRow() == 0) &&
+                    (piece.getTeamColor() == ChessGame.TeamColor.BLACK)) ||
+                    ((endPos.getRow() == 7) && (piece.getTeamColor() == ChessGame.TeamColor.WHITE)))) {
+                promotionPiece = getPromotion();
+            }
+            ChessMove move = new ChessMove(startPos, endPos, promotionPiece); // need to change from null
 
             webSocket.makeMove(authToken, username, gameID, move);
             return """
@@ -64,16 +74,41 @@ public class GameplayUI {
         }
     }
 
+    private ChessPiece.PieceType getPromotion() {
+        while (true) {
+            printPromotionPrompt();
+            String input = scanner.nextLine();
+            var token = input.toLowerCase();
+            switch(token) {
+                case "queen" -> { return ChessPiece.PieceType.QUEEN; }
+                case "rook" -> { return ChessPiece.PieceType.ROOK; }
+                case "bishop" -> { return ChessPiece.PieceType.BISHOP; }
+                case "knight" -> { return ChessPiece.PieceType.KNIGHT; }
+            }
+        }
+    }
+
+    private void printPromotionPrompt() {
+        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_MAGENTA + "    Choose piece to promote pawn to: <QUEEN/ROOK/BISHOP/KNIGHT> "
+                + ">>> " + EscapeSequences.SET_TEXT_COLOR_GREEN);
+    }
+
     public String redraw(String... params) {
         if (params.length != 0) {
             return EscapeSequences.SET_TEXT_COLOR_RED + "Redraw needs no additional information." + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
-        ChessBoard.createBoard(game.getBoard(), color);
+        ChessBoard.createBoard(game.getBoard(), color, null);
         return "\n";
     }
 
     public String highlight(String... params) throws FacadeException {
-        return "";
+        if (params.length != 1) {
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Move needs two chess positions." + EscapeSequences.RESET_TEXT_COLOR + "\n";
+        }
+        String startPosStr = params[0];
+        ChessPosition startPos = convertPosition(startPosStr);
+        ChessBoard.validMovesBoard(game, color, startPos);
+        return "\n";
     }
 
     public String resign(String... params) throws FacadeException {

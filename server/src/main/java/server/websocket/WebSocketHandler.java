@@ -145,15 +145,17 @@ public class WebSocketHandler {
         new MySqlGameDataAccess().updateGame(username, userColor, gameID, gameData);
         var userLoadGame = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
         var broadcastLoadGame = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
-        var message = String.format("Opponent moved to %s.", move.getEndPosition());
+        char row = (char) ('a' + move.getEndPosition().getRow() - 1);
+        String col = Integer.toString(move.getEndPosition().getColumn() + 1);
+        var message = "Opponent moved to " + row + col;
         var broadcastNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.userBroadcast(session, userLoadGame);
         connections.broadcast(username, gameID, broadcastLoadGame);
         connections.broadcast(username, gameID, broadcastNotification);
         if (game.isInCheckmate(ChessGame.TeamColor.WHITE) || game.isInCheckmate(ChessGame.TeamColor.BLACK) ||
                 game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)) {
-            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is over."));
-            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is over."));
+            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is over!"));
+            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is over!"));
             connections.finish(gameID, username);
             return;
         }

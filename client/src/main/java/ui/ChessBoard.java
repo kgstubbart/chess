@@ -1,8 +1,12 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
+
+import java.util.Collection;
+import java.util.Objects;
 
 public class ChessBoard {
     private static final String LIGHT_SQUARE = EscapeSequences.SET_BG_COLOR_LIGHT_BROWN;
@@ -14,7 +18,7 @@ public class ChessBoard {
     private static final String[] ROW_NUMBERS = {"1", "2", "3", "4", "5", "6", "7", "8"};
     private static final String[] BLACK_COL_LETTERS = {" h  ", " g  ", " f ", " e  ", " d ", " c  ", " b  ", " a "};
 
-    public static void createBoard(chess.ChessBoard gameBoard, ChessGame.TeamColor color) {
+    public static void createBoard(chess.ChessBoard gameBoard, ChessGame.TeamColor color, String[][] highlightedSquares) {
         String[][] board = new String[8][8];
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -71,13 +75,13 @@ public class ChessBoard {
             }
         }
         if (color == ChessGame.TeamColor.WHITE) {
-            printWhitePovBoard(board);
+            printWhitePovBoard(board, highlightedSquares);
         } else {
-            printBlackPovBoard(board);
+            printBlackPovBoard(board, highlightedSquares);
         }
     }
 
-    public static void printWhitePovBoard(String[][] board) {
+    public static void printWhitePovBoard(String[][] board, String[][] highlightedSquares) {
         System.out.println();
         System.out.print(BOARD_SURROUND + "    " + EscapeSequences.RESET_BG_COLOR);
         for (String letter : WHITE_COL_LETTERS) {
@@ -90,7 +94,7 @@ public class ChessBoard {
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
                     EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
             for (int j = 0; j < 8; j++) {
-                printSpot(board, i, j);
+                printSpot(board, i, j, highlightedSquares);
             }
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
                     EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
@@ -102,10 +106,10 @@ public class ChessBoard {
                     EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
         }
         System.out.print(BOARD_SURROUND + "    " + EscapeSequences.RESET_BG_COLOR);
-        System.out.println();
+        System.out.println("\n");
     }
 
-    public static void printBlackPovBoard(String[][] board) {
+    public static void printBlackPovBoard(String[][] board, String[][] highlightedSquares) {
         System.out.println();
         System.out.print(BOARD_SURROUND + "    " + EscapeSequences.RESET_BG_COLOR);
         for (String letter : BLACK_COL_LETTERS) {
@@ -118,7 +122,7 @@ public class ChessBoard {
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
                     EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
             for (int j = 7; j >= 0; j--) {
-                printSpot(board, i, j);
+                printSpot(board, i, j, highlightedSquares);
             }
             System.out.print(BOARD_SURROUND + EscapeSequences.SET_TEXT_COLOR_WHITE + "\u2003" + ROW_NUMBERS[i] + "\u2003" +
                     EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
@@ -130,16 +134,41 @@ public class ChessBoard {
                     EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
         }
         System.out.print(BOARD_SURROUND + "    " + EscapeSequences.RESET_BG_COLOR);
-        System.out.println();
+        System.out.println("\n");
     }
 
-    private static void printSpot(String[][] board, int i, int j) {
+    private static void printSpot(String[][] board, int i, int j, String[][] highlightedSquares) {
         String squareColor;
-        if ((i + j) % 2 == 1) {
+        if ((highlightedSquares != null) && (Objects.equals(highlightedSquares[i][j], "highlight"))) {
+            squareColor = EscapeSequences.SET_BG_COLOR_YELLOW;
+        } else if ((i + j) % 2 == 1) {
             squareColor = LIGHT_SQUARE;
         } else {
             squareColor = DARK_SQUARE;
         }
         System.out.print(squareColor + board[i][j] + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
+    }
+
+    public static void validMovesBoard(ChessGame game, ChessGame.TeamColor color, ChessPosition startPos) {
+        Collection<ChessMove> validMoves = new ChessGame(game).validMoves(startPos);
+        String[][] highlightedSquares = new String[8][8];
+        for (ChessMove move : validMoves) {
+            ChessPosition endPos = move.getEndPosition();
+            int row = endPos.getRow();
+            int tempRow = switch (row) {
+                case 1 -> 7;
+                case 2 -> 6;
+                case 3 -> 5;
+                case 4 -> 4;
+                case 5 -> 3;
+                case 6 -> 2;
+                case 7 -> 1;
+                case 8 -> 0;
+                default -> row;
+            };
+            int col = endPos.getColumn();
+            highlightedSquares[tempRow - 1][col] = "highlight";
+        }
+        createBoard(game.getBoard(), color, highlightedSquares);
     }
 }

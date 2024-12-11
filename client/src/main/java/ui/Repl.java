@@ -97,7 +97,7 @@ public class Repl implements NotificationHandler {
     }
 
     public void gameplayRun(String serverUrl) {
-        gameplayUI = new GameplayUI(serverUrl, authToken, username, this, gameID, game, color);
+        gameplayUI = new GameplayUI(serverUrl, authToken, username, this, gameID, game, color, null);
         System.out.print("\n" + gameplayUI.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -105,7 +105,7 @@ public class Repl implements NotificationHandler {
         while ((state == State.INGAME)) {
             printPrompt();
             String line = scanner.nextLine();
-            gameplayUI = new GameplayUI(serverUrl, authToken, username, this, gameID, game, color);
+            gameplayUI = new GameplayUI(serverUrl, authToken, username, this, gameID, game, color, scanner);
             try {
                 if ((line.startsWith("resign"))) {
                     if (!line.equals("resign")) {
@@ -173,14 +173,14 @@ public class Repl implements NotificationHandler {
 
     private void loadGame(ChessGame game) {
         this.game = game;
-        ChessBoard.createBoard(game.getBoard(), color);
+        ChessBoard.createBoard(game.getBoard(), color, null);
     }
 
     private void displayError(String errorMessage) {
-        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_RED + "Error: " + errorMessage + EscapeSequences.RESET_TEXT_COLOR);
+        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_RED + "Error: " + errorMessage + EscapeSequences.RESET_TEXT_COLOR + "\n");
     }
 
     private void displayNotification(String message) {
-        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_YELLOW + "Notification: " + message + EscapeSequences.RESET_TEXT_COLOR);
+        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_YELLOW + "Notification: " + message + EscapeSequences.RESET_TEXT_COLOR + "\n");
     }
 }
