@@ -8,7 +8,6 @@ import chess.ChessPosition;
 import java.util.Collection;
 import java.util.Objects;
 
-import static chess.ChessPiece.PieceType.KING;
 
 public class ChessBoard {
     private static final String LIGHT_SQUARE = EscapeSequences.SET_BG_COLOR_LIGHT_BROWN;
@@ -158,11 +157,15 @@ public class ChessBoard {
 
     public static void validMovesBoard(ChessGame game, ChessGame.TeamColor color, ChessPosition startPos) {
         Collection<ChessMove> validMoves = new ChessGame(game).validMoves(startPos);
+        if (validMoves.isEmpty()) {
+            createBoard(game.getBoard(), color, null);
+        }
         String[][] highlightedSquares = new String[8][8];
         for (ChessMove move : validMoves) {
             ChessPosition endPos = move.getEndPosition();
             int row = endPos.getRow();
             int tempRow = switch (row) {
+                case 0 -> 8;
                 case 1 -> 7;
                 case 2 -> 6;
                 case 3 -> 5;

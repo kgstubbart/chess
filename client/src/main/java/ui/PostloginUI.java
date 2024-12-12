@@ -106,6 +106,7 @@ public class PostloginUI {
             GameData game = allGames[Integer.parseInt(gameNumber) - 1];
 
             JoinGameData joinGameData = new JoinGameData(ChessGame.TeamColor.OBSERVER, game.gameID());
+            gameID = game.gameID();
             server.joinGame(joinGameData, authToken);
             webSocket.enterGameplay(authToken, username, game.gameID());
             inGame = true;

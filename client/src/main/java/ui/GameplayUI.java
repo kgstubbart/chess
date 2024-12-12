@@ -65,10 +65,7 @@ public class GameplayUI {
             ChessMove move = new ChessMove(startPos, endPos, promotionPiece); // need to change from null
 
             webSocket.makeMove(authToken, username, gameID, move);
-            return """
-                    Successfully moved.
-                    
-                    """;
+            return "";
         } catch (FacadeException e) {
             return e.getMessage() + "\n";
         }

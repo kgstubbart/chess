@@ -96,7 +96,7 @@ public class WebSocketHandler {
             gameData = new GameData(gameID, whiteUsername, null, gameName, game);
             new MySqlGameDataAccess().updateGame(null, ChessGame.TeamColor.BLACK, gameID, gameData);
         }
-        connections.remove(username);
+        connections.remove(session);
         var message = String.format("%s has left the game.", username);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(username, gameID, notification);
@@ -145,25 +145,61 @@ public class WebSocketHandler {
         new MySqlGameDataAccess().updateGame(username, userColor, gameID, gameData);
         var userLoadGame = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
         var broadcastLoadGame = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
-        var message = username + "has moved, opponent's turn.";
+        int row = move.getEndPosition().getRow();
+        int col = move.getEndPosition().getColumn();
+        int tempRow = switch (row) {
+            case 8 -> 0;
+            case 7 -> 1;
+            case 6 -> 2;
+            case 5 -> 3;
+            case 4 -> 4;
+            case 3 -> 5;
+            case 2 -> 6;
+            case 1 -> 7;
+            case 0 -> 8;
+            default -> row;
+        };
+        char letter = (char) ('a' + col);
+        var message = username + " moved to " + letter + tempRow;
         var broadcastNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.userBroadcast(session, userLoadGame);
         connections.broadcast(username, gameID, broadcastLoadGame);
         connections.broadcast(username, gameID, broadcastNotification);
-        if (game.isInCheckmate(ChessGame.TeamColor.WHITE) || game.isInCheckmate(ChessGame.TeamColor.BLACK) ||
-                game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)) {
-            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is over!"));
-            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is over!"));
+        if (game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)) {
+            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is in stalemate!"));
+            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is in stalemate!"));
             connections.finish(gameID, username);
-            return;
         }
+        if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, blackUsername + " has checkmated" + whiteUsername));
+            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, blackUsername + " has checkmated" + whiteUsername));
+        }else if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, whiteUsername + " has checkmated" + blackUsername));
+            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, whiteUsername + " has checkmated" + blackUsername));
+        } else if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
+            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, whiteUsername + " is in check!"));
+            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, whiteUsername + " is in check!"));
+        } else if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
+            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, blackUsername + " is in check!"));
+            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, blackUsername + " is in check!"));
+        }
+        return;
     }
 
     private void connect(Session session, String username, ConnectCommand command) throws IOException, ServiceException {
         connections.add(username, command.getGameID(), session);
-        var message = String.format("%s is in the game.", username);
         var gameMessage = getGameData(session, command.getGameID());
         if (gameMessage != null) {
+            Integer gameID = command.getGameID();
+            String whiteUsername = new MySqlGameDataAccess().getGame(gameID).whiteUsername();
+            String blackUsername = new MySqlGameDataAccess().getGame(gameID).blackUsername();
+            String color = "observer";
+            if (Objects.equals(whiteUsername, username)) {
+                color = "white";
+            } else if (Objects.equals(blackUsername, username)) {
+                color = "black";
+            }
+            String message = username + " is in the game as " + color;
             var broadcastNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var userLoadGame = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameMessage);
             connections.userBroadcast(session, userLoadGame);

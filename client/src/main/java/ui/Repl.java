@@ -20,6 +20,7 @@ public class Repl implements NotificationHandler {
     private Integer gameID;
     private ChessGame game;
     private ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
+    private String lastMove;
 
     public Repl (String serverUrl) {
         preloginUI = new PreloginUI(serverUrl);
@@ -114,8 +115,11 @@ public class Repl implements NotificationHandler {
                     }
                     gameplayResignRun(serverUrl);
                     return;
-                }
-                else {
+                } else if ((line.startsWith("move"))) {
+                    this.lastMove = line.substring(line.length() - 2);
+                    result = gameplayUI.eval(line);
+                    System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result);
+                } else {
                     result = gameplayUI.eval(line);
                     System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result);
                 }
