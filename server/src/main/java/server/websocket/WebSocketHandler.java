@@ -145,23 +145,6 @@ public class WebSocketHandler {
         new MySqlGameDataAccess().updateGame(username, userColor, gameID, gameData);
         var userLoadGame = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
         var broadcastLoadGame = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
-/*
-        int row = move.getEndPosition().getRow();
-        int tempRow = switch (row) {
-            case 1 -> 7;
-            case 2 -> 6;
-            case 3 -> 5;
-            case 4 -> 4;
-            case 5 -> 3;
-            case 6 -> 2;
-            case 7 -> 1;
-            case 8 -> 0;
-            default -> row;
-        };
-        char charRow = (char) ('a' + tempRow - 1);
-        String col = Integer.toString(move.getEndPosition().getColumn());
-        var message = username + " moved to " + charRow + col;
-*/
         var message = username + "has moved, opponent's turn.";
         var broadcastNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.userBroadcast(session, userLoadGame);
