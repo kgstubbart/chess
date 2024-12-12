@@ -171,17 +171,25 @@ public class WebSocketHandler {
             connections.finish(gameID, username);
         }
         if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
-            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, blackUsername + " has checkmated" + whiteUsername));
-            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, blackUsername + " has checkmated" + whiteUsername));
+            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    blackUsername + " has checkmated" + whiteUsername));
+            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    blackUsername + " has checkmated" + whiteUsername));
         }else if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
-            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, whiteUsername + " has checkmated" + blackUsername));
-            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, whiteUsername + " has checkmated" + blackUsername));
+            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    whiteUsername + " has checkmated" + blackUsername));
+            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    whiteUsername + " has checkmated" + blackUsername));
         } else if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
-            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, whiteUsername + " is in check!"));
-            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, whiteUsername + " is in check!"));
+            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    whiteUsername + " is in check!"));
+            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    whiteUsername + " is in check!"));
         } else if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
-            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, blackUsername + " is in check!"));
-            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, blackUsername + " is in check!"));
+            connections.userBroadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    blackUsername + " is in check!"));
+            connections.broadcast(username, gameID, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    blackUsername + " is in check!"));
         }
         return;
     }
