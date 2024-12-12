@@ -9,6 +9,7 @@ import ui.facade.NotificationHandler;
 import ui.facade.WebSocketFacade;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -47,12 +48,31 @@ public class GameplayUI {
     }
 
     public String move(String... params) throws FacadeException {
+        List<Character> validLetters = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
+        List<Character> validNums = Arrays.asList('1', '2', '3', '4', '5', '6', '7', '8');
         if (params.length != 2) {
             return EscapeSequences.SET_TEXT_COLOR_RED + "Move needs two chess positions." + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
         try {
             String startPosStr = params[0];
             String endPosStr = params[1];
+            if (startPosStr == null || startPosStr.length() != 2) {
+                return EscapeSequences.SET_TEXT_COLOR_RED + "Positions must be in format letter|number. For example: e7." +
+                        EscapeSequences.RESET_TEXT_COLOR + "\n";
+            }
+            if (endPosStr == null || endPosStr.length() != 2) {
+                return EscapeSequences.SET_TEXT_COLOR_RED + "Positions must be in format letter|number. For example: e7." +
+                        EscapeSequences.RESET_TEXT_COLOR + "\n";
+            }
+            char startLetter = startPosStr.charAt(0);
+            char startNumber = startPosStr.charAt(1);
+            char endLetter = endPosStr.charAt(0);
+            char endNumber = endPosStr.charAt(1);
+            if (!((validLetters.contains(startLetter)) && (validLetters.contains(endLetter))
+                    && (validNums.contains(startNumber)) && (validNums.contains(endNumber)))) {
+                return EscapeSequences.SET_TEXT_COLOR_RED + "Error: Positions must be in format letter|number. For example: e7." +
+                        EscapeSequences.RESET_TEXT_COLOR + "\n";
+            }
             ChessPosition startPos = convertPosition(startPosStr);
             ChessPiece piece = game.getBoard().getPiece(startPos);
             ChessPiece.PieceType promotionPiece = null;
@@ -62,7 +82,7 @@ public class GameplayUI {
                     ((endPos.getRow() == 7) && (piece.getTeamColor() == ChessGame.TeamColor.WHITE)))) {
                 promotionPiece = getPromotion();
             }
-            ChessMove move = new ChessMove(startPos, endPos, promotionPiece); // need to change from null
+            ChessMove move = new ChessMove(startPos, endPos, promotionPiece);
 
             webSocket.makeMove(authToken, username, gameID, move);
             return "";
@@ -99,10 +119,22 @@ public class GameplayUI {
     }
 
     public String highlight(String... params) throws FacadeException {
+        List<Character> validLetters = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
+        List<Character> validNums = Arrays.asList('1', '2', '3', '4', '5', '6', '7', '8');
         if (params.length != 1) {
             return EscapeSequences.SET_TEXT_COLOR_RED + "Move needs two chess positions." + EscapeSequences.RESET_TEXT_COLOR + "\n";
         }
         String startPosStr = params[0];
+        if (startPosStr == null || startPosStr.length() != 2) {
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Positions must be in format letter|number. For example: e7." +
+                    EscapeSequences.RESET_TEXT_COLOR + "\n";
+        }
+        char startLetter = startPosStr.charAt(0);
+        char startNumber = startPosStr.charAt(1);
+        if (!((validLetters.contains(startLetter)) && (validNums.contains(startNumber)))) {
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Error: Positions must be in format letter|number. For example: e7." +
+                    EscapeSequences.RESET_TEXT_COLOR + "\n";
+        }
         ChessPosition startPos = convertPosition(startPosStr);
         ChessBoard.validMovesBoard(game, color, startPos);
         return "\n";
